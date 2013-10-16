@@ -3,8 +3,12 @@
  */
 package tools;
 
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStreamWriter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -21,6 +25,23 @@ public abstract class Indexer {
 	 */
 	// CHEMIN A CHANGER si nécessaire
 	protected static String COLLECTION_DIRNAME = "/public/iri/projetIRI/corpus/";
+
+	// Remove the too simple words
+	private static boolean REMOVE_STOP_WORDS = false;
+	// Number of files in the corpus
+	private static Integer NB_FILES_IN_CORPUS = null;
+	// For each word, number of document in the corpus containing it
+	private static HashMap<String, Integer> DOCUMENT_FREQUENCY = new HashMap<String, Integer>();
+	// the used normalizer
+	private static Normalizer NORMALIZER = null;
+	// The only extention that we care about
+	private static String EXTENSION = null;
+
+	private static long START_TIME = 0;
+	private static long CURRENT_TIME = 0;
+
+	private static BufferedReader BR = null;
+	private static BufferedWriter BW = null;
 
 	/**
 	 * filter files according to their extention
@@ -63,7 +84,7 @@ public abstract class Indexer {
 
 		// TODO !
 		// Appel de la méthode de normalisation
-		System.out.println(fileName);
+		// System.out.println(fileName);
 		final ArrayList<String> words = normalizer.normalize(fileName,
 				removeStopWords);
 		Integer number;
@@ -85,9 +106,9 @@ public abstract class Indexer {
 		}
 
 		// // Affichage du résultat
-		for (final Map.Entry<String, Integer> hit : hits.entrySet()) {
-			System.out.println(hit.getKey() + "\t" + hit.getValue());
-		}
+		// for (final Map.Entry<String, Integer> hit : hits.entrySet()) {
+		// System.out.println(hit.getKey() + "\t" + hit.getValue());
+		// }
 		return hits;
 	}
 
@@ -101,58 +122,68 @@ public abstract class Indexer {
 	 * @return map<word, nbDocs>
 	 * @throws IOException
 	 */
-	private static HashMap<String, Integer> getDocumentFrequency(
-			final String dirName, final Normalizer normalizer,
-			final boolean removeStopWords) throws IOException {
-		// Création de la table des mots
-		final HashMap<String, Integer> hits = new HashMap<String, Integer>();
-		final File dir = new File(dirName);
-		String wordLC;
-		if (dir.isDirectory()) {
-			// Liste des fichiers du répertoire
-			// ajouter un filtre (FileNameFilter) sur les noms
-			// des fichiers si nécessaire
-			final String[] fileNames = dir.list();
+	private static HashMap<String, Integer> getDocumentFrequency(final File dir)
+			throws IOException {
+		System.out.println("Calculate document frequency : df");
+		// if result already calculated, make it easy
+		if (!Indexer.DOCUMENT_FREQUENCY.isEmpty()) {
+			return Indexer.DOCUMENT_FREQUENCY;
+		}
 
-			// Parcours des fichiers et remplissage de la table
+		// final String wordLC;
+		// check the input dir
+		if (!IOManager.checkInDir(dir)) {
+			throw new IOException();
+			// return;
+		}
 
-			// TODO !
-			Integer number;
-			final ArrayList<String> alreadySeenInTheCurrentFile = new ArrayList<String>();
-			for (final String fileName : fileNames) {
-				alreadySeenInTheCurrentFile.clear();
-				System.err.println("Analyse du fichier " + fileName);
-				// Appel de la méthode de normalisation
-				final ArrayList<String> words = normalizer.normalize(dirName
-						+ File.separator + fileName, removeStopWords);
-				// Pour chaque mot de la liste, on remplit un dictionnaire
-				// du nombre d'occurrences pour ce mot
-				for (final String word : words) {
-					wordLC = word;
-					wordLC = wordLC.toLowerCase();
-					number = hits.get(wordLC);
-					// Si ce mot n'était pas encore présent dans le
-					// dictionnaire,
-					// on l'ajoute (nombre d'occurrences = 1)
-					if (number == null) {
-						hits.put(wordLC, 1);
-					}
-					// Sinon, on incrémente le nombre d'occurrence
-					else {
-						if (!alreadySeenInTheCurrentFile.contains(wordLC)) {
-							hits.put(wordLC, ++number);
-						}
-					}
-					alreadySeenInTheCurrentFile.add(wordLC);
-				}
+		Indexer.getDocumentFrequencyRec(dir);
+		return Indexer.DOCUMENT_FREQUENCY;
+	}
+
+	private static final void getDocumentFrequencyRec(final File dir)
+			throws IOException {
+
+		for (final File f : dir.listFiles()) {
+			if (f.isFile()) {
+				Indexer.analyseOneFileForDocumentFrequency(f);
+			} else {
+				Indexer.getDocumentFrequencyRec(f);
 			}
 		}
+	}
 
-		// Affichage du résultat (avec la fréquence)
-		for (final Map.Entry<String, Integer> hit : hits.entrySet()) {
-			// System.out.println(hit.getKey() + "\t" + hit.getValue());
+	/**
+	 * Update <words, nbOfOccurencesInTheCorpus>. Can be improved with a "trie"
+	 * Structure for the alreadySeenInTheCurrentFile.
+	 * 
+	 * @param f
+	 *            File used to update the doc freq
+	 * @throws IOException
+	 */
+	private static void analyseOneFileForDocumentFrequency(final File f)
+			throws IOException {
+		System.out.print("-"); // thinking...
+		String wordLC;
+		Integer number;
+		final ArrayList<String> alreadySeenInTheCurrentFile = new ArrayList<String>();
+
+		// normalize
+		final ArrayList<String> words = Indexer.NORMALIZER.normalize(
+				f.getAbsolutePath(), Indexer.REMOVE_STOP_WORDS);
+
+		// increment doc freq
+		for (final String word : words) {
+			wordLC = word.toLowerCase();
+			number = Indexer.DOCUMENT_FREQUENCY.get(wordLC);
+			// (word !in doc_freq)?(add it):(increment freq);
+			if (number == null) {
+				Indexer.DOCUMENT_FREQUENCY.put(wordLC, 1);
+			} else if (!alreadySeenInTheCurrentFile.contains(wordLC)) {
+				Indexer.DOCUMENT_FREQUENCY.put(wordLC, ++number);
+				alreadySeenInTheCurrentFile.add(wordLC);
+			}
 		}
-		return hits;
 	}
 
 	/**
@@ -185,57 +216,131 @@ public abstract class Indexer {
 			final Integer tf = entry.getValue();
 			final Double idf = Math.log(documentNumber / dfs.get(word));
 			final Double tfIdf = tf * idf;
-			System.out.println(word + "\t" + tfIdf);
+			// System.out.println(word + "\t" + tfIdf);
 			tfIdfs.put(word, tfIdf);
 		}
 		return tfIdfs;
 	}
 
+	public static void getWeightFiles(final File inDir, final File outDir,
+			final Normalizer n, final boolean removeStopWords,
+			final String extension) throws IOException {
+		Indexer.NORMALIZER = n;
+		Indexer.REMOVE_STOP_WORDS = removeStopWords;
+		Indexer.EXTENSION = extension;
+
+		// check inDir and outDir
+		if (!IOManager.checkInDir(inDir) || !IOManager.checkOutDir(outDir)) {
+			throw new IOException();
+			// return;
+		}
+
+		Indexer.START_TIME = System.nanoTime();
+		// initialise the number of files in the corpus
+		System.out.print("Count the number of documents : N = ");
+		if (Indexer.NB_FILES_IN_CORPUS == null) {
+			Indexer.NB_FILES_IN_CORPUS = IOManager
+					.countDocumentRecusively(inDir);
+		}
+		Indexer.CURRENT_TIME = System.nanoTime();
+		System.out.println(Indexer.NB_FILES_IN_CORPUS + "|| temps(ms) = "
+				+ (Indexer.CURRENT_TIME - Indexer.START_TIME) / 1000000);
+
+		// initialise the document frequency in the corpus
+		if (Indexer.DOCUMENT_FREQUENCY.isEmpty()) {
+			Indexer.DOCUMENT_FREQUENCY = Indexer.getDocumentFrequency(inDir);
+		}
+		System.out.println("temps(ms) pour la frequence = "
+				+ (System.nanoTime() - Indexer.CURRENT_TIME) / 1000000);
+		Indexer.CURRENT_TIME = System.nanoTime();
+
+		System.out.println("Datas calculated, start to generate files");
+		Indexer.getWeightFilesRec(inDir, outDir);
+		System.out.println("temps(ms) pour la generation des fichiers = "
+				+ (System.nanoTime() - Indexer.CURRENT_TIME) / 1000000);
+		System.out.println("temps total = "
+				+ (System.nanoTime() - Indexer.START_TIME) / 1000000);
+	}
+
 	/**
-	 * So far, don't do anything usefull
+	 * So far, don't do anything usefull. Checks the inDir and outDir
 	 * 
 	 * @param inDirName
 	 * @param outDirName
-	 * @param normalizer
+	 * @param NORMALIZER
 	 * @param removeStopWords
 	 * @param extensionToKeep
 	 * @throws IOException
 	 */
-	public static void getWeightFiles(final String inDirName,
-			final String outDirName, final Normalizer normalizer,
-			final boolean removeStopWords, final String extensionToKeep)
+	public static void getWeightFilesRec(final File inDir, final File outDir)
 			throws IOException {
-		final File dir = new File(inDirName);
 
-		if (dir.isDirectory()) {
-			final ArrayList<String> fileNames = Indexer.keepExtension(
-					dir.list(), extensionToKeep);
-			System.out.println(fileNames);
-			/*
-			 * int numberDocuments = fileNames.size(); HashMap<String, Integer>
-			 * dfs = getDocumentFrequency(inDirName, normalizer,
-			 * removeStopWords); for(String file : fileNames){ HashMap<String,
-			 * Double> tfidfs = getTfIdf(inDirName + file, dfs, numberDocuments,
-			 * normalizer, true);
-			 * 
-			 * PrintWriter writer = new PrintWriter(outDirName + file +
-			 * ".poids", "UTF-8");
-			 * 
-			 * for (Map.Entry<String, Double> tfidf : tfidfs.entrySet()) {
-			 * writer.println(tfidf.getKey() + "\t" + tfidf.getValue()); }
-			 * writer.close(); }
-			 */
+		for (final File f : inDir.listFiles()) {
+			// Ignore if you can't read
+			if (!f.canRead()) {
+				continue;
+			}
+
+			// Recursive processing
+			if (f.isDirectory()) {
+				System.out.println("@");
+				// Create output dir
+				final File out = IOManager.createWriteDir(outDir
+						.getAbsolutePath() + File.separator + f.getName());
+				if (out == null) {
+					continue;
+				}
+				// work on the dir recursively
+				Indexer.getWeightFilesRec(f, out);
+			} else {
+				// it's a file, create output file
+				final File out = IOManager.createWriteFile(outDir
+						.getAbsolutePath() + File.separator + f.getName());
+				if (out == null) {
+					continue;
+				}
+				// work on the file
+				Indexer.createWeightFile(f, out);
+			}
 		}
+	}
+
+	private static void createWeightFile(final File inFile, final File outDir)
+			throws IOException {
+
+		// calculate tf idf
+		final HashMap<String, Double> tfIdf = Indexer.getTfIdf(
+				inFile.getAbsolutePath(), Indexer.DOCUMENT_FREQUENCY,
+				Indexer.NB_FILES_IN_CORPUS, Indexer.NORMALIZER,
+				Indexer.REMOVE_STOP_WORDS);
+
+		// open output
+		Indexer.BW = new BufferedWriter(new OutputStreamWriter(
+				new FileOutputStream(outDir)));
+		System.out.print("-");
+
+		// print
+		for (final Map.Entry<String, Double> eltTfIdf : tfIdf.entrySet()) {
+			Indexer.BW.write(eltTfIdf.getKey() + "\t" + eltTfIdf.getValue()
+					+ "\n");
+		}
+		// time to flush all this :
+		Indexer.BW.close();
 	}
 
 	public static void main(final String[] args) {
 		try {
-			Indexer.getWeightFiles("/public/iri/projetIRI/corpus/0000/000000/",
-					"net/k3/u/etudiant/mhadda1/IRI/weights/",
-					new FrenchStemmer(), true, ".txt");
+			System.out.println("DEBUG: begin");
+			final File in = new File("/net/k14/u/etudiant/vvanhec/IRI/lemonde");// /public/iri/projetIRI/corpus/0000/000000/
+			final File out = new File(
+					"/net/k14/u/etudiant/vvanhec/IRI/weightsLeMonde");
+			System.out.println("Launch calculus");
+			Indexer.getWeightFiles(in, out, new FrenchStemmer(), true, ".txt");
+			System.out.println("DEBUG: end");
+
 		} catch (final IOException e) {
 			System.out.println("Problem : " + e);
+			e.printStackTrace();
 		}
 	}
-
 }

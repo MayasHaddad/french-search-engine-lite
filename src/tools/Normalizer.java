@@ -6,34 +6,39 @@ import java.util.ArrayList;
 
 /**
  * Interface de normalisation des mots
+ * 
  * @author xtannier
- *
+ * 
  */
 public interface Normalizer {
 	/**
-	 * Renvoie la liste d'unités lexicales contenus dans le fichier
-	 * spécifié, en appliquant une normalisation. Equivaut à {@code normalize(file, false)}. 
+	 * Give lexical units in the file. Equivalent {@code normalize(file, false)}
+	 * 
 	 * @param file
-	 * @return
+	 *            input file
+	 * @return <unit token>
 	 * @throws IOException
 	 */
 	public ArrayList<String> normalize(File file) throws IOException;
-	
+
 	/**
-	 * Renvoie la liste d'unités lexicales contenus dans le texte
-	 * spécifié, en appliquant une normalisation. Equivaut à {@code normalize(text, false)}. 
+	 * Give lexical units in the file. Equivalent {@code normalize(file, false)}
+	 * 
 	 * @param text
-	 * @return
+	 *            input Text
+	 * @return <unit token>
 	 */
 	public ArrayList<String> normalize(String text);
-	
+
 	/**
-	 * Renvoie la liste d'unités lexicales contenus dans le fichier
-	 * spécifié, en appliquant une normalisation. Equivaut à {@code normalize(text, false)}.
-	 * avec suppression ou pas de mots vides
+	 * Give lexical units in the file. Equivalent {@code normalize(file, false)}
+	 * . It can or not supress stop words
+	 * 
 	 * @param fileName
+	 *            input file name
 	 * @param removeStopWords
-	 * @return
+	 *            true : remove too usual words
+	 * @return <unit token>
 	 * @throws IOException
 	 */
 	public ArrayList<String> normalize(String fileName, boolean removeStopWords)
