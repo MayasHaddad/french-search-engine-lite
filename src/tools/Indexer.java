@@ -10,7 +10,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Weight file, fichier inverses, tfidf...
+ * Weight file, invertedFiles, tfidf...
  * 
  * @author mhadda1
  * 
@@ -23,15 +23,19 @@ public abstract class Indexer {
 	protected static String COLLECTION_DIRNAME = "/public/iri/projetIRI/corpus/";
 
 	/**
-	 * Une m�thode permettant de filtrer une extesion de fichiers � partir d'une
-	 * liste de fichiers
+	 * filter files according to their extention
+	 * 
+	 * @param fileNamesList
+	 *            The list of file to filter
+	 * @param extension
+	 *            The extensions to keep
+	 * @return List of filtered files
 	 */
 	public static ArrayList<String> keepExtension(final String[] fileNamesList,
 			final String extension) {
 
 		final ArrayList<String> fileNamesArrayListWithoutUndesiredExtension = new ArrayList<String>();
-		// Pour chaque nom de fichier de la liste en entr�e, retenir ceux qui
-		// ont l'extension d�sir�e
+		// keep the file with the good extention
 		for (final String fileName : fileNamesList) {
 			if (fileName.contains(extension)) {
 				fileNamesArrayListWithoutUndesiredExtension.add(fileName);
@@ -42,13 +46,13 @@ public abstract class Indexer {
 	}
 
 	/**
-	 * Une méthode renvoyant le nombre d'occurrences de chaque mot dans un
-	 * fichier.
+	 * Get the number of times a word appears in a file.
 	 * 
 	 * @param fileName
-	 *            le fichier à analyser
+	 *            the input file
 	 * @param normalizer
-	 *            la classe de normalisation utilisée
+	 *            normalisation class used
+	 * @return map<word, nbOccurences>
 	 * @throws IOException
 	 */
 	public static HashMap<String, Integer> getTermFrequencies(
@@ -88,13 +92,13 @@ public abstract class Indexer {
 	}
 
 	/**
-	 * Une méthode permettant d'afficher le nombre de documents contenant chaque
-	 * mot du corpus.
+	 * For each word, the number of document containing it
 	 * 
 	 * @param dirName
-	 *            le répertoire à analyser
+	 *            input directory
 	 * @param normalizer
-	 *            la classe de normalisation utilisée
+	 *            normalisation class used
+	 * @return map<word, nbDocs>
 	 * @throws IOException
 	 */
 	private static HashMap<String, Integer> getDocumentFrequency(
@@ -151,6 +155,22 @@ public abstract class Indexer {
 		return hits;
 	}
 
+	/**
+	 * Calculate tfidf
+	 * 
+	 * @param fileName
+	 *            input file
+	 * @param dfs
+	 *            <word, freq in the corpus>
+	 * @param documentNumber
+	 *            nb of docs in the corpus
+	 * @param normalizer
+	 *            normalisation class used
+	 * @param removeStopWords
+	 *            true : remove too usual words
+	 * @return <wordsInFileName, tfidf>
+	 * @throws IOException
+	 */
 	public static HashMap<String, Double> getTfIdf(final String fileName,
 			final HashMap<String, Integer> dfs, final int documentNumber,
 			final Normalizer normalizer, final boolean removeStopWords)
@@ -170,13 +190,26 @@ public abstract class Indexer {
 		}
 		return tfIdfs;
 	}
-	
-	public static void getWeightFiles(String inDirName, String outDirName, Normalizer normalizer,
-			boolean removeStopWords, String extensionToKeep) throws IOException{
-		File dir = new File(inDirName);
-		
+
+	/**
+	 * So far, don't do anything usefull
+	 * 
+	 * @param inDirName
+	 * @param outDirName
+	 * @param normalizer
+	 * @param removeStopWords
+	 * @param extensionToKeep
+	 * @throws IOException
+	 */
+	public static void getWeightFiles(final String inDirName,
+			final String outDirName, final Normalizer normalizer,
+			final boolean removeStopWords, final String extensionToKeep)
+			throws IOException {
+		final File dir = new File(inDirName);
+
 		if (dir.isDirectory()) {
-			ArrayList<String> fileNames = keepExtension(dir.list(), extensionToKeep);
+			final ArrayList<String> fileNames = Indexer.keepExtension(
+					dir.list(), extensionToKeep);
 			System.out.println(fileNames);
 			/*
 			 * int numberDocuments = fileNames.size(); HashMap<String, Integer>
@@ -194,10 +227,13 @@ public abstract class Indexer {
 			 */
 		}
 	}
-	public static void main(String[] args){
-		try{
-			getWeightFiles("/public/iri/projetIRI/corpus/0000/000000/", "net/k3/u/etudiant/mhadda1/IRI/weights/", (new FrenchStemmer()), true, ".txt");
-		}catch(IOException e){
+
+	public static void main(final String[] args) {
+		try {
+			Indexer.getWeightFiles("/public/iri/projetIRI/corpus/0000/000000/",
+					"net/k3/u/etudiant/mhadda1/IRI/weights/",
+					new FrenchStemmer(), true, ".txt");
+		} catch (final IOException e) {
 			System.out.println("Problem : " + e);
 		}
 	}

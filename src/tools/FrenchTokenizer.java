@@ -11,44 +11,43 @@ import java.util.ArrayList;
 import tools.FrenchTokenizerAutomaton.Signal;
 
 public class FrenchTokenizer implements Normalizer {
-	
-	private FrenchTokenizerAutomaton transducer;
 
-	
+	private final FrenchTokenizerAutomaton transducer;
+
 	public FrenchTokenizer() {
 		this.transducer = new FrenchTokenizerAutomaton();
 
 	}
-	
-	public ArrayList<String> normalize(File file) throws IOException {
+
+	@Override
+	public ArrayList<String> normalize(final File file) throws IOException {
 		String text = "";
-		//lecture du fichier texte	
-		InputStream ips=new FileInputStream(file); 
-		InputStreamReader ipsr=new InputStreamReader(ips);
-		BufferedReader br=new BufferedReader(ipsr);
+		// lecture du fichier texte
+		final InputStream ips = new FileInputStream(file);
+		final InputStreamReader ipsr = new InputStreamReader(ips);
+		final BufferedReader br = new BufferedReader(ipsr);
 		String line;
-		while ((line=br.readLine())!=null){
+		while ((line = br.readLine()) != null) {
 			text += line + " ";
 		}
-		br.close(); 
+		br.close();
 		return this.tokenize(text.toLowerCase());
 	}
 
-	
 	/**
 	 * This method drives the automaton execution over the stream of chars.
 	 */
-	public ArrayList<String> tokenize(String text) {
-		char[] textContent = text.toCharArray();
-		ArrayList<String> tokens = new ArrayList<String>();
+	public ArrayList<String> tokenize(final String text) {
+		final char[] textContent = text.toCharArray();
+		final ArrayList<String> tokens = new ArrayList<String>();
 		// Initialize the execution
 		int begin = -1;
-		transducer.reset();
+		this.transducer.reset();
 		String word;
 		// Run over the chars
-		for(int i=0 ; i<textContent.length ; i++) {
-			Signal s = transducer.feedChar( textContent[i] );
-			switch(s) {
+		for (int i = 0; i < textContent.length; i++) {
+			final Signal s = this.transducer.feedChar(textContent[i]);
+			switch (s) {
 			case start_word:
 				begin = i;
 				break;
@@ -58,7 +57,7 @@ public class FrenchTokenizer implements Normalizer {
 				begin = -1;
 				break;
 			case end_word_prev:
-				word = text.substring(begin, i-1);
+				word = text.substring(begin, i - 1);
 				this.addToken(tokens, word);
 				break;
 			case switch_word:
@@ -67,7 +66,7 @@ public class FrenchTokenizer implements Normalizer {
 				begin = i;
 				break;
 			case switch_word_prev:
-				word = text.substring(begin, i-1);
+				word = text.substring(begin, i - 1);
 				this.addToken(tokens, word);
 				begin = i;
 				break;
@@ -81,45 +80,47 @@ public class FrenchTokenizer implements Normalizer {
 			word = text.substring(begin, text.length());
 			this.addToken(tokens, word);
 		}
-		
+
 		return tokens;
 	}
-	
-	private ArrayList<String> addToken(ArrayList<String> list, String token) {
-		list.add(token);			
+
+	private ArrayList<String> addToken(final ArrayList<String> list,
+			final String token) {
+		list.add(token);
 		return list;
 	}
-	
 
 	@Override
-	public ArrayList<String> normalize(String text) {
+	public ArrayList<String> normalize(final String text) {
 		return this.tokenize(text);
 	}
-	
-	public ArrayList<String> normalize(String fileName, boolean removeStopWords)
-			throws IOException{
+
+	@Override
+	public ArrayList<String> normalize(final String fileName,
+			final boolean removeStopWords) throws IOException {
 		String text = "";
-		File file = new File(fileName);
+		final File file = new File(fileName);
 		ArrayList<String> result = new ArrayList<String>();
-		//lecture du fichier texte	
-		InputStream ips=new FileInputStream(file); 
-		InputStreamReader ipsr=new InputStreamReader(ips);
-		BufferedReader br=new BufferedReader(ipsr);
+		// lecture du fichier texte
+		final InputStream ips = new FileInputStream(file);
+		final InputStreamReader ipsr = new InputStreamReader(ips);
+		final BufferedReader br = new BufferedReader(ipsr);
 		String line;
-		while ((line=br.readLine())!=null){
+		while ((line = br.readLine()) != null) {
 			text += line + " ";
 		}
 		br.close();
 		result = this.tokenize(text.toLowerCase());
-		if(removeStopWords == false){	
+		if (removeStopWords == false) {
 			return result;
 		}
-		ArrayList<String> stopWords = FrenchStemmer.getStopWords();
+		final ArrayList<String> stopWords = FrenchStemmer.getStopWords();
 		result.removeAll(stopWords);
 		return result;
-		
+
 	}
-	public static void main(String[] args) {
+
+	public static void main(final String[] args) {
 
 	}
 

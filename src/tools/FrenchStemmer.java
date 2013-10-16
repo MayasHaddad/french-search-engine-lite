@@ -8,43 +8,45 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 
-
 /**
- * Classe de racinisation (stemming) des mots
- * en français.
- * Modification légère du package SnowBall
- * http://snowball.tartarus.org/download.php
+ * Classe de racinisation (stemming) des mots en français. Modification légère
+ * du package SnowBall http://snowball.tartarus.org/download.php
+ * 
  * @author xtannier
- *
+ * 
  */
-public class FrenchStemmer extends org.tartarus.snowball.ext.frenchStemmer implements Normalizer {
+public class FrenchStemmer extends org.tartarus.snowball.ext.frenchStemmer
+		implements Normalizer {
 
 	private static short REPEAT = 1;
-	
+
 	public FrenchStemmer() {
 	}
 
 	@Override
-	public ArrayList<String> normalize(File file) throws IOException {		
+	public ArrayList<String> normalize(final File file) throws IOException {
 		String text = "";
-		//lecture du fichier texte	
-		InputStream ips=new FileInputStream(file); 
-		InputStreamReader ipsr=new InputStreamReader(ips);
-		BufferedReader br=new BufferedReader(ipsr);
+		// lecture du fichier texte
+		final InputStream ips = new FileInputStream(file);
+		final InputStreamReader ipsr = new InputStreamReader(ips);
+		final BufferedReader br = new BufferedReader(ipsr);
 		String line;
-		while ((line=br.readLine())!=null){
+		while ((line = br.readLine()) != null) {
 			text += line + " ";
 		}
-		br.close(); 
-		
-		ArrayList<String> words = (new FrenchTokenizer()).tokenize(text.toLowerCase());
-		ArrayList<String> result = new ArrayList<String>();
-		for (String word : words) {
-			// on ajoute le mot dans la liste s'il n'appartient pas ï¿œ la liste des mots-clï¿œs.
-			// Idï¿œalement il faudrait utiliser une structure de donnï¿œes plus efficace que la liste,
+		br.close();
+
+		final ArrayList<String> words = new FrenchTokenizer().tokenize(text
+				.toLowerCase());
+		final ArrayList<String> result = new ArrayList<String>();
+		for (final String word : words) {
+			// on ajoute le mot dans la liste s'il n'appartient pas ï¿œ la liste
+			// des mots-clï¿œs.
+			// Idï¿œalement il faudrait utiliser une structure de donnï¿œes plus
+			// efficace que la liste,
 			// mais ce n'est pas le sujet.
 			this.setCurrent(word);
-			for (int i = REPEAT; i != 0; i--) {
+			for (int i = FrenchStemmer.REPEAT; i != 0; i--) {
 				this.stem();
 			}
 			result.add(this.getCurrent());
@@ -52,43 +54,44 @@ public class FrenchStemmer extends org.tartarus.snowball.ext.frenchStemmer imple
 		return result;
 	}
 
-	
 	@Override
-	public ArrayList<String> normalize(String text) {
-		ArrayList<String> words = (new FrenchTokenizer()).tokenize(text.toLowerCase());
+	public ArrayList<String> normalize(final String text) {
+		final ArrayList<String> words = new FrenchTokenizer().tokenize(text
+				.toLowerCase());
 		return words;
 	}
-	
-	public ArrayList<String> normalize(String fileName, boolean removeStopWords)
-			throws IOException{
-		ArrayList<String> result = new ArrayList<String>();
-		File file = new File(fileName);
-		
+
+	@Override
+	public ArrayList<String> normalize(final String fileName,
+			final boolean removeStopWords) throws IOException {
+		final ArrayList<String> result = new ArrayList<String>();
+		final File file = new File(fileName);
+
 		ArrayList<String> stopWords = new ArrayList<String>();
-		if(removeStopWords == true){
-			stopWords = getStopWords();
+		if (removeStopWords == true) {
+			stopWords = FrenchStemmer.getStopWords();
 		}
 		String text = "";
-		//lecture du fichier texte	
-		InputStream ips=new FileInputStream(file); 
-		InputStreamReader ipsr=new InputStreamReader(ips);
-		BufferedReader br=new BufferedReader(ipsr);
+		// lecture du fichier texte
+		final InputStream ips = new FileInputStream(file);
+		final InputStreamReader ipsr = new InputStreamReader(ips);
+		final BufferedReader br = new BufferedReader(ipsr);
 		String line;
-		while ((line=br.readLine())!=null){
+		while ((line = br.readLine()) != null) {
 			text += line + " ";
 		}
-		br.close(); 
-		
-		ArrayList<String> words = (new FrenchTokenizer()).tokenize(text.toLowerCase());
-		for (String word : words) {
-			
-			if(removeStopWords == true && stopWords.contains(word)){
-				//System.out.println(word);
+		br.close();
+
+		final ArrayList<String> words = new FrenchTokenizer().tokenize(text
+				.toLowerCase());
+		for (final String word : words) {
+
+			if (removeStopWords == true && stopWords.contains(word)) {
+				// System.out.println(word);
 				continue;
-			}else{
-				
+			} else {
 				this.setCurrent(word);
-				for (int i = REPEAT; i != 0; i--) {
+				for (int i = FrenchStemmer.REPEAT; i != 0; i--) {
 					this.stem();
 				}
 				result.add(this.getCurrent());
@@ -96,21 +99,22 @@ public class FrenchStemmer extends org.tartarus.snowball.ext.frenchStemmer imple
 		}
 		return result;
 	}
-	
-	public static ArrayList<String> getStopWords() throws IOException{
-		ArrayList<String> stopWords = new ArrayList<String>();
-		File file = new File("/net/k3/u/etudiant/mhadda1/IRI/stop-words.txt");
-		InputStream ips=new FileInputStream(file); 
-		InputStreamReader ipsr=new InputStreamReader(ips);
-		BufferedReader br=new BufferedReader(ipsr);
+
+	public static ArrayList<String> getStopWords() throws IOException {
+		final ArrayList<String> stopWords = new ArrayList<String>();
+		final File file = new File(
+				"/net/k3/u/etudiant/mhadda1/IRI/stop-words.txt");
+		final InputStream ips = new FileInputStream(file);
+		final InputStreamReader ipsr = new InputStreamReader(ips);
+		final BufferedReader br = new BufferedReader(ipsr);
 		String line;
-		while ((line=br.readLine())!=null){
+		while ((line = br.readLine()) != null) {
 			stopWords.add(line);
 		}
-		br.close(); 
+		br.close();
 		return stopWords;
 	}
-	
-	public static void main(String[] args) {
+
+	public static void main(final String[] args) {
 	}
 }
