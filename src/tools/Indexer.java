@@ -149,11 +149,11 @@ public abstract class Indexer {
 	}
 
 	public static void getWeightFiles(String inDirName, String outDirName, Normalizer normalizer,
-			boolean removeStopWords) throws IOException{
+			boolean removeStopWords, String extensionToKeep) throws IOException{
 		File dir = new File(inDirName);
 		
 		if (dir.isDirectory()) {
-			ArrayList<String> fileNames = keepExtension(dir.list(), ".html");
+			ArrayList<String> fileNames = keepExtension(dir.list(), extensionToKeep);
 			System.out.println(fileNames);
 			/*
 			int numberDocuments = fileNames.size();
@@ -173,7 +173,7 @@ public abstract class Indexer {
 	
 	public static void main(String[] args){
 		try{
-			getWeightFiles("/public/iri/projetIRI/corpus/0000/000000/", "net/k3/u/etudiant/mhadda1/IRI/weights/", (new FrenchStemmer()), true);
+			getWeightFiles("/public/iri/projetIRI/corpus/0000/000000/", "net/k3/u/etudiant/mhadda1/IRI/weights/", (new FrenchStemmer()), true, ".txt");
 		}catch(IOException e){
 			System.out.println("Problem : " + e);
 		}
