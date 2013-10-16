@@ -113,7 +113,7 @@ public abstract class Indexer {
 	}
 
 	/**
-	 * For each word, the number of document containing it
+	 * Calculate for each word, the number of document containing it
 	 * 
 	 * @param dirName
 	 *            input directory
@@ -130,8 +130,6 @@ public abstract class Indexer {
 			return Indexer.DOCUMENT_FREQUENCY;
 		}
 
-		// final String wordLC;
-		// check the input dir
 		if (!IOManager.checkInDir(dir)) {
 			throw new IOException();
 			// return;
@@ -141,6 +139,13 @@ public abstract class Indexer {
 		return Indexer.DOCUMENT_FREQUENCY;
 	}
 
+	/**
+	 * Go through the tree of files to calculate doc frequency
+	 * 
+	 * @param dir
+	 *            input dir
+	 * @throws IOException
+	 */
 	private static final void getDocumentFrequencyRec(final File dir)
 			throws IOException {
 
@@ -222,6 +227,23 @@ public abstract class Indexer {
 		return tfIdfs;
 	}
 
+	/**
+	 * print file weight recursively according to the parameters given by the
+	 * user
+	 * 
+	 * @param inDir
+	 *            input directory
+	 * @param outDir
+	 *            output directory
+	 * @param n
+	 *            normalizer
+	 * @param removeStopWords
+	 *            true = remove too common words
+	 * @param extension
+	 *            we just look the files with this extension (so far not
+	 *            implemented)
+	 * @throws IOException
+	 */
 	public static void getWeightFiles(final File inDir, final File outDir,
 			final Normalizer n, final boolean removeStopWords,
 			final String extension) throws IOException {
@@ -263,16 +285,15 @@ public abstract class Indexer {
 	}
 
 	/**
-	 * So far, don't do anything usefull. Checks the inDir and outDir
+	 * print file weight through the tree of files
 	 * 
 	 * @param inDirName
+	 *            input dir
 	 * @param outDirName
-	 * @param NORMALIZER
-	 * @param removeStopWords
-	 * @param extensionToKeep
+	 *            output dir
 	 * @throws IOException
 	 */
-	public static void getWeightFilesRec(final File inDir, final File outDir)
+	private static void getWeightFilesRec(final File inDir, final File outDir)
 			throws IOException {
 
 		for (final File f : inDir.listFiles()) {
@@ -295,7 +316,10 @@ public abstract class Indexer {
 			} else {
 				// it's a file, create output file
 				final File out = IOManager.createWriteFile(outDir
-						.getAbsolutePath() + File.separator + f.getName());
+						.getAbsolutePath()
+						+ File.separator
+						+ f.getName()
+						+ ".poid");
 				if (out == null) {
 					continue;
 				}
@@ -305,7 +329,16 @@ public abstract class Indexer {
 		}
 	}
 
-	private static void createWeightFile(final File inFile, final File outDir)
+	/**
+	 * Calculate for a given file his tfidf and print it in a file .poid
+	 * 
+	 * @param inFile
+	 *            input file to analyse
+	 * @param outFile
+	 *            output file .poid
+	 * @throws IOException
+	 */
+	private static void createWeightFile(final File inFile, final File outFile)
 			throws IOException {
 
 		// calculate tf idf
@@ -316,7 +349,7 @@ public abstract class Indexer {
 
 		// open output
 		Indexer.BW = new BufferedWriter(new OutputStreamWriter(
-				new FileOutputStream(outDir)));
+				new FileOutputStream(outFile)));
 		System.out.print("-");
 
 		// print
@@ -328,6 +361,12 @@ public abstract class Indexer {
 		Indexer.BW.close();
 	}
 
+	/**
+	 * Main function
+	 * 
+	 * @param args
+	 *            command arguments
+	 */
 	public static void main(final String[] args) {
 		try {
 			System.out.println("DEBUG: begin");
