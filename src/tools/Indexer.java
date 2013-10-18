@@ -368,11 +368,17 @@ public abstract class Indexer {
 	 *            command arguments
 	 */
 	public static void main(final String[] args) {
-		try {
+		if(args.length != 2){
+			System.err.println("Usage : java " + Indexer.class.getName() + " inDirectory outDirectory");
+			System.exit(1);
+		}
+		final String inDir = args[0];
+		final String outDir = args[1];
+		
+		try{
 			System.out.println("DEBUG: begin");
-			final File in = new File("/net/k14/u/etudiant/vvanhec/IRI/lemonde");// /public/iri/projetIRI/corpus/0000/000000/
-			final File out = new File(
-					"/net/k14/u/etudiant/vvanhec/IRI/weightsLeMonde");
+			final File in = new File(inDir);// /public/iri/projetIRI/corpus/0000/000000/
+			final File out = new File(outDir);
 			System.out.println("Launch calculus");
 			Indexer.getWeightFiles(in, out, new FrenchStemmer(), true, ".txt");
 			System.out.println("DEBUG: end");
