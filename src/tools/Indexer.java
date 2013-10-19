@@ -250,7 +250,6 @@ public abstract class Indexer {
 			final Normalizer n, final boolean removeStopWords,
 			final String extension) throws IOException {
 		Indexer.NORMALIZER = n;
-		Indexer.REMOVE_STOP_WORDS = removeStopWords;
 		Indexer.EXTENSION = extension;
 
 		// check inDir and outDir
@@ -370,20 +369,23 @@ public abstract class Indexer {
 	 *            command arguments
 	 */
 	public static void main(final String[] args) {
-		if(args.length != 3){
-			System.err.println("Usage : java " + Indexer.class.getName() + " inDirectory outDirectory stopWordsPath");
+		if(args.length != 4){
+			System.err.println("Usage : java " + Indexer.class.getName() + " inDirectory outDirectory stopWordsPath removeStopWords");
+			System.err.println("Example : java " + Indexer.class.getName() + " /in /out /stop-words.txt false");
+			
 			System.exit(1);
 		}
 		final String inDir = args[0];
 		final String outDir = args[1];
 		Indexer.PATH_TO_STOP_WORDS = args[2];
+		Indexer.REMOVE_STOP_WORDS = Boolean.parseBoolean(new String(args[3]));
 		
 		try{
 			System.out.println("DEBUG: begin");
 			final File in = new File(inDir);// /public/iri/projetIRI/corpus/0000/000000/
 			final File out = new File(outDir);
 			System.out.println("Launch calculus");
-			Indexer.getWeightFiles(in, out, new FrenchStemmer(), true, ".txt");
+			Indexer.getWeightFiles(in, out, new FrenchStemmer(), Indexer.REMOVE_STOP_WORDS, ".txt");
 			System.out.println("DEBUG: end");
 
 		} catch (final IOException e) {
