@@ -97,7 +97,7 @@ public class FrenchTokenizer implements Normalizer {
 
 	@Override
 	public ArrayList<String> normalize(final String fileName,
-			final boolean removeStopWords) throws IOException {
+			final boolean removeStopWords, String pathToStopWords) throws IOException {
 		String text = "";
 		final File file = new File(fileName);
 		ArrayList<String> result = new ArrayList<String>();
@@ -114,7 +114,7 @@ public class FrenchTokenizer implements Normalizer {
 		if (removeStopWords == false) {
 			return result;
 		}
-		final ArrayList<String> stopWords = FrenchStemmer.getStopWords();
+		final ArrayList<String> stopWords = FrenchStemmer.getStopWords(pathToStopWords);
 		result.removeAll(stopWords);
 		return result;
 

@@ -28,6 +28,8 @@ public abstract class Indexer {
 
 	// Remove the too simple words
 	private static boolean REMOVE_STOP_WORDS = false;
+	// The local stop-words path
+	private static String PATH_TO_STOP_WORDS = null;
 	// Number of files in the corpus
 	private static Integer NB_FILES_IN_CORPUS = null;
 	// For each word, number of document in the corpus containing it
@@ -86,7 +88,7 @@ public abstract class Indexer {
 		// Appel de la méthode de normalisation
 		// System.out.println(fileName);
 		final ArrayList<String> words = normalizer.normalize(fileName,
-				removeStopWords);
+				removeStopWords, Indexer.PATH_TO_STOP_WORDS);
 		Integer number;
 		// Pour chaque mot de la liste, on remplit un dictionnaire
 		// du nombre d'occurrences pour ce mot
@@ -175,7 +177,7 @@ public abstract class Indexer {
 
 		// normalize
 		final ArrayList<String> words = Indexer.NORMALIZER.normalize(
-				f.getAbsolutePath(), Indexer.REMOVE_STOP_WORDS);
+				f.getAbsolutePath(), Indexer.REMOVE_STOP_WORDS, Indexer.PATH_TO_STOP_WORDS);
 
 		// increment doc freq
 		for (final String word : words) {
@@ -368,12 +370,13 @@ public abstract class Indexer {
 	 *            command arguments
 	 */
 	public static void main(final String[] args) {
-		if(args.length != 2){
-			System.err.println("Usage : java " + Indexer.class.getName() + " inDirectory outDirectory");
+		if(args.length != 3){
+			System.err.println("Usage : java " + Indexer.class.getName() + " inDirectory outDirectory stopWordsPath");
 			System.exit(1);
 		}
 		final String inDir = args[0];
 		final String outDir = args[1];
+		Indexer.PATH_TO_STOP_WORDS = args[2];
 		
 		try{
 			System.out.println("DEBUG: begin");

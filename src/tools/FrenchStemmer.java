@@ -63,13 +63,13 @@ public class FrenchStemmer extends org.tartarus.snowball.ext.frenchStemmer
 
 	@Override
 	public ArrayList<String> normalize(final String fileName,
-			final boolean removeStopWords) throws IOException {
+			final boolean removeStopWords, String pathToStopWords) throws IOException {
 		final ArrayList<String> result = new ArrayList<String>();
 		final File file = new File(fileName);
 
 		ArrayList<String> stopWords = new ArrayList<String>();
 		if (removeStopWords == true) {
-			stopWords = FrenchStemmer.getStopWords();
+			stopWords = FrenchStemmer.getStopWords(pathToStopWords);
 		}
 		String text = "";
 		// lecture du fichier texte
@@ -100,10 +100,10 @@ public class FrenchStemmer extends org.tartarus.snowball.ext.frenchStemmer
 		return result;
 	}
 
-	public static ArrayList<String> getStopWords() throws IOException {
+	public static ArrayList<String> getStopWords(String pathToStopWords) throws IOException {
 		final ArrayList<String> stopWords = new ArrayList<String>();
 		final File file = new File(
-				"/net/k3/u/etudiant/mhadda1/IRI/stop-words.txt");
+				pathToStopWords);
 		final InputStream ips = new FileInputStream(file);
 		final InputStreamReader ipsr = new InputStreamReader(ips);
 		final BufferedReader br = new BufferedReader(ipsr);

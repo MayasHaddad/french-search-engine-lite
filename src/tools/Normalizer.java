@@ -41,6 +41,6 @@ public interface Normalizer {
 	 * @return <unit token>
 	 * @throws IOException
 	 */
-	public ArrayList<String> normalize(String fileName, boolean removeStopWords)
+	public ArrayList<String> normalize(String fileName, boolean removeStopWords, String pathToStopWords)
 			throws IOException;
 }
