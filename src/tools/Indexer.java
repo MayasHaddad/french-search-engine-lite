@@ -29,6 +29,8 @@ public abstract class Indexer {
 
 	// Remove the too simple words
 	private static boolean REMOVE_STOP_WORDS = false;
+	// The local stop-words path
+	private static String PATH_TO_STOP_WORDS = null;
 	// Number of files in the corpus
 	private static Integer NB_FILES_IN_CORPUS = null;
 	// For each word, number of document in the corpus containing it
@@ -42,23 +44,7 @@ public abstract class Indexer {
 	private static BufferedReader BR = null;
 	private static BufferedWriter BW = null;
 
-	public static String[] EXTENTION_KEEP = { ".html" };
-
-	/**
-	 * Check the file extension
-	 * 
-	 * @param s
-	 *            the file name
-	 * @return true : extension correct. False : extention not correct
-	 */
-	public static boolean checkExtention(final String s) {
-		for (final String end : Indexer.EXTENTION_KEEP) {
-			if (s.endsWith(end)) {
-				return true;
-			}
-		}
-		return false;
-	}
+	public static String EXTENTION_KEEP = ".txt";
 
 	/**
 	 * Get the number of times a word appears in a file.
@@ -80,7 +66,7 @@ public abstract class Indexer {
 		// Appel de la méthode de normalisation
 		// System.out.println(fileName);
 		final ArrayList<String> words = normalizer.normalize(fileName,
-				removeStopWords);
+				removeStopWords, Indexer.PATH_TO_STOP_WORDS);
 		Integer number;
 		// Pour chaque mot de la liste, on remplit un dictionnaire
 		// du nombre d'occurrences pour ce mot
@@ -145,7 +131,7 @@ public abstract class Indexer {
 
 		for (final File f : dir.listFiles()) {
 			if (f.isFile()) {
-				if (!Indexer.checkExtention(f.getName())) {
+				if (!f.getName().endsWith(Indexer.EXTENTION_KEEP)) {
 					continue;
 				}
 				Indexer.analyseOneFileForDocumentFrequency(f);
@@ -172,7 +158,8 @@ public abstract class Indexer {
 
 		// normalize
 		final ArrayList<String> words = Indexer.NORMALIZER.normalize(
-				f.getAbsolutePath(), Indexer.REMOVE_STOP_WORDS);
+				f.getAbsolutePath(), Indexer.REMOVE_STOP_WORDS,
+				Indexer.PATH_TO_STOP_WORDS);
 
 		// increment doc freq
 		for (final String word : words) {
@@ -241,10 +228,8 @@ public abstract class Indexer {
 	 * @throws IOException
 	 */
 	public static void getWeightFiles(final File inDir, final File outDir,
-			final Normalizer n, final boolean removeStopWords)
-			throws IOException {
+			final Normalizer n) throws IOException {
 		Indexer.NORMALIZER = n;
-		Indexer.REMOVE_STOP_WORDS = removeStopWords;
 
 		// check inDir and outDir
 		if (!IOManager.checkInDir(inDir) || !IOManager.checkOutDir(outDir)) {
@@ -309,7 +294,7 @@ public abstract class Indexer {
 				// work on the dir recursively
 				Indexer.getWeightFilesRec(f, out);
 			} else {
-				if (!Indexer.checkExtention(f.getName())) {
+				if (!f.getName().endsWith(Indexer.EXTENTION_KEEP)) {
 					continue;
 				}
 				// it's a file, create output file
@@ -366,15 +351,27 @@ public abstract class Indexer {
 	 *            command arguments
 	 */
 	public static void main(final String[] args) {
+		if (args.length != 5) {
+			System.err
+					.println("Usage : java "
+							+ Indexer.class.getName()
+							+ " inDirectory outDirectory stopWordsPath removeStopWords extension");
+			System.err.println("Example : java " + Indexer.class.getName()
+					+ " /in /out /stop-words.txt false .html");
+			System.exit(1);
+		}
+		final String inDir = args[0];
+		final String outDir = args[1];
+		Indexer.PATH_TO_STOP_WORDS = args[2];
+		Indexer.REMOVE_STOP_WORDS = Boolean.parseBoolean(new String(args[3]));
+		Indexer.EXTENTION_KEEP = args[4];
 		try {
 			System.out.println("DEBUG: begin");
-			final File in = new File(
-					"/public/iri/projetIRI/corpus/0000/000000/");// /net/k14/u/etudiant/vvanhec/IRI/lemonde
-			final File out = new File(
-					"/net/k14/u/etudiant/vvanhec/IRI/weightsLeMonde");
-			System.out.println("Launch calculus");
 
-			Indexer.getWeightFiles(in, out, new FrenchStemmer(), true);
+			final File in = new File(inDir);// /public/iri/projetIRI/corpus/0000/000000/
+			final File out = new File(outDir);
+			System.out.println("Launch calculus");
+			Indexer.getWeightFiles(in, out, new FrenchStemmer());
 			System.out.println("DEBUG: end");
 
 		} catch (final IOException e) {

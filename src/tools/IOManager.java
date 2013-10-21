@@ -110,7 +110,7 @@ public class IOManager {
 		int cpt = 0;
 
 		for (final File f : inDir.listFiles()) {
-			if (!Indexer.checkExtention(f.getName())) {
+			if (!f.getName().endsWith(Indexer.EXTENTION_KEEP)) {
 				continue;
 			}
 			if (f.isDirectory()) {
