@@ -108,7 +108,11 @@ public class IOManager {
 	 */
 	public static int countDocumentRecusively(final File inDir) {
 		int cpt = 0;
+
 		for (final File f : inDir.listFiles()) {
+			if (!Indexer.checkExtention(f.getName())) {
+				continue;
+			}
 			if (f.isDirectory()) {
 				cpt += IOManager.countDocumentRecusively(f);
 			} else {

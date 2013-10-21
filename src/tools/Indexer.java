@@ -24,7 +24,8 @@ public abstract class Indexer {
 	 * Le répertoire du corpus
 	 */
 	// CHEMIN A CHANGER si nécessaire
-	protected static String COLLECTION_DIRNAME = "/public/iri/projetIRI/corpus/";
+	// protected static String COLLECTION_DIRNAME =
+	// "/public/iri/projetIRI/corpus/";
 
 	// Remove the too simple words
 	private static boolean REMOVE_STOP_WORDS = false;
@@ -34,8 +35,6 @@ public abstract class Indexer {
 	private static HashMap<String, Integer> DOCUMENT_FREQUENCY = new HashMap<String, Integer>();
 	// the used normalizer
 	private static Normalizer NORMALIZER = null;
-	// The only extention that we care about
-	private static String EXTENSION = null;
 
 	private static long START_TIME = 0;
 	private static long CURRENT_TIME = 0;
@@ -43,27 +42,22 @@ public abstract class Indexer {
 	private static BufferedReader BR = null;
 	private static BufferedWriter BW = null;
 
-	/**
-	 * filter files according to their extention
-	 * 
-	 * @param fileNamesList
-	 *            The list of file to filter
-	 * @param extension
-	 *            The extensions to keep
-	 * @return List of filtered files
-	 */
-	public static ArrayList<String> keepExtension(final String[] fileNamesList,
-			final String extension) {
+	public static String[] EXTENTION_KEEP = { ".html" };
 
-		final ArrayList<String> fileNamesArrayListWithoutUndesiredExtension = new ArrayList<String>();
-		// keep the file with the good extention
-		for (final String fileName : fileNamesList) {
-			if (fileName.contains(extension)) {
-				fileNamesArrayListWithoutUndesiredExtension.add(fileName);
+	/**
+	 * Check the file extension
+	 * 
+	 * @param s
+	 *            the file name
+	 * @return true : extension correct. False : extention not correct
+	 */
+	public static boolean checkExtention(final String s) {
+		for (final String end : Indexer.EXTENTION_KEEP) {
+			if (s.endsWith(end)) {
+				return true;
 			}
 		}
-
-		return fileNamesArrayListWithoutUndesiredExtension;
+		return false;
 	}
 
 	/**
@@ -151,6 +145,9 @@ public abstract class Indexer {
 
 		for (final File f : dir.listFiles()) {
 			if (f.isFile()) {
+				if (!Indexer.checkExtention(f.getName())) {
+					continue;
+				}
 				Indexer.analyseOneFileForDocumentFrequency(f);
 			} else {
 				Indexer.getDocumentFrequencyRec(f);
@@ -214,15 +211,14 @@ public abstract class Indexer {
 
 		final HashMap<String, Double> tfIdfs = new HashMap<String, Double>();
 
+		Double tf = 0.0, idf = 0.0;
 		for (final Map.Entry<String, Integer> entry : Indexer
 				.getTermFrequencies(fileName, normalizer, removeStopWords)
 				.entrySet()) {
-			final String word = entry.getKey();
-			final Integer tf = entry.getValue();
-			final Double idf = Math.log(documentNumber / dfs.get(word));
-			final Double tfIdf = tf * idf;
+			tf = 1 + Math.log10(entry.getValue());
+			idf = Math.log10(documentNumber / dfs.get(entry.getKey()));
 			// System.out.println(word + "\t" + tfIdf);
-			tfIdfs.put(word, tfIdf);
+			tfIdfs.put(entry.getKey(), tf * idf);
 		}
 		return tfIdfs;
 	}
@@ -245,11 +241,10 @@ public abstract class Indexer {
 	 * @throws IOException
 	 */
 	public static void getWeightFiles(final File inDir, final File outDir,
-			final Normalizer n, final boolean removeStopWords,
-			final String extension) throws IOException {
+			final Normalizer n, final boolean removeStopWords)
+			throws IOException {
 		Indexer.NORMALIZER = n;
 		Indexer.REMOVE_STOP_WORDS = removeStopWords;
-		Indexer.EXTENSION = extension;
 
 		// check inDir and outDir
 		if (!IOManager.checkInDir(inDir) || !IOManager.checkOutDir(outDir)) {
@@ -314,6 +309,9 @@ public abstract class Indexer {
 				// work on the dir recursively
 				Indexer.getWeightFilesRec(f, out);
 			} else {
+				if (!Indexer.checkExtention(f.getName())) {
+					continue;
+				}
 				// it's a file, create output file
 				final File out = IOManager.createWriteFile(outDir
 						.getAbsolutePath()
@@ -370,11 +368,13 @@ public abstract class Indexer {
 	public static void main(final String[] args) {
 		try {
 			System.out.println("DEBUG: begin");
-			final File in = new File("/net/k14/u/etudiant/vvanhec/IRI/lemonde");// /public/iri/projetIRI/corpus/0000/000000/
+			final File in = new File(
+					"/public/iri/projetIRI/corpus/0000/000000/");// /net/k14/u/etudiant/vvanhec/IRI/lemonde
 			final File out = new File(
 					"/net/k14/u/etudiant/vvanhec/IRI/weightsLeMonde");
 			System.out.println("Launch calculus");
-			Indexer.getWeightFiles(in, out, new FrenchStemmer(), true, ".txt");
+
+			Indexer.getWeightFiles(in, out, new FrenchStemmer(), true);
 			System.out.println("DEBUG: end");
 
 		} catch (final IOException e) {
