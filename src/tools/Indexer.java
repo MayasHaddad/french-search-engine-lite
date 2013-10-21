@@ -8,10 +8,14 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
+import java.util.TreeMap;
+import java.util.TreeSet;
 
 /**
  * Weight file, invertedFiles, tfidf...
@@ -345,6 +349,130 @@ public abstract class Indexer {
 	}
 
 	/**
+	 * Analyse l'ensemble des fichiers d'un repertoire et collecte, pour chaque
+	 * mot, la liste des fichiers dans lesquels ce mot apparait.
+	 * 
+	 * @param dirName
+	 * @param normalizer
+	 * @param removeStopWords
+	 * @return
+	 */
+	public static TreeMap<String, TreeSet<String>> getInvertedFile(
+			final File dir, final Normalizer normalizer,
+			final boolean removeStopWords) throws IOException {
+		// the results <words, <docsName>>
+		final TreeMap<String, TreeSet<String>> res = new TreeMap<String, TreeSet<String>>();
+		// contains the words <words>
+		final TreeSet<String> occurences = new TreeSet<String>();
+		if (dir.exists() && dir.canRead() && dir.isDirectory()) {
+			Iterator it;
+			TreeSet<String> listFiles;
+			ArrayList<String> mots;
+			for (final File f : dir.listFiles()) {
+				// recursively...
+				if (f.isDirectory()) {
+					final TreeMap<String, TreeSet<String>> invertFiles = Indexer
+							.getInvertedFile(f, normalizer, removeStopWords);
+					for (final Map.Entry<String, TreeSet<String>> invertFile : invertFiles
+							.entrySet()) {
+						if (!res.containsKey(invertFile.getKey())) {
+							res.put(invertFile.getKey(), invertFile.getValue());
+						} else {
+							final TreeSet<String> tmpSet = invertFile
+									.getValue();
+							it = tmpSet.iterator();
+							while (it.hasNext()) {
+								final TreeSet<String> tmp = res.get(invertFile
+										.getKey());
+								tmp.add((String) it.next());
+							}
+						}
+					}
+					continue;
+				} // otherwise, this is a file, work on it
+				occurences.clear();
+				mots = normalizer.normalize(f.getAbsolutePath(),
+						removeStopWords, Indexer.PATH_TO_STOP_WORDS);
+				for (final String word : mots) {
+					occurences.add(word);
+				}
+				// put all the words into the tree
+				it = occurences.iterator();
+				while (it.hasNext()) {
+					final String key = (String) it.next();
+					if (res.containsKey(key)
+							&& !res.get(key).contains(f.getName())) {
+						listFiles = res.get(key);
+						listFiles.add(f.getName());
+						// res.put(key, listFiles);
+					} else {
+						listFiles = new TreeSet<String>();
+						listFiles.add(f.getName());
+						res.put(key, listFiles);
+					}
+				}
+			}
+		}
+		return res;
+	}
+
+	/**
+	 * Print the inverted file (syntax = word doc1,doc2,doc3...)
+	 * 
+	 * @param invertedFile
+	 */
+	public static void printInvertedFile(
+			final TreeMap<String, TreeSet<String>> invertedFile) {
+		for (final Map.Entry<String, TreeSet<String>> i : invertedFile
+				.entrySet()) {
+			System.out.print(i.getKey() + "=[");
+			for (final String s : i.getValue()) {
+				System.out.print(s + ", ");
+			}
+			System.out.println("]");
+		}
+	}
+
+	/**
+	 * Sauvegarde un fichier de l'index au format suivant : mot frequence
+	 * doc1,doc2,doc3
+	 * 
+	 * @param invertedFile
+	 * @param outFile
+	 */
+	public static void saveInvertedFile(
+			final TreeMap<String, TreeSet<String>> invertedFile,
+			final File outFile) throws IOException {
+		if (!outFile.exists()) {
+			outFile.createNewFile();
+		}
+		if (outFile.canRead() && outFile.isFile()) {
+			final OutputStream os = new FileOutputStream(outFile);
+			final OutputStreamWriter osr = new OutputStreamWriter(os);
+			final BufferedWriter bw = new BufferedWriter(osr);
+			Iterator it;
+			int size, cpt;
+
+			for (final Map.Entry<String, TreeSet<String>> data : invertedFile
+					.entrySet()) {
+				size = data.getValue().size();
+				bw.append(data.getKey() + "\t" + size + "\t");
+				it = data.getValue().iterator();
+				cpt = 0;
+				while (it.hasNext()) {
+					cpt++;
+					bw.append((String) it.next());
+					if (cpt != size) {
+						bw.append(",");
+					}
+				}
+				bw.append('\n');
+			}
+			bw.close();
+		}
+	}
+
+	/**
 	 * Main function
 	 * 
 	 * @param args
@@ -368,10 +496,19 @@ public abstract class Indexer {
 		try {
 			System.out.println("DEBUG: begin");
 
+			final Normalizer n = new FrenchStemmer();
+
 			final File in = new File(inDir);// /public/iri/projetIRI/corpus/0000/000000/
 			final File out = new File(outDir);
 			System.out.println("Launch calculus");
-			Indexer.getWeightFiles(in, out, new FrenchStemmer());
+			// Indexer.getWeightFiles(in, out, new FrenchStemmer());
+			Indexer.getInvertedFile(in, n, true);
+			final TreeMap<String, TreeSet<String>> invertedFile = Indexer
+					.getInvertedFile(in, n, Indexer.REMOVE_STOP_WORDS);
+			// Indexer.printInvertedFile(invertedFile);
+			final File invertedFileOutput = new File(outDir + "index");
+			invertedFileOutput.createNewFile();
+			Indexer.saveInvertedFile(invertedFile, invertedFileOutput);
 			System.out.println("DEBUG: end");
 
 		} catch (final IOException e) {
