@@ -40,7 +40,7 @@ public abstract class Indexer {
 	// For each word, number of document in the corpus containing it
 	private static HashMap<String, Integer> DOCUMENT_FREQUENCY = new HashMap<String, Integer>();
 	// the used normalizer
-	private static Normalizer NORMALIZER = new FrenchStemmer();
+	public static Normalizer NORMALIZER = new FrenchStemmer();
 
 	private static long START_TIME = 0;
 	private static long CURRENT_TIME = 0;
