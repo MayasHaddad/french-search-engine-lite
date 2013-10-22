@@ -40,14 +40,14 @@ public abstract class Indexer {
 	// For each word, number of document in the corpus containing it
 	private static HashMap<String, Integer> DOCUMENT_FREQUENCY = new HashMap<String, Integer>();
 	// the used normalizer
-	private static Normalizer NORMALIZER = null;
+	private static Normalizer NORMALIZER = new FrenchStemmer();
 
 	private static long START_TIME = 0;
 	private static long CURRENT_TIME = 0;
 
 	private static BufferedReader BR = null;
 	private static BufferedWriter BW = null;
-
+	
 	public static String EXTENTION_KEEP = ".txt";
 
 	/**
@@ -496,15 +496,13 @@ public abstract class Indexer {
 		try {
 			System.out.println("DEBUG: begin");
 
-			final Normalizer n = new FrenchStemmer();
-
 			final File in = new File(inDir);// /public/iri/projetIRI/corpus/0000/000000/
 			final File out = new File(outDir);
 			System.out.println("Launch calculus");
 			// Indexer.getWeightFiles(in, out, new FrenchStemmer());
-			Indexer.getInvertedFile(in, n, true);
+			Indexer.getInvertedFile(in, Indexer.NORMALIZER, true);
 			final TreeMap<String, TreeSet<String>> invertedFile = Indexer
-					.getInvertedFile(in, n, Indexer.REMOVE_STOP_WORDS);
+					.getInvertedFile(in, Indexer.NORMALIZER, Indexer.REMOVE_STOP_WORDS);
 			// Indexer.printInvertedFile(invertedFile);
 			final File invertedFileOutput = new File(outDir + "index");
 			invertedFileOutput.createNewFile();
