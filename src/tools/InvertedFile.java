@@ -6,8 +6,8 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
-import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 import java.util.TreeSet;
@@ -22,8 +22,9 @@ import expes.Utils;
  */
 public class InvertedFile {
 
-	public static final String INVERTED_FILE_DIR = "";
+	public static final String INVERTED_FILE_DIR = "/net/k14/u/etudiant/vvanhec/IRI/invertedFiles";
 	private static Integer cpt = 0;
+	private static TreeMap<String, TreeSet<String>> res = new TreeMap<String, TreeSet<String>>();;
 
 	/**
 	 * Analyse l'ensemble des fichiers d'un repertoire et collecte, pour chaque
@@ -32,46 +33,47 @@ public class InvertedFile {
 	 * @param dirName
 	 * @param normalizer
 	 * @param removeStopWords
-	 * @return
+	 * @return nothing relevant
 	 */
-	public static TreeMap<String, TreeSet<String>> getInvertedFile(
-			final File dir, final Normalizer normalizer,
-			final boolean removeStopWords) throws IOException {
+	public static void calculateInvertedFile(final File dir,
+			final Normalizer normalizer, final boolean removeStopWords)
+			throws IOException {
 		// the results <words, <docsName>>
-		final TreeMap<String, TreeSet<String>> res = new TreeMap<String, TreeSet<String>>();
 		// contains the words <words>
 		final TreeSet<String> occurences = new TreeSet<String>();
 		if (dir.exists() && dir.canRead() && dir.isDirectory()) {
 			Iterator it;
 			TreeSet<String> listFiles;
-			ArrayList<String> mots;
+			List<String> mots;
 			for (final File f : dir.listFiles()) {
 				// check memory
 				if (Utils.isMemoryFull(Main.RATIO_MEMORY)) {
-					InvertedFile.saveInvertedFile(res,
+					InvertedFile.saveInvertedFile(InvertedFile.res,
 							InvertedFile.generateInvertedFileName());
-					res.clear();
+					InvertedFile.res.clear();
 					System.out.println("Memory Full: " + InvertedFile.cpt);
 				}
 				// recursively...
 				if (f.isDirectory()) {
-					final TreeMap<String, TreeSet<String>> invertFiles = InvertedFile
-							.getInvertedFile(f, normalizer, removeStopWords);
-					for (final Map.Entry<String, TreeSet<String>> invertFile : invertFiles
-							.entrySet()) {
-						if (!res.containsKey(invertFile.getKey())) {
-							res.put(invertFile.getKey(), invertFile.getValue());
-						} else {
-							final TreeSet<String> tmpSet = invertFile
-									.getValue();
-							it = tmpSet.iterator();
-							while (it.hasNext()) {
-								final TreeSet<String> tmp = res.get(invertFile
-										.getKey());
-								tmp.add((String) it.next());
-							}
-						}
-					}
+					InvertedFile.calculateInvertedFile(f, normalizer,
+							removeStopWords);
+					// for (final Map.Entry<String, TreeSet<String>> invertFile
+					// : invertFiles
+					// .entrySet()) {
+					// if (!InvertedFile.res.containsKey(invertFile.getKey())) {
+					// InvertedFile.res.put(invertFile.getKey(),
+					// invertFile.getValue());
+					// } else {
+					// final TreeSet<String> tmpSet = invertFile
+					// .getValue();
+					// it = tmpSet.iterator();
+					// while (it.hasNext()) {
+					// final TreeSet<String> tmp = InvertedFile.res
+					// .get(invertFile.getKey());
+					// tmp.add((String) it.next());
+					// }
+					// }
+					// }
 					continue;
 				} // otherwise, this is a file, work on it
 				if (!f.getName().endsWith(Indexer.EXTENTION_KEEP)) {
@@ -87,20 +89,22 @@ public class InvertedFile {
 				it = occurences.iterator();
 				while (it.hasNext()) {
 					final String key = (String) it.next();
-					if (res.containsKey(key)
-							&& !res.get(key).contains(f.getName())) {
-						listFiles = res.get(key);
+					if (InvertedFile.res.containsKey(key)
+							&& !InvertedFile.res.get(key).contains(f.getName())) {
+						listFiles = InvertedFile.res.get(key);
 						listFiles.add(f.getName());
 						// res.put(key, listFiles);
 					} else {
 						listFiles = new TreeSet<String>();
 						listFiles.add(f.getName());
-						res.put(key, listFiles);
+						InvertedFile.res.put(key, listFiles);
 					}
 				}
 			}
+			InvertedFile.saveInvertedFile(InvertedFile.res,
+					InvertedFile.generateInvertedFileName());
 		}
-		return res;
+		// return InvertedFile.res;
 	}
 
 	/**

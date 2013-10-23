@@ -42,7 +42,7 @@ public class Weights {
 		System.out.print("Count the number of documents : N = ");
 		if (Indexer.NB_FILES_IN_CORPUS == null) {
 			Indexer.NB_FILES_IN_CORPUS = IOManager
-					.countDocumentRecusively(inDir);
+					.countDocumentRecursively(inDir);
 		}
 		Indexer.CURRENT_TIME = System.nanoTime();
 		System.out.println(Indexer.NB_FILES_IN_CORPUS + "|| temps(ms) = "
@@ -85,7 +85,8 @@ public class Weights {
 			// Recursive processing
 			if (f.isDirectory()) {
 				System.out.println("@");
-				// Create output dir
+				// Create output dir to repeat the folder hierarchy
+				// Here we use a flat folder so we comment that
 				// final File out = IOManager.createWriteDir(outDir
 				// .getAbsolutePath() + File.separator + f.getName());
 				// if (out == null) {

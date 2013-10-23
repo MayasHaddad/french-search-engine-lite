@@ -1,7 +1,6 @@
 package tools;
 
 import java.io.File;
-import java.io.IOException;
 
 public class Main {
 
@@ -35,10 +34,15 @@ public class Main {
 			final File in = new File(inDir);// /public/iri/projetIRI/corpus/0000/000000/
 			final File out = new File(outDir);
 			System.out.println("Launch calculus");
-			Weights.getWeightFiles(in, out, new FrenchStemmer());
-			// final TreeMap<String, TreeSet<String>> invertedFile =
-			// InvertedFile
-			// .getInvertedFile(in, Indexer.NORMALIZER,
+
+			// count document
+			System.out.println(IOManager.countDocumentRecursively(in));
+
+			// calculate the weights
+			// Weights.getWeightFiles(in, out, new FrenchStemmer());
+
+			// calculate the indexes
+			// InvertedFile.getInvertedFile(in, Indexer.NORMALIZER,
 			// Indexer.REMOVE_STOP_WORDS);
 			// Indexer.printInvertedFile(invertedFile);
 			// final File invertedFileOutput = new File(outDir + "index");
@@ -47,7 +51,7 @@ public class Main {
 
 			System.out.println("DEBUG: end");
 
-		} catch (final IOException e) {
+		} catch (final Exception e) {
 			System.out.println("Problem : " + e);
 			e.printStackTrace();
 		}
