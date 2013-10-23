@@ -1,9 +1,14 @@
 package tools;
 
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.IOException;
 
 public class IOManager {
+
+	public static BufferedReader BR = null;
+	public static BufferedWriter BW = null;
 
 	/**
 	 * Check if a directory is ok to be read
@@ -106,20 +111,27 @@ public class IOManager {
 	 *            the in dir
 	 * @return nb of files in the direcotry and sub-directories
 	 */
-	public static int countDocumentRecusively(final File inDir) {
+	public static int countDocumentRecursively(final File inDir) {
 		int cpt = 0;
+		if (!inDir.exists()) {
+			System.err.println("IOManager, countDocumentRecusively : File "
+					+ inDir.getAbsolutePath() + " don't exists");
+			return -1;
+		}
 
 		for (final File f : inDir.listFiles()) {
-			if (!f.getName().endsWith(Indexer.EXTENTION_KEEP)) {
-				continue;
-			}
 			if (f.isDirectory()) {
-				cpt += IOManager.countDocumentRecusively(f);
+				// System.out.println(f.getAbsolutePath());
+				// cpt++;
+				cpt += IOManager.countDocumentRecursively(f);
 			} else {
+				if (!f.getName().endsWith(Indexer.EXTENTION_KEEP)) {
+					continue;
+				}
+				// System.out.print("+");
 				cpt++;
 			}
 		}
 		return cpt;
 	}
-
 }
