@@ -32,7 +32,7 @@ public abstract class Indexer {
 	// For each word, number of document in the corpus containing it
 	public static HashMap<String, Integer> DOCUMENT_FREQUENCY = new HashMap<String, Integer>();
 	// the used normalizer
-	public static Normalizer NORMALIZER = new FrenchStemmer();
+	public static Normalizer NORMALIZER = null;
 
 	public static long START_TIME = 0;
 	public static long CURRENT_TIME = 0;
@@ -201,9 +201,23 @@ public abstract class Indexer {
 			} else {
 				logtf = 1 + Math.log10(entry.getValue());
 			}
-			idf = Math.log10(documentNumber / dfs.get(entry.getKey()));
+			idf = Math.log10((double) documentNumber / dfs.get(entry.getKey()));
 			// System.out.println(word + "\t" + tfIdf);
 			tfIdfs.put(entry.getKey(), logtf * idf);
+
+			if (entry.getKey().equals(".") && fileName.contains("00000001.txt")) {
+				System.out.println(fileName);
+				System.out.println("*** POINT ***");
+				System.out.println("\tft: " + entry.getValue());
+				System.out.println("\tlogft: " + logtf);
+				System.out.println("\tdocNumber: " + documentNumber);
+				System.out.println("\tnbOfDocWithPoint: "
+						+ dfs.get(entry.getKey()));
+				System.out.println("\tidf: " + (double) documentNumber
+						/ dfs.get(entry.getKey()));
+				System.out.println("\tlogidf: " + idf);
+				System.out.println("\ttf*logidf: " + logtf * idf);
+			}
 		}
 		return tfIdfs;
 	}
