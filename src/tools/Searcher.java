@@ -12,12 +12,16 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.Map;
 import java.util.TreeSet;
 
 /**
+ * Answer to a request Take and normalize the request, return the first best
+ * files.
+ * 
  * @author user
- *
+ * 
  */
 public class Searcher {
 	
@@ -46,10 +50,11 @@ public class Searcher {
 							filesContainingQueryWords.put(line.split("\t")[0], filenamesTreeSet);
 							Searcher.DOCUMENT_FRENQUENCIES_QUERY_WORDS.put(line.split("\t")[0], Integer.parseInt(line.split("\t")[1]));
 						}
-				}
-				br.close();
+			}
+		br.close();
 		return filesContainingQueryWords;
 	}
+
 	/**
 	 * @param args
 	 */
@@ -59,15 +64,16 @@ public class Searcher {
 			System.err.println("Example : java " + Searcher.class.getName()	+ " /in /weight /inverted-file.txt");
 			System.exit(1);
 		}
-		
+
 		// getting the program's command line arguments
 		//String collectionDirectoryPath = args[0];
 		String weightsDirectoryPath = args[0];
 		String invertedFilePath = args[1];
 		
 		// getting the user's query from the keybord
-		BufferedReader inputReader = new BufferedReader(new InputStreamReader(System.in));
-		
+		final BufferedReader inputReader = new BufferedReader(
+				new InputStreamReader(System.in));
+
 		try {
 			//Creating the needed files
 			//File collectionDirectory = new File(collectionDirectoryPath);
@@ -77,16 +83,16 @@ public class Searcher {
 			System.out.println("Ecrire votre requête");
 			String query = inputReader.readLine();
 			
-			ArrayList<String> queryNormalized = Indexer.NORMALIZER.normalize(query);
+			ArrayList<String> queryNormalized = (new FrenchStemmer()).normalize(query);
 			
 			Map<String, TreeSet<String>> filenamesContainingQueryWords = Searcher.getContainingFilesOfThisQuery(queryNormalized, invertedFile);
-			
-			ArrayList<String> alreadyVisitedFilename = new ArrayList<String>();
+			System.out.println(filenamesContainingQueryWords);
+			/*ArrayList<String> alreadyVisitedFilename = new ArrayList<String>();
 			HashMap<String, Double> weightsOfQuery = Indexer.getTfIdf(
 																		(InputStream)(new ByteArrayInputStream(query.getBytes())),
 																		(HashMap)Searcher.DOCUMENT_FRENQUENCIES_QUERY_WORDS,
 																		(int)Indexer.NB_FILES_IN_CORPUS,
-																		Indexer.NORMALIZER,
+																		(new FrenchStemmer()),
 																		Indexer.REMOVE_STOP_WORDS
 																	);
 			/*for(TreeSet<String> filenamesListContainingQueryWord : filenamesContainingQueryWords.values()){
@@ -95,8 +101,8 @@ public class Searcher {
 						//	getSimilarity(weightsOfQuery, filename);
 					}
 				}
-			}*/
-			System.out.println(weightsOfQuery);
+			}
+			System.out.println(weightsOfQuery);*/
 		}catch(IOException e) {
 			System.out.println("error: " + e);
 		}
