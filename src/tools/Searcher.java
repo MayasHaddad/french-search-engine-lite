@@ -4,6 +4,7 @@
 package tools;
 
 import java.io.BufferedReader;
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -20,6 +21,8 @@ import java.util.TreeSet;
  */
 public class Searcher {
 	
+	public static Map<String, Integer> DOCUMENT_FRENQUENCIES_QUERY_WORDS = new HashMap<String, Integer>();
+	
 	// Retrieve all the files which contain the query
 	public static Map<String, TreeSet<String>> getContainingFilesOfThisQuery(final ArrayList<String> queryNormalized, final File invertedFile) throws IOException{
 		
@@ -31,8 +34,8 @@ public class Searcher {
 				final BufferedReader br = new BufferedReader(ipsr);
 				String line;
 				while ((line = br.readLine()) != null) {
-					// I could've chosen used ArrayList, but complexity is the same O(n) and requires an object 
 						if(queryNormalized.contains(line.split("\t")[0])){
+							// the current word is in the query
 							// store the files containing the word
 							ArrayList<String> filenamesArrayList = new ArrayList<String>();
 							for(String filename : line.split("\t")[2].split(",")){
@@ -41,6 +44,7 @@ public class Searcher {
 							
 							TreeSet<String> filenamesTreeSet = new TreeSet<String>(filenamesArrayList);
 							filesContainingQueryWords.put(line.split("\t")[0], filenamesTreeSet);
+							Searcher.DOCUMENT_FRENQUENCIES_QUERY_WORDS.put(line.split("\t")[0], Integer.parseInt(line.split("\t")[1]));
 						}
 				}
 				br.close();
@@ -50,7 +54,7 @@ public class Searcher {
 	 * @param args
 	 */
 	public static void main(String[] args) {
-		if (args.length != 1) {
+		if (args.length != 2) {
 			System.err.println("Usage : java " + Searcher.class.getName() + " collectionDir weightsDir invertedFile");
 			System.err.println("Example : java " + Searcher.class.getName()	+ " /in /weight /inverted-file.txt");
 			System.exit(1);
@@ -58,8 +62,8 @@ public class Searcher {
 		
 		// getting the program's command line arguments
 		//String collectionDirectoryPath = args[0];
-		//String wightsDirectoryPath = args[1];
-		String invertedFilePath = args[0];
+		String weightsDirectoryPath = args[0];
+		String invertedFilePath = args[1];
 		
 		// getting the user's query from the keybord
 		BufferedReader inputReader = new BufferedReader(new InputStreamReader(System.in));
@@ -67,15 +71,32 @@ public class Searcher {
 		try {
 			//Creating the needed files
 			//File collectionDirectory = new File(collectionDirectoryPath);
-			//File weightsDirectory = new File(wightsDirectoryPath);
+			File weightsDirectory = new File(weightsDirectoryPath);
 			File invertedFile = new File(invertedFilePath);
 			
 			System.out.println("Ecrire votre requête");
 			String query = inputReader.readLine();
+			
 			ArrayList<String> queryNormalized = Indexer.NORMALIZER.normalize(query);
 			
-			Map<String, TreeSet<String>> filesContainingQueryWords = Searcher.getContainingFilesOfThisQuery(queryNormalized, invertedFile);
-
+			Map<String, TreeSet<String>> filenamesContainingQueryWords = Searcher.getContainingFilesOfThisQuery(queryNormalized, invertedFile);
+			
+			ArrayList<String> alreadyVisitedFilename = new ArrayList<String>();
+			HashMap<String, Double> weightsOfQuery = Indexer.getTfIdf(
+																		(InputStream)(new ByteArrayInputStream(query.getBytes())),
+																		(HashMap)Searcher.DOCUMENT_FRENQUENCIES_QUERY_WORDS,
+																		(int)Indexer.NB_FILES_IN_CORPUS,
+																		Indexer.NORMALIZER,
+																		Indexer.REMOVE_STOP_WORDS
+																	);
+			/*for(TreeSet<String> filenamesListContainingQueryWord : filenamesContainingQueryWords.values()){
+				for(String filename : filenamesListContainingQueryWord){
+					if(!alreadyVisitedFilename.contains(filename)){
+						//	getSimilarity(weightsOfQuery, filename);
+					}
+				}
+			}*/
+			System.out.println(weightsOfQuery);
 		}catch(IOException e) {
 			System.out.println("error: " + e);
 		}
