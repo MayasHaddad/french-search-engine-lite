@@ -54,7 +54,7 @@ public class Searcher {
 		br.close();
 		return filesContainingQueryWords;
 	}
-
+	
 	/**
 	 * @param args
 	 */
@@ -87,11 +87,11 @@ public class Searcher {
 			
 			Map<String, TreeSet<String>> filenamesContainingQueryWords = Searcher.getContainingFilesOfThisQuery(queryNormalized, invertedFile);
 			System.out.println(filenamesContainingQueryWords);
-			/*ArrayList<String> alreadyVisitedFilename = new ArrayList<String>();
+			ArrayList<String> alreadyVisitedFilename = new ArrayList<String>();
 			HashMap<String, Double> weightsOfQuery = Indexer.getTfIdf(
 																		(InputStream)(new ByteArrayInputStream(query.getBytes())),
 																		(HashMap)Searcher.DOCUMENT_FRENQUENCIES_QUERY_WORDS,
-																		Weights.countDocumentRecursively(new File("")),
+																		IOManager.countDocumentRecursively(new File("F:\\lemonde")) + 1,
 																		(new FrenchStemmer()),
 																		Indexer.REMOVE_STOP_WORDS
 																	);
@@ -101,8 +101,8 @@ public class Searcher {
 						//	getSimilarity(weightsOfQuery, filename);
 					}
 				}
-			}
-			System.out.println(weightsOfQuery);*/
+			}*/
+			System.out.println(weightsOfQuery);
 		}catch(IOException e) {
 			System.out.println("error: " + e);
 		}
