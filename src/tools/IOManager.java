@@ -1,9 +1,14 @@
 package tools;
 
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.IOException;
 
 public class IOManager {
+
+	public static BufferedReader BR = null;
+	public static BufferedWriter BW = null;
 
 	/**
 	 * Check if a directory is ok to be read
