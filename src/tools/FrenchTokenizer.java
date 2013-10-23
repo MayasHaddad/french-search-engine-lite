@@ -73,6 +73,8 @@ public class FrenchTokenizer implements Normalizer {
 			case cancel_word:
 				begin = -1;
 				break;
+			default:
+				break;
 			}
 		}
 		// Add the last one
@@ -94,16 +96,13 @@ public class FrenchTokenizer implements Normalizer {
 	public ArrayList<String> normalize(final String text) {
 		return this.tokenize(text);
 	}
-
-	@Override
-	public ArrayList<String> normalize(final String fileName,
-			final boolean removeStopWords, String pathToStopWords) throws IOException {
+	
+	public ArrayList<String> normalize(InputStream fileInputStream, boolean removeStopWords, String pathToStopWords)
+			throws IOException{
 		String text = "";
-		final File file = new File(fileName);
 		ArrayList<String> result = new ArrayList<String>();
 		// lecture du fichier texte
-		final InputStream ips = new FileInputStream(file);
-		final InputStreamReader ipsr = new InputStreamReader(ips);
+		final InputStreamReader ipsr = new InputStreamReader(fileInputStream);
 		final BufferedReader br = new BufferedReader(ipsr);
 		String line;
 		while ((line = br.readLine()) != null) {
@@ -117,6 +116,16 @@ public class FrenchTokenizer implements Normalizer {
 		final ArrayList<String> stopWords = FrenchStemmer.getStopWords(pathToStopWords);
 		result.removeAll(stopWords);
 		return result;
+	}
+	
+	@Override
+	public ArrayList<String> normalize(final String fileName,
+			final boolean removeStopWords, String pathToStopWords) throws IOException {
+		
+		final File file = new File(fileName);
+		final InputStream ips = new FileInputStream(file);
+		
+		return normalize(ips, removeStopWords, pathToStopWords);
 
 	}
 

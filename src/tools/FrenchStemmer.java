@@ -75,12 +75,10 @@ public class FrenchStemmer extends org.tartarus.snowball.ext.frenchStemmer
 		}
 		return result;
 	}
-
-	@Override
-	public ArrayList<String> normalize(final String fileName,
-			final boolean removeStopWords, String pathToStopWords) throws IOException {
+	
+	public ArrayList<String> normalize(final InputStream fileInputStream, boolean removeStopWords, String pathToStopWords)
+			throws IOException{
 		final ArrayList<String> result = new ArrayList<String>();
-		final File file = new File(fileName);
 
 		ArrayList<String> stopWords = new ArrayList<String>();
 		if (removeStopWords == true) {
@@ -88,8 +86,7 @@ public class FrenchStemmer extends org.tartarus.snowball.ext.frenchStemmer
 		}
 		String text = "";
 		// lecture du fichier texte
-		final InputStream ips = new FileInputStream(file);
-		final InputStreamReader ipsr = new InputStreamReader(ips);
+		final InputStreamReader ipsr = new InputStreamReader(fileInputStream);
 		final BufferedReader br = new BufferedReader(ipsr);
 		String line;
 		while ((line = br.readLine()) != null) {
@@ -114,6 +111,15 @@ public class FrenchStemmer extends org.tartarus.snowball.ext.frenchStemmer
 		}
 		return result;
 	}
+	@Override
+	public ArrayList<String> normalize(final String fileName,
+			final boolean removeStopWords, String pathToStopWords) throws IOException {
+		
+		final File file = new File(fileName);
+		final InputStream ips = new FileInputStream(file);
+		
+		return normalize(ips,removeStopWords, pathToStopWords);
+	}
 
 	public static ArrayList<String> getStopWords(String pathToStopWords) throws IOException {
 		final ArrayList<String> stopWords = new ArrayList<String>();
@@ -129,7 +135,7 @@ public class FrenchStemmer extends org.tartarus.snowball.ext.frenchStemmer
 		br.close();
 		return stopWords;
 	}
-
+	
 	public static void main(final String[] args) {
 	}
 }

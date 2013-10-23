@@ -6,8 +6,10 @@ package tools;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.util.ArrayList;
@@ -32,11 +34,11 @@ public abstract class Indexer {
 	// "/public/iri/projetIRI/corpus/";
 
 	// Remove the too simple words
-	private static boolean REMOVE_STOP_WORDS = false;
+	public static boolean REMOVE_STOP_WORDS = false;
 	// The local stop-words path
-	private static String PATH_TO_STOP_WORDS = null;
+	public static String PATH_TO_STOP_WORDS = null;
 	// Number of files in the corpus
-	private static Integer NB_FILES_IN_CORPUS = null;
+	public static Integer NB_FILES_IN_CORPUS = null;
 	// For each word, number of document in the corpus containing it
 	private static HashMap<String, Integer> DOCUMENT_FREQUENCY = new HashMap<String, Integer>();
 	// the used normalizer
@@ -61,7 +63,7 @@ public abstract class Indexer {
 	 * @throws IOException
 	 */
 	public static HashMap<String, Integer> getTermFrequencies(
-			final String fileName, final Normalizer normalizer,
+			final InputStream fileInputStream, final Normalizer normalizer,
 			final boolean removeStopWords) throws IOException {
 		// Création de la table des mots
 		final HashMap<String, Integer> hits = new HashMap<String, Integer>();
@@ -69,7 +71,7 @@ public abstract class Indexer {
 		// TODO !
 		// Appel de la méthode de normalisation
 		// System.out.println(fileName);
-		final ArrayList<String> words = normalizer.normalize(fileName,
+		final ArrayList<String> words = normalizer.normalize(fileInputStream,
 				removeStopWords, Indexer.PATH_TO_STOP_WORDS);
 		Integer number;
 		// Pour chaque mot de la liste, on remplit un dictionnaire
@@ -195,7 +197,7 @@ public abstract class Indexer {
 	 * @return <wordsInFileName, tfidf>
 	 * @throws IOException
 	 */
-	public static HashMap<String, Double> getTfIdf(final String fileName,
+	public static HashMap<String, Double> getTfIdf(final InputStream fileInputStream,
 			final HashMap<String, Integer> dfs, final int documentNumber,
 			final Normalizer normalizer, final boolean removeStopWords)
 			throws IOException {
@@ -204,7 +206,7 @@ public abstract class Indexer {
 
 		Double logtf = 0.0, idf = 0.0;
 		for (final Map.Entry<String, Integer> entry : Indexer
-				.getTermFrequencies(fileName, normalizer, removeStopWords)
+				.getTermFrequencies(fileInputStream, normalizer, removeStopWords)
 				.entrySet()) {
 			// <word, tf>
 			if (entry.getValue() == 0) {
@@ -335,7 +337,7 @@ public abstract class Indexer {
 
 		// calculate tf idf
 		final HashMap<String, Double> tfIdf = Indexer.getTfIdf(
-				inFile.getAbsolutePath(), Indexer.DOCUMENT_FREQUENCY,
+				(new FileInputStream(inFile.getAbsolutePath())), Indexer.DOCUMENT_FREQUENCY,
 				Indexer.NB_FILES_IN_CORPUS, Indexer.NORMALIZER,
 				Indexer.REMOVE_STOP_WORDS);
 
