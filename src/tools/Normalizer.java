@@ -2,6 +2,7 @@ package tools;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 
 /**
@@ -42,5 +43,8 @@ public interface Normalizer {
 	 * @throws IOException
 	 */
 	public ArrayList<String> normalize(String fileName, boolean removeStopWords, String pathToStopWords)
+			throws IOException;
+	
+	public ArrayList<String> normalize(InputStream fileInputStream, boolean removeStopWords, String pathToStopWords)
 			throws IOException;
 }

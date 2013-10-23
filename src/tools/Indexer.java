@@ -4,7 +4,12 @@
 package tools;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -50,7 +55,7 @@ public abstract class Indexer {
 	 * @throws IOException
 	 */
 	public static HashMap<String, Integer> getTermFrequencies(
-			final String fileName, final Normalizer normalizer,
+			final InputStream fileInputStream, final Normalizer normalizer,
 			final boolean removeStopWords) throws IOException {
 		// Création de la table des mots
 		final HashMap<String, Integer> hits = new HashMap<String, Integer>();
@@ -58,7 +63,7 @@ public abstract class Indexer {
 		// TODO !
 		// Appel de la méthode de normalisation
 		// System.out.println(fileName);
-		final ArrayList<String> words = normalizer.normalize(fileName,
+		final ArrayList<String> words = normalizer.normalize(fileInputStream,
 				removeStopWords, Indexer.PATH_TO_STOP_WORDS);
 		Integer number;
 		// Pour chaque mot de la liste, on remplit un dictionnaire
@@ -184,7 +189,7 @@ public abstract class Indexer {
 	 * @return <wordsInFileName, tfidf>
 	 * @throws IOException
 	 */
-	public static HashMap<String, Double> getTfIdf(final String fileName,
+	public static HashMap<String, Double> getTfIdf(final InputStream fileInputStream,
 			final HashMap<String, Integer> dfs, final int documentNumber,
 			final Normalizer normalizer, final boolean removeStopWords)
 			throws IOException {
@@ -193,7 +198,7 @@ public abstract class Indexer {
 
 		Double logtf = 0.0, idf = 0.0;
 		for (final Map.Entry<String, Integer> entry : Indexer
-				.getTermFrequencies(fileName, normalizer, removeStopWords)
+				.getTermFrequencies(fileInputStream, normalizer, removeStopWords)
 				.entrySet()) {
 			// <word, tf>
 			if (entry.getValue() == 0) {
@@ -204,7 +209,6 @@ public abstract class Indexer {
 			idf = Math.log10((double) documentNumber / dfs.get(entry.getKey()));
 			// System.out.println(word + "\t" + tfIdf);
 			tfIdfs.put(entry.getKey(), logtf * idf);
-
 		}
 		return tfIdfs;
 	}
