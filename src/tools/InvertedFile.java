@@ -12,6 +12,8 @@ import java.util.Map;
 import java.util.TreeMap;
 import java.util.TreeSet;
 
+import expes.Utils;
+
 /**
  * Generate, print and save the index file <word, listOfDocs>
  * 
@@ -19,6 +21,9 @@ import java.util.TreeSet;
  * 
  */
 public class InvertedFile {
+
+	public static final String INVERTED_FILE_DIR = "";
+	private static Integer cpt = 0;
 
 	/**
 	 * Analyse l'ensemble des fichiers d'un repertoire et collecte, pour chaque
@@ -41,6 +46,13 @@ public class InvertedFile {
 			TreeSet<String> listFiles;
 			ArrayList<String> mots;
 			for (final File f : dir.listFiles()) {
+				// check memory
+				if (Utils.isMemoryFull(Main.RATIO_MEMORY)) {
+					InvertedFile.saveInvertedFile(res,
+							InvertedFile.generateInvertedFileName());
+					res.clear();
+					System.out.println("Memory Full: " + InvertedFile.cpt);
+				}
 				// recursively...
 				if (f.isDirectory()) {
 					final TreeMap<String, TreeSet<String>> invertFiles = InvertedFile
@@ -147,4 +159,9 @@ public class InvertedFile {
 		}
 	}
 
+	private static File generateInvertedFileName() {
+		InvertedFile.cpt++;
+		return new File(InvertedFile.INVERTED_FILE_DIR + File.separator
+				+ InvertedFile.cpt.toString());
+	}
 }

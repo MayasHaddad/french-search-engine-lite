@@ -5,6 +5,8 @@ import java.io.IOException;
 
 public class Main {
 
+	public static Double RATIO_MEMORY = 0.8;
+
 	/**
 	 * Main function
 	 * 
