@@ -2,6 +2,7 @@ package tools;
 
 import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
@@ -127,7 +128,7 @@ public class Weights {
 
 		// calculate tf idf
 		final HashMap<String, Double> tfIdf = Indexer.getTfIdf(
-				inFile.getAbsolutePath(), Indexer.DOCUMENT_FREQUENCY,
+				(new FileInputStream(inFile.getAbsolutePath())), Indexer.DOCUMENT_FREQUENCY,
 				Indexer.NB_FILES_IN_CORPUS, Indexer.NORMALIZER,
 				Indexer.REMOVE_STOP_WORDS);
 
