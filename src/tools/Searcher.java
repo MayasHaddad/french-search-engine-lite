@@ -34,10 +34,12 @@ public class Searcher {
 					// I could've chosen used ArrayList, but complexity is the same O(n) and requires an object 
 						if(queryNormalized.contains(line.split("\t")[0])){
 							// store the files containing the word
-							TreeSet<String> filenamesTreeSet = new TreeSet<String>();
+							ArrayList<String> filenamesArrayList = new ArrayList<String>();
 							for(String filename : line.split("\t")[2].split(",")){
-								filenamesTreeSet.add(filename);
+								filenamesArrayList.add(filename);
 							}
+							
+							TreeSet<String> filenamesTreeSet = new TreeSet<String>(filenamesArrayList);
 							filesContainingQueryWords.put(line.split("\t")[0], filenamesTreeSet);
 						}
 				}
