@@ -202,14 +202,19 @@ public abstract class Indexer {
 
 		final HashMap<String, Double> tfIdfs = new HashMap<String, Double>();
 
-		Double tf = 0.0, idf = 0.0;
+		Double logtf = 0.0, idf = 0.0;
 		for (final Map.Entry<String, Integer> entry : Indexer
 				.getTermFrequencies(fileName, normalizer, removeStopWords)
 				.entrySet()) {
-			tf = 1 + Math.log10(entry.getValue());
+			// <word, tf>
+			if (entry.getValue() == 0) {
+				logtf = 0D;
+			} else {
+				logtf = 1 + Math.log10(entry.getValue());
+			}
 			idf = Math.log10(documentNumber / dfs.get(entry.getKey()));
 			// System.out.println(word + "\t" + tfIdf);
-			tfIdfs.put(entry.getKey(), tf * idf);
+			tfIdfs.put(entry.getKey(), logtf * idf);
 		}
 		return tfIdfs;
 	}
@@ -390,6 +395,9 @@ public abstract class Indexer {
 					}
 					continue;
 				} // otherwise, this is a file, work on it
+				if (!f.getName().endsWith(Indexer.EXTENTION_KEEP)) {
+					continue;
+				}
 				occurences.clear();
 				mots = normalizer.normalize(f.getAbsolutePath(),
 						removeStopWords, Indexer.PATH_TO_STOP_WORDS);
