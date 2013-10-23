@@ -91,7 +91,7 @@ public class Searcher {
 			HashMap<String, Double> weightsOfQuery = Indexer.getTfIdf(
 																		(InputStream)(new ByteArrayInputStream(query.getBytes())),
 																		(HashMap)Searcher.DOCUMENT_FRENQUENCIES_QUERY_WORDS,
-																		(int)Indexer.NB_FILES_IN_CORPUS,
+																		Weights.countDocumentRecursively(new File("")),
 																		(new FrenchStemmer()),
 																		Indexer.REMOVE_STOP_WORDS
 																	);
