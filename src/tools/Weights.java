@@ -86,13 +86,13 @@ public class Weights {
 			if (f.isDirectory()) {
 				System.out.println("@");
 				// Create output dir
-				final File out = IOManager.createWriteDir(outDir
-						.getAbsolutePath() + File.separator + f.getName());
-				if (out == null) {
-					continue;
-				}
+				// final File out = IOManager.createWriteDir(outDir
+				// .getAbsolutePath() + File.separator + f.getName());
+				// if (out == null) {
+				// continue;
+				// }
 				// work on the dir recursively
-				Weights.getWeightFilesRec(f, out);
+				Weights.getWeightFilesRec(f, outDir);
 			} else {
 				if (!f.getName().endsWith(Indexer.EXTENTION_KEEP)) {
 					continue;

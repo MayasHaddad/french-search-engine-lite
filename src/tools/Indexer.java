@@ -205,19 +205,6 @@ public abstract class Indexer {
 			// System.out.println(word + "\t" + tfIdf);
 			tfIdfs.put(entry.getKey(), logtf * idf);
 
-			if (entry.getKey().equals(".") && fileName.contains("00000001.txt")) {
-				System.out.println(fileName);
-				System.out.println("*** POINT ***");
-				System.out.println("\tft: " + entry.getValue());
-				System.out.println("\tlogft: " + logtf);
-				System.out.println("\tdocNumber: " + documentNumber);
-				System.out.println("\tnbOfDocWithPoint: "
-						+ dfs.get(entry.getKey()));
-				System.out.println("\tidf: " + (double) documentNumber
-						/ dfs.get(entry.getKey()));
-				System.out.println("\tlogidf: " + idf);
-				System.out.println("\ttf*logidf: " + logtf * idf);
-			}
 		}
 		return tfIdfs;
 	}
