@@ -195,13 +195,12 @@ public class Searcher {
 	 */
 	public static void main(String[] args) {
 		if (args.length != 2) {
-			System.err.println("Usage : java " + Searcher.class.getName() + " collectionDir weightsDir invertedFile");
-			System.err.println("Example : java " + Searcher.class.getName()	+ " /in /weight /inverted-file.txt");
+			System.err.println("Usage : java " + Searcher.class.getName() + " weightsDir invertedFile");
+			System.err.println("Example : java " + Searcher.class.getName()	+ " /weight /inverted-file.txt");
 			System.exit(1);
 		}
 
 		// getting the program's command line arguments
-		//String collectionDirectoryPath = args[0];
 		String weightsDirectoryPath = args[0];
 		String invertedFilePath = args[1];
 
