@@ -58,11 +58,12 @@ public class Utils {
 	 * @return <code>true</code> if the ratio of the memory is full.
 	 */
 	public static boolean isMemoryFull(final double ratio) {
-		final long maxMemory = Utils.runtime.maxMemory();
+		final long maxMemory = Utils.runtime.maxMemory(); // 1073741824;// 1 Gb
+		// System.out.println(maxMemory);
 		final long allocatedMemory = Utils.runtime.totalMemory();
 		final long freeMemory = Utils.runtime.freeMemory();
-		final double r = (double) (allocatedMemory - freeMemory)
-				/ (double) maxMemory;
+		final double r = (allocatedMemory - freeMemory) / (double) maxMemory
+				* 1073741824 / maxMemory;
 		return r > ratio;
 	}
 

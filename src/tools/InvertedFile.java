@@ -22,9 +22,9 @@ import expes.Utils;
  */
 public class InvertedFile {
 
-	public static final String INVERTED_FILE_DIR = "/net/k14/u/etudiant/vvanhec/IRI/invertedFiles";
+	public static final String INVERTED_FILE_DIR = "/net/k14/u/etudiant/vvanhec/IRI/invertedFiles3";
 	private static Integer cpt = 0;
-	private static TreeMap<String, TreeSet<String>> res = new TreeMap<String, TreeSet<String>>();;
+	private static TreeMap<String, TreeSet<String>> res = new TreeMap<String, TreeSet<String>>();
 
 	/**
 	 * Analyse l'ensemble des fichiers d'un repertoire et collecte, pour chaque
@@ -51,7 +51,10 @@ public class InvertedFile {
 					InvertedFile.saveInvertedFile(InvertedFile.res,
 							InvertedFile.generateInvertedFileName());
 					InvertedFile.res.clear();
+					occurences.clear();
 					System.out.println("Memory Full: " + InvertedFile.cpt);
+					final Runtime r = Runtime.getRuntime();
+					r.gc();
 				}
 				// recursively...
 				if (f.isDirectory()) {
@@ -76,7 +79,7 @@ public class InvertedFile {
 					// }
 					continue;
 				} // otherwise, this is a file, work on it
-				if (!f.getName().endsWith(Indexer.EXTENTION_KEEP)) {
+				if (!f.getName().endsWith(".poid")) {
 					continue;
 				}
 				occurences.clear();
@@ -89,7 +92,8 @@ public class InvertedFile {
 				it = occurences.iterator();
 				while (it.hasNext()) {
 					final String key = (String) it.next();
-					if (InvertedFile.res.containsKey(key)
+					final TreeSet<String> s = InvertedFile.res.get(key);
+					if (s != null
 							&& !InvertedFile.res.get(key).contains(f.getName())) {
 						listFiles = InvertedFile.res.get(key);
 						listFiles.add(f.getName());

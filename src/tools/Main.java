@@ -36,18 +36,17 @@ public class Main {
 			System.out.println("Launch calculus");
 
 			// count document
-			System.out.println(IOManager.countDocumentRecursively(in));
+			// System.out.println(IOManager.countDocumentRecursively(in));
 
 			// calculate the weights
 			// Weights.getWeightFiles(in, out, new FrenchStemmer());
 
 			// calculate the indexes
-			// InvertedFile.getInvertedFile(in, Indexer.NORMALIZER,
-			// Indexer.REMOVE_STOP_WORDS);
-			// Indexer.printInvertedFile(invertedFile);
-			// final File invertedFileOutput = new File(outDir + "index");
-			// invertedFileOutput.createNewFile();
-			// InvertedFile.saveInvertedFile(invertedFile, invertedFileOutput);
+			InvertedFile.calculateInvertedFile(out, Indexer.NORMALIZER,
+					Indexer.REMOVE_STOP_WORDS);
+
+			// System.out.println(Utils.isMemoryFull(0.9
+			// ));
 
 			System.out.println("DEBUG: end");
 
@@ -56,5 +55,4 @@ public class Main {
 			e.printStackTrace();
 		}
 	}
-
 }
