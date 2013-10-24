@@ -16,8 +16,10 @@ import java.util.TreeSet;
  */
 public class InvertedFileMerger {
 
+	public static final String pathToInvertedFileFromIndexer = "/projet/iri/bvh/InvertedFileFromIndexer/";
+	public static final String pathToInvertedFileFromMerger = "/projet/iri/bvh/InvertedFileFromMerger/";
+	
 	private File directorySource;
-	private String invertedFilePathSource;
 	private int marqueur = 1;
 	
 	private String lettres = "abcdefghijklmnopqrstuvwxyzéèêàâîë";
@@ -29,10 +31,8 @@ public class InvertedFileMerger {
 	 * @param pathToDirectorySource
 	 * 		Path du repertoire contenant les inverted files générés par l'indexer.
 	 **/
-	public InvertedFileMerger(String pathToDirectorySource){
-		invertedFilePathSource = pathToDirectorySource;
-		
-		directorySource = new File(pathToDirectorySource);		
+	public InvertedFileMerger(){
+		directorySource = new File(InvertedFileMerger.pathToInvertedFileFromIndexer);		
 	}
 	
 	
@@ -61,7 +61,7 @@ public class InvertedFileMerger {
 		//alphabétiquement ou alors comme on veut.
 		if(fileNames.length == 1){
 			//cette méthode peut etre interchangée pour créer des resultats différents
-			splitInvertedFileResult(fileNames[0]);	
+			splitInvertedFileResultWithTwoLetters(fileNames[0]);	
 			
 			File file = new File(fileNames[0]);
 			file.delete();
@@ -71,9 +71,9 @@ public class InvertedFileMerger {
 				if(i>=fileNames.length-1){
 				}
 				else{
-					File fileA = new File(invertedFilePathSource+fileNames[i]);
-					File fileB = new File(invertedFilePathSource+fileNames[i+1]);
-					File fileResultat = new File(invertedFilePathSource+"FileResultat"+marqueur+".txt");
+					File fileA = new File(InvertedFileMerger.pathToInvertedFileFromIndexer+fileNames[i]);
+					File fileB = new File(InvertedFileMerger.pathToInvertedFileFromIndexer+fileNames[i+1]);
+					File fileResultat = new File(InvertedFileMerger.pathToInvertedFileFromIndexer+"FileResultat"+marqueur+".txt");
 					
 					mergeInvertedFiles(fileA, fileB, fileResultat);
 					
@@ -95,13 +95,13 @@ public class InvertedFileMerger {
 	 * @throws IOException
 	 */
 	private void splitInvertedFileResult(String fileName) throws IOException{
-		File file = new File(invertedFilePathSource+fileName);
+		File file = new File(InvertedFileMerger.pathToInvertedFileFromIndexer+fileName);
 		BufferedReader reader = new BufferedReader(new FileReader(file));
-		BufferedWriter trucDeMerde = new BufferedWriter(new FileWriter(invertedFilePathSource+"trucDeMerde.txt"));
-		BufferedWriter chiffre = new BufferedWriter(new FileWriter(invertedFilePathSource+"chiffre.txt"));
+		BufferedWriter trucDeMerde = new BufferedWriter(new FileWriter(InvertedFileMerger.pathToInvertedFileFromMerger+"trucDeMerde.txt"));
+		BufferedWriter chiffre = new BufferedWriter(new FileWriter(InvertedFileMerger.pathToInvertedFileFromMerger+"chiffre.txt"));
 		
 		
-		BufferedWriter writer = new BufferedWriter(new FileWriter(invertedFilePathSource+"a.txt"));
+		BufferedWriter writer = new BufferedWriter(new FileWriter(InvertedFileMerger.pathToInvertedFileFromMerger+"a.txt"));
 		String currentString = "a";
 		
 		
@@ -115,7 +115,7 @@ public class InvertedFileMerger {
 				else{
 					writer.close();
 					currentString = firstLetter;
-					writer = new BufferedWriter(new FileWriter(invertedFilePathSource+currentString+".txt"));
+					writer = new BufferedWriter(new FileWriter(InvertedFileMerger.pathToInvertedFileFromMerger+currentString+".txt"));
 					writer.write(mot+"\n");	
 				}				
 			}
@@ -141,13 +141,13 @@ public class InvertedFileMerger {
 	 * @throws IOException
 	 */
 	private void splitInvertedFileResultWithTwoLetters(String fileName) throws IOException{
-		File file = new File(invertedFilePathSource+fileName);
+		File file = new File(InvertedFileMerger.pathToInvertedFileFromIndexer+fileName);
 		BufferedReader reader = new BufferedReader(new FileReader(file));
-		BufferedWriter trucDeMerde = new BufferedWriter(new FileWriter(invertedFilePathSource+"trucDeMerde.txt"));
-		BufferedWriter chiffre = new BufferedWriter(new FileWriter(invertedFilePathSource+"chiffre.txt"));
+		BufferedWriter trucDeMerde = new BufferedWriter(new FileWriter(InvertedFileMerger.pathToInvertedFileFromMerger+"otherCharacter.txt"));
+		BufferedWriter chiffre = new BufferedWriter(new FileWriter(InvertedFileMerger.pathToInvertedFileFromMerger+"chiffre.txt"));
 		
 		
-		BufferedWriter writer = new BufferedWriter(new FileWriter(invertedFilePathSource+"a.txt"));
+		BufferedWriter writer = new BufferedWriter(new FileWriter(InvertedFileMerger.pathToInvertedFileFromMerger+"aa.txt"));
 		String currentString = "aa";
 		
 		
@@ -167,7 +167,7 @@ public class InvertedFileMerger {
 						
 						writer.close();
 						currentString = twoFirstLetters;
-						writer = new BufferedWriter(new FileWriter(invertedFilePathSource+currentString+".txt"));
+						writer = new BufferedWriter(new FileWriter(InvertedFileMerger.pathToInvertedFileFromMerger+currentString+".txt"));
 						writer.write(mot+"\n");	
 					}
 					else{

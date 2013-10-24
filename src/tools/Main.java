@@ -40,10 +40,11 @@ public class Main {
 
 			// calculate the weights
 			// Weights.getWeightFiles(in, out, new FrenchStemmer());
-
+			InvertedFileMerger a = new InvertedFileMerger();
+			a.run();
 			// calculate the indexes
-			InvertedFile.calculateInvertedFile(out, Indexer.NORMALIZER,
-					Indexer.REMOVE_STOP_WORDS);
+			//InvertedFile.calculateInvertedFile(out, Indexer.NORMALIZER,
+			//		Indexer.REMOVE_STOP_WORDS);
 
 			// System.out.println(Utils.isMemoryFull(0.9
 			// ));
