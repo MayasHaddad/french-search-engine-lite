@@ -55,6 +55,38 @@ public class Searcher {
 		br.close();
 		return filesContainingQueryWords;
 	}
+	
+	public static Map<String, TreeSet<String>> getContainingFilesOfThisQueryExplodedIndex(final ArrayList<String> queryNormalized, final File invertedFilesDirectory) throws IOException{
+
+		Map<String, TreeSet<String>> filesContainingQueryWords = new HashMap<String, TreeSet<String>>();
+		if(invertedFilesDirectory.isDirectory()){
+			for(String queryWord : queryNormalized){
+				
+				File invertedFile = new File(invertedFilesDirectory + queryWord.substring(0, 1) + ".txt");
+				// lecture du fichier texte
+				final InputStream ips = new FileInputStream(invertedFile);
+				final InputStreamReader ipsr = new InputStreamReader(ips);
+				final BufferedReader br = new BufferedReader(ipsr);
+				String line;
+				while ((line = br.readLine()) != null) {
+					if(queryNormalized.contains(line.split("\t")[0])){
+						// the current word is in the query
+						// store the files containing the word
+						ArrayList<String> filenamesArrayList = new ArrayList<String>();
+						for(String filename : line.split("\t")[2].split(",")){
+							filenamesArrayList.add(filename);
+						}
+
+						TreeSet<String> filenamesTreeSet = new TreeSet<String>(filenamesArrayList);
+						filesContainingQueryWords.put(line.split("\t")[0], filenamesTreeSet);
+						Searcher.DOCUMENT_FRENQUENCIES_QUERY_WORDS.put(line.split("\t")[0], Integer.parseInt(line.split("\t")[1]));
+					}
+				}
+				br.close();
+			}
+		}
+		return filesContainingQueryWords;
+	}
 	/**
 	 * 
 	 * @param weightsOfQuery
@@ -210,7 +242,6 @@ public class Searcher {
 
 		try {
 			//Creating the needed files
-			//File collectionDirectory = new File(collectionDirectoryPath);
 			File weightsDirectory = new File(weightsDirectoryPath);
 			File invertedFile = new File(invertedFilePath);
 
