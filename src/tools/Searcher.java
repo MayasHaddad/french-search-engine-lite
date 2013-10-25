@@ -28,7 +28,7 @@ public class Searcher {
 	public static Map<String, Integer> DOCUMENT_FRENQUENCIES_QUERY_WORDS = new HashMap<String, Integer>();
 
 	// Retrieve all the files which contain the query
-	public static Map<String, TreeSet<String>> getContainingFilesOfThisQuery(
+/*	public static Map<String, TreeSet<String>> getContainingFilesOfThisQuery(
 			final ArrayList<String> queryNormalized, final File invertedFile)
 					throws IOException {
 
@@ -60,14 +60,15 @@ public class Searcher {
 		br.close();
 		return filesContainingQueryWords;
 	}
-
+*/
 	public static Map<String, TreeSet<String>> getContainingFilesOfThisQueryExplodedIndex(
 			final ArrayList<String> queryNormalized,
 			final File invertedFilesDirectory) throws IOException {
-
+		
 		Map<String, TreeSet<String>> filesContainingQueryWords = new HashMap<String, TreeSet<String>>();
 		if(invertedFilesDirectory.isDirectory()){
 			for(String queryWord : queryNormalized){
+				
 				File invertedFile = new File(invertedFilesDirectory + File.separator + queryWord.substring(0, 2) + ".txt");
 				// lecture du fichier texte
 				final InputStream ips = new FileInputStream(invertedFile);
