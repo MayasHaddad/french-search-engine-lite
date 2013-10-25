@@ -11,229 +11,241 @@ import java.util.TreeSet;
 
 /**
  * 
- * @author sbazin10
- *	Fusionne les fichiers inverses générés par l'indexer.
+ * @author sbazin10 Fusionne les fichiers inverses générés par l'indexer.
  */
 public class InvertedFileMerger {
 
-	private File directorySource;
-	private String invertedFilePathSource;
+	private final File directorySource;
 	private int marqueur = 1;
-	
-	private String lettres = "abcdefghijklmnopqrstuvwxyzéèêàâîë";
-	private String chiffres ="0123456789";
-	
-	
+
 	/**
 	 * 
 	 * @param pathToDirectorySource
-	 * 		Path du repertoire contenant les inverted files générés par l'indexer.
+	 *            Path du repertoire contenant les inverted files générés par
+	 *            l'indexer.
 	 **/
-	public InvertedFileMerger(String pathToDirectorySource){
-		invertedFilePathSource = pathToDirectorySource;
-		
-		directorySource = new File(pathToDirectorySource);		
+
+	public InvertedFileMerger() {
+		this.directorySource = new File(Const.pathToInvertedFileFromIndexer);
 	}
-	
-	
-	/** 
-	 * La méthode à lancer, qui démarre le merge
-	 * @throws IOException
-	 */
-	public void run() throws IOException{	
-		
-		String[] fileNames = directorySource.list();		
-		this.merge(fileNames);		
-	}
-	
-	
-	
+
 	/**
-	 * Fusionne récursivement deux a deux tous les fichiers d'un repertoire, supprime les fichiers sources, et relance la fusion sur les fichiers resultats
-	 * Quand il ne reste plus que un seul fichier, le découpe
-	 * @param fileNames
-	 * 		FileName du répertoire d'ou on va merger les fichiers
+	 * La méthode à lancer, qui démarre le merge
+	 * 
 	 * @throws IOException
 	 */
-	private void merge(String[] fileNames) throws IOException{
-		
-		//S'il n'ya qu'un seul fichier dans le repertoire, on lui applique un traitement pour le découper, par exemple
-		//alphabétiquement ou alors comme on veut.
-		if(fileNames.length == 1){
-			//cette méthode peut etre interchangée pour créer des resultats différents
-			splitInvertedFileResult(fileNames[0]);	
-			
-			File file = new File(fileNames[0]);
+	public void run() throws IOException {
+
+		final String[] fileNames = this.directorySource.list();
+		this.merge(fileNames);
+	}
+
+	/**
+	 * Fusionne récursivement deux a deux tous les fichiers d'un repertoire,
+	 * supprime les fichiers sources, et relance la fusion sur les fichiers
+	 * resultats Quand il ne reste plus que un seul fichier, le découpe
+	 * 
+	 * @param fileNames
+	 *            FileName du répertoire d'ou on va merger les fichiers
+	 * @throws IOException
+	 */
+
+	private void merge(final String[] fileNames) throws IOException {
+
+		// S'il n'ya qu'un seul fichier dans le repertoire, on lui applique un
+		// traitement pour le découper, par exemple
+		// alphabétiquement ou alors comme on veut.
+		if (fileNames.length == 1) {
+			// cette méthode peut etre interchangée pour créer des resultats
+			// différents
+			this.splitInvertedFileResultWithTwoLetters(fileNames[0]);
+
+			final File file = new File(fileNames[0]);
 			file.delete();
-		}
-		else{
-			for(int i=0;i<fileNames.length;i=i+2){	
-				if(i>=fileNames.length-1){
-				}
-				else{
-					File fileA = new File(invertedFilePathSource+fileNames[i]);
-					File fileB = new File(invertedFilePathSource+fileNames[i+1]);
-					File fileResultat = new File(invertedFilePathSource+"FileResultat"+marqueur+".txt");
-					
-					mergeInvertedFiles(fileA, fileB, fileResultat);
-					
+		} else {
+			for (int i = 0; i < fileNames.length; i = i + 2) {
+				if (i >= fileNames.length - 1) {
+				} else {
+					final File fileA = new File(
+							Const.pathToInvertedFileFromIndexer + fileNames[i]);
+					final File fileB = new File(
+							Const.pathToInvertedFileFromIndexer
+									+ fileNames[i + 1]);
+					final File fileResultat = new File(
+							Const.pathToInvertedFileFromIndexer
+									+ "FileResultat" + this.marqueur + ".txt");
+
+					this.mergeInvertedFiles(fileA, fileB, fileResultat);
+
 					fileA.delete();
 					fileB.delete();
-					
-					marqueur++;
+
+					this.marqueur++;
 				}
-			}					
-			String[] newFileNames = directorySource.list();			
-			merge(newFileNames);
-		}		
+			}
+			final String[] newFileNames = this.directorySource.list();
+			this.merge(newFileNames);
+		}
 	}
-	
+
 	/**
-	 * Split un fichier inverse en 26 fichiers inverse, un par lettres de l'alphabet (+ 1 fichier pour les chiffres et 1 fichier pour
-	 * les caractères bizarres)
+	 * Split un fichier inverse en 26 fichiers inverse, un par lettres de
+	 * l'alphabet (+ 1 fichier pour les chiffres et 1 fichier pour les
+	 * caractères bizarres)
+	 * 
 	 * @param fileName
 	 * @throws IOException
 	 */
-	private void splitInvertedFileResult(String fileName) throws IOException{
-		File file = new File(invertedFilePathSource+fileName);
-		BufferedReader reader = new BufferedReader(new FileReader(file));
-		BufferedWriter trucDeMerde = new BufferedWriter(new FileWriter(invertedFilePathSource+"trucDeMerde.txt"));
-		BufferedWriter chiffre = new BufferedWriter(new FileWriter(invertedFilePathSource+"chiffre.txt"));
-		
-		
-		BufferedWriter writer = new BufferedWriter(new FileWriter(invertedFilePathSource+"a.txt"));
+
+	private void splitInvertedFileResult(final String fileName)
+			throws IOException {
+		final File file = new File(Const.pathToInvertedFileFromIndexer
+				+ fileName);
+		final BufferedReader reader = new BufferedReader(new FileReader(file));
+		final BufferedWriter trucDeMerde = new BufferedWriter(new FileWriter(
+				Const.pathToInvertedFileFromMerger + "trucDeMerde.txt"));
+		final BufferedWriter chiffre = new BufferedWriter(new FileWriter(
+				Const.pathToInvertedFileFromMerger + "chiffre.txt"));
+
+		BufferedWriter writer = new BufferedWriter(new FileWriter(
+				Const.pathToInvertedFileFromMerger + "a.txt"));
 		String currentString = "a";
-		
-		
+
 		String mot = reader.readLine();
-		while(mot !=null){
-			String firstLetter = mot.substring(0,1).toLowerCase();
-			if(lettres.contains(firstLetter)){
-				if(currentString.equals(firstLetter)){
-					writer.write(mot+"\n");					
-				}
-				else{
+		while (mot != null) {
+			final String firstLetter = mot.substring(0, 1).toLowerCase();
+			if (Const.lettres.contains(firstLetter)) {
+				if (currentString.equals(firstLetter)) {
+					writer.write(mot + "\n");
+				} else {
 					writer.close();
 					currentString = firstLetter;
-					writer = new BufferedWriter(new FileWriter(invertedFilePathSource+currentString+".txt"));
-					writer.write(mot+"\n");	
-				}				
+					writer = new BufferedWriter(new FileWriter(
+							Const.pathToInvertedFileFromMerger + currentString
+									+ ".txt"));
+					writer.write(mot + "\n");
+				}
+			} else if (Const.chiffres.contains(firstLetter)) {
+				chiffre.write(mot + "\n");
+			} else {
+				trucDeMerde.write(mot + "\n");
 			}
-			else if(chiffres.contains(firstLetter)){
-				chiffre.write(mot+"\n");
-			}
-			else{
-				trucDeMerde.write(mot+"\n");
-			}
-			
-			mot=reader.readLine();
+
+			mot = reader.readLine();
 		}
-		
+
 		reader.close();
 		trucDeMerde.close();
 		chiffre.close();
 		writer.close();
 	}
-	
+
 	/**
-	 * Découpe un fichier inverse en de nombreux fichiers inverses, ordonnées par les deux premières lettres des mots qu'ils contiennent
+	 * Découpe un fichier inverse en de nombreux fichiers inverses, ordonnées
+	 * par les deux premières lettres des mots qu'ils contiennent
+	 * 
 	 * @param fileName
 	 * @throws IOException
 	 */
-	private void splitInvertedFileResultWithTwoLetters(String fileName) throws IOException{
-		File file = new File(invertedFilePathSource+fileName);
-		BufferedReader reader = new BufferedReader(new FileReader(file));
-		BufferedWriter trucDeMerde = new BufferedWriter(new FileWriter(invertedFilePathSource+"trucDeMerde.txt"));
-		BufferedWriter chiffre = new BufferedWriter(new FileWriter(invertedFilePathSource+"chiffre.txt"));
-		
-		
-		BufferedWriter writer = new BufferedWriter(new FileWriter(invertedFilePathSource+"a.txt"));
+	private void splitInvertedFileResultWithTwoLetters(final String fileName)
+			throws IOException {
+		final File file = new File(Const.pathToInvertedFileFromIndexer
+				+ fileName);
+		final BufferedReader reader = new BufferedReader(new FileReader(file));
+		final BufferedWriter trucDeMerde = new BufferedWriter(new FileWriter(
+				Const.pathToInvertedFileFromMerger + "otherCharacter.txt"));
+		final BufferedWriter chiffre = new BufferedWriter(new FileWriter(
+				Const.pathToInvertedFileFromMerger + "chiffre.txt"));
+
+		BufferedWriter writer = new BufferedWriter(new FileWriter(
+				Const.pathToInvertedFileFromMerger + "aa.txt"));
 		String currentString = "aa";
-		
-		
+
 		String mot = reader.readLine();
-		while(mot !=null){
-			String firstLetter = mot.substring(0,1).toLowerCase();
-			String secondLetter = mot.substring(1,2).toLowerCase();
-			String twoFirstLetters = mot.substring(0,2).toLowerCase();
-			
-			if(lettres.contains(firstLetter)){
-				
-				if(currentString.equals(twoFirstLetters)){
-					writer.write(mot+"\n");					
-				}
-				else{
-					if(lettres.contains(secondLetter)){
-						
+		while (mot != null) {
+			final String firstLetter = mot.substring(0, 1).toLowerCase();
+			final String secondLetter = mot.substring(1, 2).toLowerCase();
+			final String twoFirstLetters = mot.substring(0, 2).toLowerCase();
+
+			if (Const.lettres.contains(firstLetter)) {
+
+				if (currentString.equals(twoFirstLetters)) {
+					writer.write(mot + "\n");
+				} else {
+					if (Const.lettres.contains(secondLetter)) {
+
 						writer.close();
 						currentString = twoFirstLetters;
-						writer = new BufferedWriter(new FileWriter(invertedFilePathSource+currentString+".txt"));
-						writer.write(mot+"\n");	
+						writer = new BufferedWriter(new FileWriter(
+								Const.pathToInvertedFileFromMerger
+										+ currentString + ".txt"));
+						writer.write(mot + "\n");
+					} else {
+						trucDeMerde.write(mot + "\n");
 					}
-					else{
-						trucDeMerde.write(mot+"\n");					
-					}
-				}				
+				}
+			} else if (Const.chiffres.contains(firstLetter)) {
+				chiffre.write(mot + "\n");
+			} else {
+				trucDeMerde.write(mot + "\n");
 			}
-			else if(chiffres.contains(firstLetter)){
-				chiffre.write(mot+"\n");
-			}
-			else{
-				trucDeMerde.write(mot+"\n");
-			}			
-			mot=reader.readLine();
+			mot = reader.readLine();
 		}
-		
+
 		reader.close();
 		trucDeMerde.close();
 		chiffre.close();
 		writer.close();
 	}
-	
-	
+
 	/**
 	 * 
-	 * @param invertedFile1 
-	 * 		Premier fichier inverse à fusionner
+	 * @param invertedFile1
+	 *            Premier fichier inverse à fusionner
 	 * @param invertedFile2
-	 * 		Second fichier inverse à fusionner
+	 *            Second fichier inverse à fusionner
 	 * @param mergedInvertedFile
-	 * 		Fichier inverse resultat de la fusion des deux
+	 *            Fichier inverse resultat de la fusion des deux
 	 * @throws IOException
 	 */
-	private void mergeInvertedFiles(File invertedFile1, File invertedFile2,
-			File mergedInvertedFile) throws IOException{
-		BufferedReader readerA = new BufferedReader(new FileReader(invertedFile1));
-		BufferedReader readerB = new BufferedReader(new FileReader(invertedFile2));
-		BufferedWriter writer = new BufferedWriter(new FileWriter(mergedInvertedFile));
+	private void mergeInvertedFiles(final File invertedFile1,
+			final File invertedFile2, final File mergedInvertedFile)
+			throws IOException {
+		final BufferedReader readerA = new BufferedReader(new FileReader(
+				invertedFile1));
+		final BufferedReader readerB = new BufferedReader(new FileReader(
+				invertedFile2));
+		final BufferedWriter writer = new BufferedWriter(new FileWriter(
+				mergedInvertedFile));
 
-		try{
+		try {
 			String motA = readerA.readLine();
 			String motB = readerB.readLine();
 
-			while(motA !=null && motB !=null){
-				//On split les lignes courantes selon la tabulation
-				String[] wordFreqDocsA = motA.split("\t");
-				String[] wordFreqDocsB = motB.split("\t");
-				if(wordFreqDocsA[0].equals(wordFreqDocsB[0])){
-					String[] documentListA = wordFreqDocsA[2].split(",");
-					String[] documentListB = wordFreqDocsB[2].split(",");
+			while (motA != null && motB != null) {
+				// On split les lignes courantes selon la tabulation
+				final String[] wordFreqDocsA = motA.split("\t");
+				final String[] wordFreqDocsB = motB.split("\t");
+				if (wordFreqDocsA[0].equals(wordFreqDocsB[0])) {
+					final String[] documentListA = wordFreqDocsA[2].split(",");
+					final String[] documentListB = wordFreqDocsB[2].split(",");
 
-					TreeSet<String> documentListResult = new TreeSet<String>();
-					for(String s : documentListB){
-						documentListResult.add(s);					
+					final TreeSet<String> documentListResult = new TreeSet<String>();
+					for (final String s : documentListB) {
+						documentListResult.add(s);
 					}
-					for(String s : documentListA){
-						documentListResult.add(s);					
+					for (final String s : documentListA) {
+						documentListResult.add(s);
 					}
 
-					int a = Integer.parseInt(wordFreqDocsA[1]) + Integer.parseInt(wordFreqDocsB[1]);
-					writer.write(wordFreqDocsA[0]+"\t"+a+"\t");
-					
-					//Ecriture de la liste des documents
-					Iterator it = documentListResult.iterator();
-					int size = documentListResult.size();
-					int cpt=0;
+					final int a = Integer.parseInt(wordFreqDocsA[1])
+							+ Integer.parseInt(wordFreqDocsB[1]);
+					writer.write(wordFreqDocsA[0] + "\t" + a + "\t");
+
+					// Ecriture de la liste des documents
+					final Iterator it = documentListResult.iterator();
+					final int size = documentListResult.size();
+					int cpt = 0;
 					while (it.hasNext()) {
 						cpt++;
 						writer.append((String) it.next());
@@ -242,41 +254,38 @@ public class InvertedFileMerger {
 						}
 					}
 					writer.append('\n');
-					
+
 					motA = readerA.readLine();
 					motB = readerB.readLine();
+				} else if (wordFreqDocsA[0].compareTo(wordFreqDocsB[0]) < 0) {
+					writer.write(motA + "\n");
+					motA = readerA.readLine();
+				} else if (wordFreqDocsA[0].compareTo(wordFreqDocsB[0]) > 0) {
+					writer.write(motB + "\n");
+					motB = readerB.readLine();
 				}
-				else if(wordFreqDocsA[0].compareTo(wordFreqDocsB[0])<0){
-					writer.write(motA+"\n");
-					motA = readerA.readLine();							
-				}
-				else if(wordFreqDocsA[0].compareTo(wordFreqDocsB[0])>0){
-					writer.write(motB+"\n");
-					motB = readerB.readLine();							
-				}					
 			}
 
-			//Si le document A est vide on Ã©crit la fin du document B
-			if(motA == null){
-				while(motB !=null){
-					writer.write(motB+"\n");
-					motB = readerB.readLine();					
-				}			
-			}	
+			// Si le document A est vide on Ã©crit la fin du document B
+			if (motA == null) {
+				while (motB != null) {
+					writer.write(motB + "\n");
+					motB = readerB.readLine();
+				}
+			}
 
-			//Si le document B est vide on Ã©crit la fin du document A
-			if(motB == null){
-				while(motA !=null){
-					writer.write(motA+"\n");
-					motA = readerA.readLine();					
-				}			
-			}	
-		}finally{
+			// Si le document B est vide on Ã©crit la fin du document A
+			if (motB == null) {
+				while (motA != null) {
+					writer.write(motA + "\n");
+					motA = readerA.readLine();
+				}
+			}
+		} finally {
 			writer.close();
 			readerA.close();
 			readerB.close();
 		}
 	}
-	
-	
+
 }
