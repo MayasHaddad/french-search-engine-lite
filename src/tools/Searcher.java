@@ -61,7 +61,7 @@ public class Searcher {
 		Map<String, TreeSet<String>> filesContainingQueryWords = new HashMap<String, TreeSet<String>>();
 		if(invertedFilesDirectory.isDirectory()){
 			for(String queryWord : queryNormalized){
-				File invertedFile = new File(invertedFilesDirectory + "\\" + queryWord.substring(0, 2) + ".txt");
+				File invertedFile = new File(invertedFilesDirectory + File.separator + queryWord.substring(0, 2) + ".txt");
 				// lecture du fichier texte
 				final InputStream ips = new FileInputStream(invertedFile);
 				final InputStreamReader ipsr = new InputStreamReader(ips);
