@@ -69,7 +69,9 @@ public class Searcher {
 		Map<String, TreeSet<String>> filesContainingQueryWords = new HashMap<String, TreeSet<String>>();
 		if(invertedFilesDirectory.isDirectory()){
 			for(String queryWord : queryNormalized){
-
+				
+				boolean queryWordIsInTheCorpus = false;
+				
 				// We won't search for a word which has only one 
 				if(queryWord.length() >= 2){
 
@@ -100,10 +102,15 @@ public class Searcher {
 								Searcher.DOCUMENT_FRENQUENCIES_QUERY_WORDS.put(
 										line.split("\t")[0],
 										Integer.parseInt(line.split("\t")[1]));
+								queryWordIsInTheCorpus = false;
 							}
 						}
 						br.close();
 					}
+				}
+				if(!queryWordIsInTheCorpus){
+					// even though the word is not in the corpus, it's in the query, so df = 1
+					Searcher.DOCUMENT_FRENQUENCIES_QUERY_WORDS.put(queryWord, 1);
 				}
 			}
 		}
