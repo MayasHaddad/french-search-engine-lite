@@ -26,7 +26,7 @@ public class InvertedFileMerger {
 	 **/
 
 	public InvertedFileMerger() {
-		this.directorySource = new File(Const.pathToInvertedFileFromIndexer);
+		this.directorySource = new File(Const.PATH_TO_INVERTED_FILE_FROM_INDEXER);
 	}
 
 	/**
@@ -67,12 +67,12 @@ public class InvertedFileMerger {
 				if (i >= fileNames.length - 1) {
 				} else {
 					final File fileA = new File(
-							Const.pathToInvertedFileFromIndexer + fileNames[i]);
+							Const.PATH_TO_INVERTED_FILE_FROM_INDEXER + fileNames[i]);
 					final File fileB = new File(
-							Const.pathToInvertedFileFromIndexer
+							Const.PATH_TO_INVERTED_FILE_FROM_INDEXER
 									+ fileNames[i + 1]);
 					final File fileResultat = new File(
-							Const.pathToInvertedFileFromIndexer
+							Const.PATH_TO_INVERTED_FILE_FROM_INDEXER
 									+ "FileResultat" + this.marqueur + ".txt");
 
 					this.mergeInvertedFiles(fileA, fileB, fileResultat);
@@ -99,33 +99,33 @@ public class InvertedFileMerger {
 
 	private void splitInvertedFileResult(final String fileName)
 			throws IOException {
-		final File file = new File(Const.pathToInvertedFileFromIndexer
+		final File file = new File(Const.PATH_TO_INVERTED_FILE_FROM_INDEXER
 				+ fileName);
 		final BufferedReader reader = new BufferedReader(new FileReader(file));
 		final BufferedWriter trucDeMerde = new BufferedWriter(new FileWriter(
-				Const.pathToInvertedFileFromMerger + "trucDeMerde.txt"));
+				Const.PATH_TO_INVERTED_FILE_FROM_MERGER + "trucDeMerde.txt"));
 		final BufferedWriter chiffre = new BufferedWriter(new FileWriter(
-				Const.pathToInvertedFileFromMerger + "chiffre.txt"));
+				Const.PATH_TO_INVERTED_FILE_FROM_MERGER + "chiffre.txt"));
 
 		BufferedWriter writer = new BufferedWriter(new FileWriter(
-				Const.pathToInvertedFileFromMerger + "a.txt"));
+				Const.PATH_TO_INVERTED_FILE_FROM_MERGER + "a.txt"));
 		String currentString = "a";
 
 		String mot = reader.readLine();
 		while (mot != null) {
 			final String firstLetter = mot.substring(0, 1).toLowerCase();
-			if (Const.lettres.contains(firstLetter)) {
+			if (Const.LETTRES.contains(firstLetter)) {
 				if (currentString.equals(firstLetter)) {
 					writer.write(mot + "\n");
 				} else {
 					writer.close();
 					currentString = firstLetter;
 					writer = new BufferedWriter(new FileWriter(
-							Const.pathToInvertedFileFromMerger + currentString
+							Const.PATH_TO_INVERTED_FILE_FROM_MERGER + currentString
 									+ ".txt"));
 					writer.write(mot + "\n");
 				}
-			} else if (Const.chiffres.contains(firstLetter)) {
+			} else if (Const.CHIFFRES.contains(firstLetter)) {
 				chiffre.write(mot + "\n");
 			} else {
 				trucDeMerde.write(mot + "\n");
@@ -149,16 +149,16 @@ public class InvertedFileMerger {
 	 */
 	private void splitInvertedFileResultWithTwoLetters(final String fileName)
 			throws IOException {
-		final File file = new File(Const.pathToInvertedFileFromIndexer
+		final File file = new File(Const.PATH_TO_INVERTED_FILE_FROM_INDEXER
 				+ fileName);
 		final BufferedReader reader = new BufferedReader(new FileReader(file));
 		final BufferedWriter trucDeMerde = new BufferedWriter(new FileWriter(
-				Const.pathToInvertedFileFromMerger + "otherCharacter.txt"));
+				Const.PATH_TO_INVERTED_FILE_FROM_MERGER + "otherCharacter.txt"));
 		final BufferedWriter chiffre = new BufferedWriter(new FileWriter(
-				Const.pathToInvertedFileFromMerger + "chiffre.txt"));
+				Const.PATH_TO_INVERTED_FILE_FROM_MERGER + "chiffre.txt"));
 
 		BufferedWriter writer = new BufferedWriter(new FileWriter(
-				Const.pathToInvertedFileFromMerger + "aa.txt"));
+				Const.PATH_TO_INVERTED_FILE_FROM_MERGER + "aa.txt"));
 		String currentString = "aa";
 
 		String mot = reader.readLine();
@@ -167,24 +167,24 @@ public class InvertedFileMerger {
 			final String secondLetter = mot.substring(1, 2).toLowerCase();
 			final String twoFirstLetters = mot.substring(0, 2).toLowerCase();
 
-			if (Const.lettres.contains(firstLetter)) {
+			if (Const.LETTRES.contains(firstLetter)) {
 
 				if (currentString.equals(twoFirstLetters)) {
 					writer.write(mot + "\n");
 				} else {
-					if (Const.lettres.contains(secondLetter)) {
+					if (Const.LETTRES.contains(secondLetter)) {
 
 						writer.close();
 						currentString = twoFirstLetters;
 						writer = new BufferedWriter(new FileWriter(
-								Const.pathToInvertedFileFromMerger
+								Const.PATH_TO_INVERTED_FILE_FROM_MERGER
 										+ currentString + ".txt"));
 						writer.write(mot + "\n");
 					} else {
 						trucDeMerde.write(mot + "\n");
 					}
 				}
-			} else if (Const.chiffres.contains(firstLetter)) {
+			} else if (Const.CHIFFRES.contains(firstLetter)) {
 				chiffre.write(mot + "\n");
 			} else {
 				trucDeMerde.write(mot + "\n");

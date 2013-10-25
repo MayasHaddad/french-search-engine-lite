@@ -6,10 +6,13 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
-import java.util.HashMap;
 import java.util.Map;
+import java.util.TreeMap;
 
 public class Weights {
+
+	public static long START_TIME = 0;
+	public static long CURRENT_TIME = 0;
 
 	/**
 	 * print file weight recursively according to the parameters given by the
@@ -30,7 +33,6 @@ public class Weights {
 	 */
 	public static void getWeightFiles(final File inDir, final File outDir,
 			final Normalizer n) throws IOException {
-		Indexer.NORMALIZER = n;
 
 		// check inDir and outDir
 		if (!IOManager.checkInDir(inDir) || !IOManager.checkOutDir(outDir)) {
@@ -38,31 +40,31 @@ public class Weights {
 			// return;
 		}
 
-		Indexer.START_TIME = System.nanoTime();
+		Weights.START_TIME = System.nanoTime();
 		// initialise the number of files in the corpus
 		System.out.print("Count the number of documents : N = ");
-		if (Indexer.NB_FILES_IN_CORPUS == null) {
-			Indexer.NB_FILES_IN_CORPUS = IOManager
+		if (Const.NB_FILES_IN_CORPUS == null) {
+			Const.NB_FILES_IN_CORPUS = IOManager
 					.countDocumentRecursively(inDir);
 		}
-		Indexer.CURRENT_TIME = System.nanoTime();
-		System.out.println(Indexer.NB_FILES_IN_CORPUS + "|| temps(ms) = "
-				+ (Indexer.CURRENT_TIME - Indexer.START_TIME) / 1000000);
+		Weights.CURRENT_TIME = System.nanoTime();
+		System.out.println(Const.NB_FILES_IN_CORPUS + "|| temps(ms) = "
+				+ (Weights.CURRENT_TIME - Weights.START_TIME) / 1000000);
 
 		// initialise the document frequency in the corpus
 		if (Indexer.DOCUMENT_FREQUENCY.isEmpty()) {
 			Indexer.DOCUMENT_FREQUENCY = Indexer.getDocumentFrequency(inDir);
 		}
 		System.out.println("temps(ms) pour la frequence = "
-				+ (System.nanoTime() - Indexer.CURRENT_TIME) / 1000000);
-		Indexer.CURRENT_TIME = System.nanoTime();
+				+ (System.nanoTime() - Weights.CURRENT_TIME) / 1000000);
+		Weights.CURRENT_TIME = System.nanoTime();
 
 		System.out.println("Datas calculated, start to generate files");
-		Weights.getWeightFilesRec(inDir, outDir);
+		Weights.getWeightFilesRec(inDir, outDir, n);
 		System.out.println("temps(ms) pour la generation des fichiers = "
-				+ (System.nanoTime() - Indexer.CURRENT_TIME) / 1000000);
+				+ (System.nanoTime() - Weights.CURRENT_TIME) / 1000000);
 		System.out.println("temps total = "
-				+ (System.nanoTime() - Indexer.START_TIME) / 1000000);
+				+ (System.nanoTime() - Weights.START_TIME) / 1000000);
 	}
 
 	/**
@@ -74,8 +76,8 @@ public class Weights {
 	 *            output dir
 	 * @throws IOException
 	 */
-	private static void getWeightFilesRec(final File inDir, final File outDir)
-			throws IOException {
+	private static void getWeightFilesRec(final File inDir, final File outDir,
+			final Normalizer n) throws IOException {
 
 		for (final File f : inDir.listFiles()) {
 			// Ignore if you can't read
@@ -94,9 +96,9 @@ public class Weights {
 				// continue;
 				// }
 				// work on the dir recursively
-				Weights.getWeightFilesRec(f, outDir);
+				Weights.getWeightFilesRec(f, outDir, n);
 			} else {
-				if (!f.getName().endsWith(Indexer.EXTENTION_KEEP)) {
+				if (!f.getName().endsWith(Const.EXTENTION_KEEP)) {
 					continue;
 				}
 				// it's a file, create output file
@@ -109,7 +111,7 @@ public class Weights {
 					continue;
 				}
 				// work on the file
-				Weights.createWeightFile(f, out);
+				Weights.createWeightFile(f, out, n);
 			}
 		}
 	}
@@ -123,27 +125,26 @@ public class Weights {
 	 *            output file .poid
 	 * @throws IOException
 	 */
-	private static void createWeightFile(final File inFile, final File outFile)
-			throws IOException {
+	private static void createWeightFile(final File inFile, final File outFile,
+			final Normalizer n) throws IOException {
 
 		// calculate tf idf
-		final HashMap<String, Double> tfIdf = Indexer.getTfIdf(
-				(new FileInputStream(inFile.getAbsolutePath())), Indexer.DOCUMENT_FREQUENCY,
-				Indexer.NB_FILES_IN_CORPUS, Indexer.NORMALIZER,
-				Indexer.REMOVE_STOP_WORDS);
+		final TreeMap<String, Double> tfIdf = new TreeMap(Indexer.getTfIdf(
+				new FileInputStream(inFile.getAbsolutePath()),
+				Indexer.DOCUMENT_FREQUENCY, Const.NB_FILES_IN_CORPUS,
+				Const.NORMALIZER, Const.REMOVE_STOP_WORDS));
 
 		// open output
-		IOManager.BW = new BufferedWriter(new OutputStreamWriter(
+		final BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(
 				new FileOutputStream(outFile)));
 		System.out.print("-");
 
 		// print
 		for (final Map.Entry<String, Double> eltTfIdf : tfIdf.entrySet()) {
-			IOManager.BW.write(eltTfIdf.getKey() + "\t" + eltTfIdf.getValue()
-					+ "\n");
+			bw.write(eltTfIdf.getKey() + "\t" + eltTfIdf.getValue() + "\n");
 		}
 		// time to flush all this :
-		IOManager.BW.close();
+		bw.close();
 	}
 
 }

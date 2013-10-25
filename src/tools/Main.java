@@ -24,10 +24,9 @@ public class Main {
 		}
 		final String inDir = args[0];
 		final String outDir = args[1];
-		Indexer.PATH_TO_STOP_WORDS = args[2];
-		Indexer.REMOVE_STOP_WORDS = Boolean.parseBoolean(new String(args[3]));
-		Indexer.EXTENTION_KEEP = args[4];
-		Indexer.NORMALIZER = new FrenchStemmer();
+		Const.PATH_TO_STOP_WORDS = args[2];
+		Const.REMOVE_STOP_WORDS = Boolean.parseBoolean(new String(args[3]));
+		Const.EXTENTION_KEEP = args[4];
 		try {
 			System.out.println("DEBUG: begin");
 
@@ -39,15 +38,16 @@ public class Main {
 			// System.out.println(IOManager.countDocumentRecursively(in));
 
 			// calculate the weights
-			// Weights.getWeightFiles(in, out, new FrenchStemmer());
-			InvertedFileMerger a = new InvertedFileMerger();
-			a.run();
-			// calculate the indexes
-			//InvertedFile.calculateInvertedFile(out, Indexer.NORMALIZER,
-			//		Indexer.REMOVE_STOP_WORDS);
+			Weights.getWeightFiles(new File(Const.PATH_TO_LITTLE_CORPUS),
+					new File(Const.PATH_TO_WEIGHT_FILES), new FrenchStemmer());
 
-			// System.out.println(Utils.isMemoryFull(0.9
-			// ));
+			// Create inverted files of maximum memory
+			// InvertedFile.calculateInvertedFile(out, Indexer.NORMALIZER,
+			// Const.REMOVE_STOP_WORDS);
+
+			// Fusion and merge invertedFiles
+			// final InvertedFileMerger a = new InvertedFileMerger();
+			// a.run();
 
 			System.out.println("DEBUG: end");
 

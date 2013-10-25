@@ -1,14 +1,12 @@
 package tools;
 
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
 import java.io.File;
 import java.io.IOException;
 
 public class IOManager {
 
-	public static BufferedReader BR = null;
-	public static BufferedWriter BW = null;
+	// public static BufferedReader BR = null;
+	// public static BufferedWriter BW = null;
 
 	/**
 	 * Check if a directory is ok to be read
@@ -125,7 +123,7 @@ public class IOManager {
 				// cpt++;
 				cpt += IOManager.countDocumentRecursively(f);
 			} else {
-				if (!f.getName().endsWith(Indexer.EXTENTION_KEEP)) {
+				if (!f.getName().endsWith(Const.EXTENTION_KEEP)) {
 					continue;
 				}
 				// System.out.print("+");

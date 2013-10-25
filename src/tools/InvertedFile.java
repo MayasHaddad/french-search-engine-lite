@@ -22,7 +22,6 @@ import expes.Utils;
  */
 public class InvertedFile {
 
-	public static final String INVERTED_FILE_DIR = "/net/k14/u/etudiant/vvanhec/IRI/invertedFiles3";
 	private static Integer cpt = 0;
 	private static TreeMap<String, TreeSet<String>> res = new TreeMap<String, TreeSet<String>>();
 
@@ -84,7 +83,7 @@ public class InvertedFile {
 				}
 				occurences.clear();
 				mots = normalizer.normalize(f.getAbsolutePath(),
-						removeStopWords, Indexer.PATH_TO_STOP_WORDS);
+						removeStopWords, Const.PATH_TO_STOP_WORDS);
 				for (final String word : mots) {
 					occurences.add(word);
 				}
@@ -169,7 +168,7 @@ public class InvertedFile {
 
 	private static File generateInvertedFileName() {
 		InvertedFile.cpt++;
-		return new File(InvertedFile.INVERTED_FILE_DIR + File.separator
+		return new File(Const.PATH_TO_INVERTED_FILE_FROM_INDEXER + File.separator
 				+ InvertedFile.cpt.toString());
 	}
 }
