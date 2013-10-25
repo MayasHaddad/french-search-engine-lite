@@ -16,11 +16,7 @@ import java.util.TreeSet;
 public class InvertedFileMerger {
 
 	private final File directorySource;
-	private final String invertedFilePathSource;
 	private int marqueur = 1;
-
-	private final String lettres = "abcdefghijklmnopqrstuvwxyzéèêàâîë";
-	private final String chiffres = "0123456789";
 
 	/**
 	 * 
@@ -28,10 +24,9 @@ public class InvertedFileMerger {
 	 *            Path du repertoire contenant les inverted files générés par
 	 *            l'indexer.
 	 **/
-	public InvertedFileMerger(final String pathToDirectorySource) {
-		this.invertedFilePathSource = pathToDirectorySource;
 
-		this.directorySource = new File(pathToDirectorySource);
+	public InvertedFileMerger() {
+		this.directorySource = new File(Const.pathToInvertedFileFromIndexer);
 	}
 
 	/**
@@ -54,6 +49,7 @@ public class InvertedFileMerger {
 	 *            FileName du répertoire d'ou on va merger les fichiers
 	 * @throws IOException
 	 */
+
 	private void merge(final String[] fileNames) throws IOException {
 
 		// S'il n'ya qu'un seul fichier dans le repertoire, on lui applique un
@@ -62,7 +58,7 @@ public class InvertedFileMerger {
 		if (fileNames.length == 1) {
 			// cette méthode peut etre interchangée pour créer des resultats
 			// différents
-			this.splitInvertedFileResult(fileNames[0]);
+			this.splitInvertedFileResultWithTwoLetters(fileNames[0]);
 
 			final File file = new File(fileNames[0]);
 			file.delete();
@@ -70,13 +66,14 @@ public class InvertedFileMerger {
 			for (int i = 0; i < fileNames.length; i = i + 2) {
 				if (i >= fileNames.length - 1) {
 				} else {
-					final File fileA = new File(this.invertedFilePathSource
-							+ fileNames[i]);
-					final File fileB = new File(this.invertedFilePathSource
-							+ fileNames[i + 1]);
+					final File fileA = new File(
+							Const.pathToInvertedFileFromIndexer + fileNames[i]);
+					final File fileB = new File(
+							Const.pathToInvertedFileFromIndexer
+									+ fileNames[i + 1]);
 					final File fileResultat = new File(
-							this.invertedFilePathSource + "FileResultat"
-									+ this.marqueur + ".txt");
+							Const.pathToInvertedFileFromIndexer
+									+ "FileResultat" + this.marqueur + ".txt");
 
 					this.mergeInvertedFiles(fileA, fileB, fileResultat);
 
@@ -99,34 +96,36 @@ public class InvertedFileMerger {
 	 * @param fileName
 	 * @throws IOException
 	 */
+
 	private void splitInvertedFileResult(final String fileName)
 			throws IOException {
-		final File file = new File(this.invertedFilePathSource + fileName);
+		final File file = new File(Const.pathToInvertedFileFromIndexer
+				+ fileName);
 		final BufferedReader reader = new BufferedReader(new FileReader(file));
 		final BufferedWriter trucDeMerde = new BufferedWriter(new FileWriter(
-				this.invertedFilePathSource + "trucDeMerde.txt"));
+				Const.pathToInvertedFileFromMerger + "trucDeMerde.txt"));
 		final BufferedWriter chiffre = new BufferedWriter(new FileWriter(
-				this.invertedFilePathSource + "chiffre.txt"));
+				Const.pathToInvertedFileFromMerger + "chiffre.txt"));
 
 		BufferedWriter writer = new BufferedWriter(new FileWriter(
-				this.invertedFilePathSource + "a.txt"));
+				Const.pathToInvertedFileFromMerger + "a.txt"));
 		String currentString = "a";
 
 		String mot = reader.readLine();
 		while (mot != null) {
 			final String firstLetter = mot.substring(0, 1).toLowerCase();
-			if (this.lettres.contains(firstLetter)) {
+			if (Const.lettres.contains(firstLetter)) {
 				if (currentString.equals(firstLetter)) {
 					writer.write(mot + "\n");
 				} else {
 					writer.close();
 					currentString = firstLetter;
 					writer = new BufferedWriter(new FileWriter(
-							this.invertedFilePathSource + currentString
+							Const.pathToInvertedFileFromMerger + currentString
 									+ ".txt"));
 					writer.write(mot + "\n");
 				}
-			} else if (this.chiffres.contains(firstLetter)) {
+			} else if (Const.chiffres.contains(firstLetter)) {
 				chiffre.write(mot + "\n");
 			} else {
 				trucDeMerde.write(mot + "\n");
@@ -150,15 +149,16 @@ public class InvertedFileMerger {
 	 */
 	private void splitInvertedFileResultWithTwoLetters(final String fileName)
 			throws IOException {
-		final File file = new File(this.invertedFilePathSource + fileName);
+		final File file = new File(Const.pathToInvertedFileFromIndexer
+				+ fileName);
 		final BufferedReader reader = new BufferedReader(new FileReader(file));
 		final BufferedWriter trucDeMerde = new BufferedWriter(new FileWriter(
-				this.invertedFilePathSource + "trucDeMerde.txt"));
+				Const.pathToInvertedFileFromMerger + "otherCharacter.txt"));
 		final BufferedWriter chiffre = new BufferedWriter(new FileWriter(
-				this.invertedFilePathSource + "chiffre.txt"));
+				Const.pathToInvertedFileFromMerger + "chiffre.txt"));
 
 		BufferedWriter writer = new BufferedWriter(new FileWriter(
-				this.invertedFilePathSource + "a.txt"));
+				Const.pathToInvertedFileFromMerger + "aa.txt"));
 		String currentString = "aa";
 
 		String mot = reader.readLine();
@@ -167,24 +167,24 @@ public class InvertedFileMerger {
 			final String secondLetter = mot.substring(1, 2).toLowerCase();
 			final String twoFirstLetters = mot.substring(0, 2).toLowerCase();
 
-			if (this.lettres.contains(firstLetter)) {
+			if (Const.lettres.contains(firstLetter)) {
 
 				if (currentString.equals(twoFirstLetters)) {
 					writer.write(mot + "\n");
 				} else {
-					if (this.lettres.contains(secondLetter)) {
+					if (Const.lettres.contains(secondLetter)) {
 
 						writer.close();
 						currentString = twoFirstLetters;
 						writer = new BufferedWriter(new FileWriter(
-								this.invertedFilePathSource + currentString
-										+ ".txt"));
+								Const.pathToInvertedFileFromMerger
+										+ currentString + ".txt"));
 						writer.write(mot + "\n");
 					} else {
 						trucDeMerde.write(mot + "\n");
 					}
 				}
-			} else if (this.chiffres.contains(firstLetter)) {
+			} else if (Const.chiffres.contains(firstLetter)) {
 				chiffre.write(mot + "\n");
 			} else {
 				trucDeMerde.write(mot + "\n");
