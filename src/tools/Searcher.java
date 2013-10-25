@@ -261,9 +261,9 @@ public class Searcher {
 	 * @param args
 	 */
 	public static void main(final String[] args) {
-		if (args.length != 2) {
+		if (args.length != 3) {
 			System.err.println("Usage : java " + Searcher.class.getName()
-					+ " weightsDir invertedFilesDir");
+					+ " weightsDir invertedFilesDir NUMBEROFFILES");
 			System.err.println("Example : java " + Searcher.class.getName()
 					+ " /weight /inverted-file.txt/");
 			System.exit(1);
@@ -272,7 +272,8 @@ public class Searcher {
 		// getting the program's command line arguments
 		final String weightsDirectoryPath = args[0];
 		final String invertedFilesDirPath = args[1];
-
+		final int numberOfDocumentsInTheCorpus = Integer.parseInt(args[2]);
+		
 		// getting the user's query from the keybord
 		final BufferedReader inputReader = new BufferedReader(
 				new InputStreamReader(System.in));
@@ -294,7 +295,7 @@ public class Searcher {
 
 			// int numberOfDocumentsInTheCorpus =
 			// IOManager.countDocumentRecursively(new File("F:\\lemonde"));
-			final int numberOfDocumentsInTheCorpus = 107;
+			
 
 			for (final Map.Entry<Double, TreeSet<String>> similarity : Searcher
 					.getSimilarDocuments(query, invertedFilesDir,
