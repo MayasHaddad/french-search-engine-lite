@@ -55,14 +55,13 @@ public class Searcher {
 		br.close();
 		return filesContainingQueryWords;
 	}
-	
+
 	public static Map<String, TreeSet<String>> getContainingFilesOfThisQueryExplodedIndex(final ArrayList<String> queryNormalized, final File invertedFilesDirectory) throws IOException{
 
 		Map<String, TreeSet<String>> filesContainingQueryWords = new HashMap<String, TreeSet<String>>();
 		if(invertedFilesDirectory.isDirectory()){
 			for(String queryWord : queryNormalized){
-				
-				File invertedFile = new File(invertedFilesDirectory + queryWord.substring(0, 1) + ".txt");
+				File invertedFile = new File(invertedFilesDirectory + "\\" + queryWord.substring(0, 2) + ".txt");
 				// lecture du fichier texte
 				final InputStream ips = new FileInputStream(invertedFile);
 				final InputStreamReader ipsr = new InputStreamReader(ips);
@@ -189,17 +188,19 @@ public class Searcher {
 
 		return d1d2 / (Math.sqrt(d1)*Math.sqrt(d2));
 	}
-	public static Map<Double, TreeSet<String>> getSimilarDocuments(final String query, final File invertedFile) throws IOException{
+
+	public static Map<Double, TreeSet<String>> getSimilarDocuments(final String query, final File invertedFilesDir, final String weightsDirectoryPath, final int numberOfDocumentsInTheCorpus) throws IOException{
 
 		ArrayList<String> queryNormalized = (new FrenchStemmer()).normalize(query);
 
-		Map<String, TreeSet<String>> filenamesContainingQueryWords = Searcher.getContainingFilesOfThisQuery(queryNormalized, invertedFile);
-		//System.out.println(filenamesContainingQueryWords);
+		Map<String, TreeSet<String>> filenamesContainingQueryWords = Searcher.getContainingFilesOfThisQueryExplodedIndex(queryNormalized, invertedFilesDir);
+
 		ArrayList<String> alreadyVisitedFilename = new ArrayList<String>();
+
 		HashMap<String, Double> weightsOfQuery = Indexer.getTfIdf(
 				(InputStream)(new ByteArrayInputStream(query.getBytes())),
 				(HashMap)Searcher.DOCUMENT_FRENQUENCIES_QUERY_WORDS,
-				IOManager.countDocumentRecursively(new File("F:\\lemonde")) + 1,
+				numberOfDocumentsInTheCorpus + 1,
 				(new FrenchStemmer()),
 				Indexer.REMOVE_STOP_WORDS
 				);
@@ -209,11 +210,14 @@ public class Searcher {
 		for(TreeSet<String> filenamesListContainingQueryWord : filenamesContainingQueryWords.values()){
 			for(String filename : filenamesListContainingQueryWord){
 				if(!alreadyVisitedFilename.contains(filename)){
-					Double similarity = getSimilarity(weightsOfQuery, new File("F:\\index-lemonde\\" + filename + ".poid"));
+
+					Double similarity = getSimilarity(weightsOfQuery, new File(weightsDirectoryPath + File.separator + filename + ".poid"));
 					TreeSet<String> filenamesList = result.get(similarity);
+
 					if(filenamesList == null){
 						filenamesList = new TreeSet<String>();
 					}
+
 					filenamesList.add(filename);
 					result.put(similarity, filenamesList);
 					alreadyVisitedFilename.add(filename);
@@ -227,14 +231,14 @@ public class Searcher {
 	 */
 	public static void main(String[] args) {
 		if (args.length != 2) {
-			System.err.println("Usage : java " + Searcher.class.getName() + " weightsDir invertedFile");
-			System.err.println("Example : java " + Searcher.class.getName()	+ " /weight /inverted-file.txt");
+			System.err.println("Usage : java " + Searcher.class.getName() + " weightsDir invertedFilesDir");
+			System.err.println("Example : java " + Searcher.class.getName()	+ " /weight /inverted-file.txt/");
 			System.exit(1);
 		}
 
 		// getting the program's command line arguments
 		String weightsDirectoryPath = args[0];
-		String invertedFilePath = args[1];
+		String invertedFilesDirPath = args[1];
 
 		// getting the user's query from the keybord
 		final BufferedReader inputReader = new BufferedReader(
@@ -243,16 +247,19 @@ public class Searcher {
 		try {
 			//Creating the needed files
 			File weightsDirectory = new File(weightsDirectoryPath);
-			File invertedFile = new File(invertedFilePath);
+			File invertedFilesDir = new File(invertedFilesDirPath);
 
 			System.out.println("Ecrire votre requête");
 			String query = inputReader.readLine();
 
+			ArrayList<String> queryNormalized = (new FrenchStemmer()).normalize(query);
 
+			System.out.println(Searcher.getContainingFilesOfThisQueryExplodedIndex(queryNormalized, invertedFilesDir));
 
+			//int numberOfDocumentsInTheCorpus = IOManager.countDocumentRecursively(new File("F:\\lemonde"));
+			int numberOfDocumentsInTheCorpus = 107;
 
-			//System.out.println(getSimilarity(weightsOfQuery, new File("F:\\f1.txt")));
-			for(Map.Entry<Double, TreeSet<String>> similarity : getSimilarDocuments(query, invertedFile).entrySet()){
+			for(Map.Entry<Double, TreeSet<String>> similarity : getSimilarDocuments(query, invertedFilesDir, weightsDirectoryPath, numberOfDocumentsInTheCorpus).entrySet()){
 				for(String similarFile : similarity.getValue()){
 					System.out.println(similarFile + " " + similarity.getKey());
 				}
