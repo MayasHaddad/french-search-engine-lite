@@ -28,7 +28,7 @@ public class Searcher {
 	public static Map<String, Integer> DOCUMENT_FRENQUENCIES_QUERY_WORDS = new HashMap<String, Integer>();
 
 	// Retrieve all the files which contain the query
-/*	public static Map<String, TreeSet<String>> getContainingFilesOfThisQuery(
+	/*	public static Map<String, TreeSet<String>> getContainingFilesOfThisQuery(
 			final ArrayList<String> queryNormalized, final File invertedFile)
 					throws IOException {
 
@@ -60,7 +60,7 @@ public class Searcher {
 		br.close();
 		return filesContainingQueryWords;
 	}
-*/
+	 */
 	public static Map<String, TreeSet<String>> getContainingFilesOfThisQueryExplodedIndex(
 			final ArrayList<String> queryNormalized,
 			final File invertedFilesDirectory) throws IOException {
@@ -69,35 +69,41 @@ public class Searcher {
 		Map<String, TreeSet<String>> filesContainingQueryWords = new HashMap<String, TreeSet<String>>();
 		if(invertedFilesDirectory.isDirectory()){
 			for(String queryWord : queryNormalized){
-				
+
 				// We won't search for a word which has only one 
 				if(queryWord.length() >= 2){
-				File invertedFile = new File(invertedFilesDirectory + File.separator + queryWord.substring(0, 2) + ".txt");
-				// lecture du fichier texte
-				final InputStream ips = new FileInputStream(invertedFile);
-				final InputStreamReader ipsr = new InputStreamReader(ips);
-				final BufferedReader br = new BufferedReader(ipsr);
-				String line;
-				while ((line = br.readLine()) != null) {
-					if (queryNormalized.contains(line.split("\t")[0])) {
-						// the current word is in the query
-						// store the files containing the word
-						final ArrayList<String> filenamesArrayList = new ArrayList<String>();
-						for (final String filename : line.split("\t")[2]
-								.split(",")) {
-							filenamesArrayList.add(filename);
-						}
 
-						final TreeSet<String> filenamesTreeSet = new TreeSet<String>(
-								filenamesArrayList);
-						filesContainingQueryWords.put(line.split("\t")[0],
-								filenamesTreeSet);
-						Searcher.DOCUMENT_FRENQUENCIES_QUERY_WORDS.put(
-								line.split("\t")[0],
-								Integer.parseInt(line.split("\t")[1]));
+					File invertedFile = new File(invertedFilesDirectory + File.separator + queryWord.substring(0, 2) + ".txt");
+					
+					// no need to process a word for which there are no inverted file ...
+					if(invertedFile.exists()){
+
+						// lecture du fichier texte
+						final InputStream ips = new FileInputStream(invertedFile);
+						final InputStreamReader ipsr = new InputStreamReader(ips);
+						final BufferedReader br = new BufferedReader(ipsr);
+						String line;
+						while ((line = br.readLine()) != null) {
+							if (queryNormalized.contains(line.split("\t")[0])) {
+								// the current word is in the query
+								// store the files containing the word
+								final ArrayList<String> filenamesArrayList = new ArrayList<String>();
+								for (final String filename : line.split("\t")[2]
+										.split(",")) {
+									filenamesArrayList.add(filename);
+								}
+
+								final TreeSet<String> filenamesTreeSet = new TreeSet<String>(
+										filenamesArrayList);
+								filesContainingQueryWords.put(line.split("\t")[0],
+										filenamesTreeSet);
+								Searcher.DOCUMENT_FRENQUENCIES_QUERY_WORDS.put(
+										line.split("\t")[0],
+										Integer.parseInt(line.split("\t")[1]));
+							}
+						}
+						br.close();
 					}
-				}
-				br.close();
 				}
 			}
 		}
@@ -317,9 +323,9 @@ public class Searcher {
 
 			// int numberOfDocumentsInTheCorpus =
 			// IOManager.countDocumentRecursively(new File("F:\\lemonde"));
-			
+
 			printSimilarDocuments(100, Searcher.getSimilarDocuments(query, invertedFilesDir, weightsDirectoryPath, numberOfDocumentsInTheCorpus));
-			
+
 			/*for (final Map.Entry<Double, TreeSet<String>> similarity : Searcher
 					.getSimilarDocuments(query, invertedFilesDir,
 							weightsDirectoryPath, numberOfDocumentsInTheCorpus)
