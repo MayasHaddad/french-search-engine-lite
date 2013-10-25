@@ -4,12 +4,8 @@
 package tools;
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -24,25 +20,9 @@ public abstract class Indexer {
 	/**
 	 * Le répertoire du corpus
 	 */
-	// CHEMIN A CHANGER si nécessaire
-	// protected static String COLLECTION_DIRNAME =
-	// "/public/iri/projetIRI/corpus/";
 
-	// Remove the too simple words
-	public static boolean REMOVE_STOP_WORDS = false;
-	// The local stop-words path
-	public static String PATH_TO_STOP_WORDS = null;
-	// Number of files in the corpus
-	public static Integer NB_FILES_IN_CORPUS = null;
 	// For each word, number of document in the corpus containing it
 	public static HashMap<String, Integer> DOCUMENT_FREQUENCY = new HashMap<String, Integer>();
-	// the used normalizer
-	public static Normalizer NORMALIZER = null;
-
-	public static long START_TIME = 0;
-	public static long CURRENT_TIME = 0;
-
-	public static String EXTENTION_KEEP = ".txt";
 
 	/**
 	 * Get the number of times a word appears in a file.
@@ -64,7 +44,7 @@ public abstract class Indexer {
 		// Appel de la méthode de normalisation
 		// System.out.println(fileName);
 		final ArrayList<String> words = normalizer.normalize(fileInputStream,
-				removeStopWords, Indexer.PATH_TO_STOP_WORDS);
+				removeStopWords, Const.PATH_TO_STOP_WORDS);
 		Integer number;
 		// Pour chaque mot de la liste, on remplit un dictionnaire
 		// du nombre d'occurrences pour ce mot
@@ -129,7 +109,7 @@ public abstract class Indexer {
 
 		for (final File f : dir.listFiles()) {
 			if (f.isFile()) {
-				if (!f.getName().endsWith(Indexer.EXTENTION_KEEP)) {
+				if (!f.getName().endsWith(Const.EXTENTION_KEEP)) {
 					continue;
 				}
 				Indexer.analyseOneFileForDocumentFrequency(f);
@@ -155,9 +135,9 @@ public abstract class Indexer {
 		final ArrayList<String> alreadySeenInTheCurrentFile = new ArrayList<String>();
 
 		// normalize
-		final ArrayList<String> words = Indexer.NORMALIZER.normalize(
-				f.getAbsolutePath(), Indexer.REMOVE_STOP_WORDS,
-				Indexer.PATH_TO_STOP_WORDS);
+		final ArrayList<String> words = Const.NORMALIZER.normalize(
+				f.getAbsolutePath(), Const.REMOVE_STOP_WORDS,
+				Const.PATH_TO_STOP_WORDS);
 
 		// increment doc freq
 		for (final String word : words) {
@@ -189,7 +169,8 @@ public abstract class Indexer {
 	 * @return <wordsInFileName, tfidf>
 	 * @throws IOException
 	 */
-	public static HashMap<String, Double> getTfIdf(final InputStream fileInputStream,
+	public static HashMap<String, Double> getTfIdf(
+			final InputStream fileInputStream,
 			final HashMap<String, Integer> dfs, final int documentNumber,
 			final Normalizer normalizer, final boolean removeStopWords)
 			throws IOException {
@@ -198,8 +179,8 @@ public abstract class Indexer {
 
 		Double logtf = 0.0, idf = 0.0;
 		for (final Map.Entry<String, Integer> entry : Indexer
-				.getTermFrequencies(fileInputStream, normalizer, removeStopWords)
-				.entrySet()) {
+				.getTermFrequencies(fileInputStream, normalizer,
+						removeStopWords).entrySet()) {
 			// <word, tf>
 			if (entry.getValue() == 0) {
 				logtf = 0D;
