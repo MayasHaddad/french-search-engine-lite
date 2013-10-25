@@ -64,11 +64,14 @@ public class Searcher {
 	public static Map<String, TreeSet<String>> getContainingFilesOfThisQueryExplodedIndex(
 			final ArrayList<String> queryNormalized,
 			final File invertedFilesDirectory) throws IOException {
-		
+
+
 		Map<String, TreeSet<String>> filesContainingQueryWords = new HashMap<String, TreeSet<String>>();
 		if(invertedFilesDirectory.isDirectory()){
 			for(String queryWord : queryNormalized){
 				
+				// We won't search for a word which has only one 
+				if(queryWord.length() >= 2){
 				File invertedFile = new File(invertedFilesDirectory + File.separator + queryWord.substring(0, 2) + ".txt");
 				// lecture du fichier texte
 				final InputStream ips = new FileInputStream(invertedFile);
@@ -95,6 +98,7 @@ public class Searcher {
 					}
 				}
 				br.close();
+				}
 			}
 		}
 		return filesContainingQueryWords;
