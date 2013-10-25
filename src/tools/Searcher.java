@@ -30,7 +30,7 @@ public class Searcher {
 	// Retrieve all the files which contain the query
 	public static Map<String, TreeSet<String>> getContainingFilesOfThisQuery(
 			final ArrayList<String> queryNormalized, final File invertedFile)
-			throws IOException {
+					throws IOException {
 
 		final Map<String, TreeSet<String>> filesContainingQueryWords = new HashMap<String, TreeSet<String>>();
 
@@ -108,7 +108,7 @@ public class Searcher {
 	 */
 	public static double getSimilarity(
 			final HashMap<String, Double> weightsOfQuery, final File f2)
-			throws IOException {
+					throws IOException {
 
 		if (!f2.exists()) {
 			System.err.println("getSimilarity, fileName:" + f2.getName()
@@ -130,7 +130,7 @@ public class Searcher {
 		String[] t2; // table word, tfidf for f1 and f2
 		String w1 = null, w2 = null; // the current word in f1 and f2
 		Boolean b1, b2; // are w1 and w2 already entered in the di and dk calcul
-						// ?
+		// ?
 		Double tfidf1 = 0D, tfidf2 = 0D;
 
 		Double d1 = 0D; // for the di and dk calcul
@@ -212,13 +212,13 @@ public class Searcher {
 		return d1d2 / (Math.sqrt(d1) * Math.sqrt(d2));
 	}
 
-	public static Map<Double, TreeSet<String>> getSimilarDocuments(
+	public static TreeMap<Double, TreeSet<String>> getSimilarDocuments(
 			final String query, final File invertedFilesDir,
 			final String weightsDirectoryPath,
 			final int numberOfDocumentsInTheCorpus) throws IOException {
 
 		final ArrayList<String> queryNormalized = new FrenchStemmer()
-				.normalize(query);
+		.normalize(query);
 
 		final Map<String, TreeSet<String>> filenamesContainingQueryWords = Searcher
 				.getContainingFilesOfThisQueryExplodedIndex(queryNormalized,
@@ -254,9 +254,26 @@ public class Searcher {
 				}
 			}
 		}
-		return result;
+		return new TreeMap(result);
 	}
 
+	public static void printSimilarDocuments(int topNResults, TreeMap<Double, TreeSet<String>> filesBySimilarity){
+
+		Map.Entry<Double, TreeSet<String>> element = filesBySimilarity.lastEntry();
+
+		while(element != null && topNResults > 0){
+			if(element.getValue().size() > 1 ){
+				for(String currentFileName : element.getValue()){
+					System.out.println(currentFileName + "\t" + element.getKey());
+				}
+			}else{
+				System.out.println(element.getValue().first() + "\t" + element.getKey());
+			}
+			topNResults++;
+			filesBySimilarity.remove(element.getKey());
+			element = filesBySimilarity.lastEntry();
+		}
+	}
 	/**
 	 * @param args
 	 */
@@ -273,7 +290,7 @@ public class Searcher {
 		final String weightsDirectoryPath = args[0];
 		final String invertedFilesDirPath = args[1];
 		final int numberOfDocumentsInTheCorpus = Integer.parseInt(args[2]);
-		
+
 		// getting the user's query from the keybord
 		final BufferedReader inputReader = new BufferedReader(
 				new InputStreamReader(System.in));
@@ -287,7 +304,7 @@ public class Searcher {
 			final String query = inputReader.readLine();
 
 			final ArrayList<String> queryNormalized = new FrenchStemmer()
-					.normalize(query);
+			.normalize(query);
 
 			System.out.println(Searcher
 					.getContainingFilesOfThisQueryExplodedIndex(
@@ -296,15 +313,16 @@ public class Searcher {
 			// int numberOfDocumentsInTheCorpus =
 			// IOManager.countDocumentRecursively(new File("F:\\lemonde"));
 			
-
-			for (final Map.Entry<Double, TreeSet<String>> similarity : Searcher
+			printSimilarDocuments(100, Searcher.getSimilarDocuments(query, invertedFilesDir, weightsDirectoryPath, numberOfDocumentsInTheCorpus));
+			
+			/*for (final Map.Entry<Double, TreeSet<String>> similarity : Searcher
 					.getSimilarDocuments(query, invertedFilesDir,
 							weightsDirectoryPath, numberOfDocumentsInTheCorpus)
-					.entrySet()) {
+							.entrySet()) {
 				for (final String similarFile : similarity.getValue()) {
 					System.out.println(similarFile + " " + similarity.getKey());
 				}
-			}
+			}*/
 			System.out.println();
 			// System.out.println(weightsOfQuery);
 		} catch (final IOException e) {
