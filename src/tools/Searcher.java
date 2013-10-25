@@ -314,9 +314,12 @@ public class Searcher {
 			System.out.println("Ecrire votre requ�te");
 			final String query = inputReader.readLine();
 
-			final ArrayList<String> queryNormalized = new FrenchStemmer()
-			.normalize(query);
-
+			/*final ArrayList<String> queryNormalized = new FrenchStemmer()
+			.normalize(query);*/
+			
+			
+			final ArrayList<String> queryNormalized = Const.NORMALIZER.normalize(new ByteArrayInputStream(query.getBytes()), Const.REMOVE_STOP_WORDS, Const.PATH_TO_STOP_WORDS);
+					
 			System.out.println(Searcher
 					.getContainingFilesOfThisQueryExplodedIndex(
 							queryNormalized, invertedFilesDir));
