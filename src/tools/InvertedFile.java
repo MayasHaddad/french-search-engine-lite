@@ -1,9 +1,13 @@
 package tools;
 
+import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.util.Iterator;
@@ -44,11 +48,16 @@ public class InvertedFile {
 			return;
 		}
 		Iterator it;
+		int cpt =0;
 		TreeSet<String> listFiles;
-		List<String> mots;
 		for (final File f : dir.listFiles()) {
+			String fileNameOfActualFile = f.getName();
+			String fileNameConvertedInString = Integer.toString(Integer.parseInt(fileNameOfActualFile.substring(0,8)));
+			
+			cpt ++;
+			
 			// check memory
-			if (Utils.isMemoryFull(Main.RATIO_MEMORY)) {
+			if (cpt%1000==0 && Utils.isMemoryFull(Main.RATIO_MEMORY)) {
 				InvertedFile.saveInvertedFile(InvertedFile.res,
 						InvertedFile.generateInvertedFileName());
 				InvertedFile.res.clear();
@@ -66,24 +75,35 @@ public class InvertedFile {
 				continue;
 			}
 			occurences.clear();
-			mots = normalizer.normalize(f.getAbsolutePath(), removeStopWords,
-					Const.PATH_TO_STOP_WORDS);
-			for (final String word : mots) {
-				occurences.add(word);
+			//mots = normalizer.normalize(f.getAbsolutePath(), removeStopWords,
+			//		Const.PATH_TO_STOP_WORDS);
+			//for (final String word : mots) {
+			//	occurences.add(word);
+			//}
+			BufferedReader readerA = new BufferedReader(new FileReader(f));
+			String line;
+			while ((line = readerA.readLine()) != null) {
+				String s = line.split("\t")[0];
+				//TODO vérifier pas sur LETTRES_ET_CHIFFRES mais sur la table ASCII
+				if(Const.LETTRES_ET_CHIFFRES.contains(s.substring(0,1))){
+					occurences.add(s);
+				}
 			}
+			readerA.close();
+			
 			// put all the words into the tree
 			it = occurences.iterator();
 			while (it.hasNext()) {
-				final String key = (String) it.next();
+				final String key = (String) it.next();				
 				final TreeSet<String> s = InvertedFile.res.get(key);
 				if (s != null
-						&& !InvertedFile.res.get(key).contains(f.getName())) {
+						&& !InvertedFile.res.get(key).contains(fileNameConvertedInString)) {
 					listFiles = InvertedFile.res.get(key);
-					listFiles.add(f.getName());
+					listFiles.add(fileNameConvertedInString);
 					// res.put(key, listFiles);
 				} else {
 					listFiles = new TreeSet<String>();
-					listFiles.add(f.getName());
+					listFiles.add(fileNameConvertedInString);
 					InvertedFile.res.put(key, listFiles);
 				}
 			}
