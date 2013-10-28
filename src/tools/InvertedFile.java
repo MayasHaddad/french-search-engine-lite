@@ -40,74 +40,58 @@ public class InvertedFile {
 		// the results <words, <docsName>>
 		// contains the words <words>
 		final TreeSet<String> occurences = new TreeSet<String>();
-		if (dir.exists() && dir.canRead() && dir.isDirectory()) {
-			Iterator it;
-			TreeSet<String> listFiles;
-			List<String> mots;
-			for (final File f : dir.listFiles()) {
-				// check memory
-				if (Utils.isMemoryFull(Main.RATIO_MEMORY)) {
-					InvertedFile.saveInvertedFile(InvertedFile.res,
-							InvertedFile.generateInvertedFileName());
-					InvertedFile.res.clear();
-					occurences.clear();
-					System.out.println("Memory Full: " + InvertedFile.cpt);
-					final Runtime r = Runtime.getRuntime();
-					r.gc();
-				}
-				// recursively...
-				if (f.isDirectory()) {
-					InvertedFile.calculateInvertedFile(f, normalizer,
-							removeStopWords);
-					// for (final Map.Entry<String, TreeSet<String>> invertFile
-					// : invertFiles
-					// .entrySet()) {
-					// if (!InvertedFile.res.containsKey(invertFile.getKey())) {
-					// InvertedFile.res.put(invertFile.getKey(),
-					// invertFile.getValue());
-					// } else {
-					// final TreeSet<String> tmpSet = invertFile
-					// .getValue();
-					// it = tmpSet.iterator();
-					// while (it.hasNext()) {
-					// final TreeSet<String> tmp = InvertedFile.res
-					// .get(invertFile.getKey());
-					// tmp.add((String) it.next());
-					// }
-					// }
-					// }
-					continue;
-				} // otherwise, this is a file, work on it
-				if (!f.getName().endsWith(".poid")) {
-					continue;
-				}
+		if (!dir.exists() || !dir.canRead() || !dir.isDirectory()) {
+			return;
+		}
+		Iterator it;
+		TreeSet<String> listFiles;
+		List<String> mots;
+		for (final File f : dir.listFiles()) {
+			// check memory
+			if (Utils.isMemoryFull(Main.RATIO_MEMORY)) {
+				InvertedFile.saveInvertedFile(InvertedFile.res,
+						InvertedFile.generateInvertedFileName());
+				InvertedFile.res.clear();
 				occurences.clear();
-				mots = normalizer.normalize(f.getAbsolutePath(),
-						removeStopWords, Const.PATH_TO_STOP_WORDS);
-				for (final String word : mots) {
-					occurences.add(word);
-				}
-				// put all the words into the tree
-				it = occurences.iterator();
-				while (it.hasNext()) {
-					final String key = (String) it.next();
-					final TreeSet<String> s = InvertedFile.res.get(key);
-					if (s != null
-							&& !InvertedFile.res.get(key).contains(f.getName())) {
-						listFiles = InvertedFile.res.get(key);
-						listFiles.add(f.getName());
-						// res.put(key, listFiles);
-					} else {
-						listFiles = new TreeSet<String>();
-						listFiles.add(f.getName());
-						InvertedFile.res.put(key, listFiles);
-					}
+				System.out.println("Memory Full: " + InvertedFile.cpt);
+				System.gc();
+			}
+			// recursively...
+			if (f.isDirectory()) {
+				InvertedFile.calculateInvertedFile(f, normalizer,
+						removeStopWords);
+				continue;
+			} // otherwise, this is a file, work on it
+			if (!f.getName().endsWith(".poid")) {
+				continue;
+			}
+			occurences.clear();
+			mots = normalizer.normalize(f.getAbsolutePath(), removeStopWords,
+					Const.PATH_TO_STOP_WORDS);
+			for (final String word : mots) {
+				occurences.add(word);
+			}
+			// put all the words into the tree
+			it = occurences.iterator();
+			while (it.hasNext()) {
+				final String key = (String) it.next();
+				final TreeSet<String> s = InvertedFile.res.get(key);
+				if (s != null
+						&& !InvertedFile.res.get(key).contains(f.getName())) {
+					listFiles = InvertedFile.res.get(key);
+					listFiles.add(f.getName());
+					// res.put(key, listFiles);
+				} else {
+					listFiles = new TreeSet<String>();
+					listFiles.add(f.getName());
+					InvertedFile.res.put(key, listFiles);
 				}
 			}
-			InvertedFile.saveInvertedFile(InvertedFile.res,
-					InvertedFile.generateInvertedFileName());
+			it = null;
+			listFiles = null;
 		}
-		// return InvertedFile.res;
+		InvertedFile.saveInvertedFile(InvertedFile.res,
+				InvertedFile.generateInvertedFileName());
 	}
 
 	/**
@@ -168,7 +152,7 @@ public class InvertedFile {
 
 	private static File generateInvertedFileName() {
 		InvertedFile.cpt++;
-		return new File(Const.PATH_TO_INVERTED_FILE_FROM_INDEXER + File.separator
-				+ InvertedFile.cpt.toString());
+		return new File(Const.PATH_TO_INVERTED_FILE_FROM_INDEXER
+				+ File.separator + InvertedFile.cpt.toString());
 	}
 }

@@ -2,9 +2,11 @@ package tools;
 
 import java.io.File;
 
+import expes.Utils;
+
 public class Main {
 
-	public static Double RATIO_MEMORY = 0.8;
+	public static Double RATIO_MEMORY = 0.9;
 
 	/**
 	 * Main function
@@ -28,6 +30,8 @@ public class Main {
 		Const.REMOVE_STOP_WORDS = Boolean.parseBoolean(new String(args[3]));
 		Const.EXTENTION_KEEP = args[4];
 		try {
+			System.out.println("Start program, wait for key pressed");
+			Utils.waitKeyPressed();
 			System.out.println("DEBUG: begin");
 
 			final File in = new File(inDir);// /public/iri/projetIRI/corpus/0000/000000/
@@ -38,16 +42,17 @@ public class Main {
 			// System.out.println(IOManager.countDocumentRecursively(in));
 
 			// calculate the weights
-			Weights.getWeightFiles(new File(Const.PATH_TO_LITTLE_CORPUS),
-					new File(Const.PATH_TO_WEIGHT_FILES), new FrenchStemmer());
+			// Weights.getWeightFiles(new File(Const.PATH_TO_LITTLE_CORPUS),
+			// new File(Const.PATH_TO_WEIGHT_FILES), new FrenchStemmer());
 
 			// Create inverted files of maximum memory
-			// InvertedFile.calculateInvertedFile(out, Indexer.NORMALIZER,
+			// InvertedFile.calculateInvertedFile(new File(
+			// Const.PATH_TO_WEIGHT_FILES), Const.NORMALIZER,
 			// Const.REMOVE_STOP_WORDS);
 
 			// Fusion and merge invertedFiles
-			// final InvertedFileMerger a = new InvertedFileMerger();
-			// a.run();
+			final InvertedFileMerger a = new InvertedFileMerger();
+			a.run();
 
 			System.out.println("DEBUG: end");
 

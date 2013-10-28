@@ -26,7 +26,8 @@ public class InvertedFileMerger {
 	 **/
 
 	public InvertedFileMerger() {
-		this.directorySource = new File(Const.PATH_TO_INVERTED_FILE_FROM_INDEXER);
+		this.directorySource = new File(
+				Const.PATH_TO_INVERTED_FILE_FROM_INDEXER);
 	}
 
 	/**
@@ -67,7 +68,8 @@ public class InvertedFileMerger {
 				if (i >= fileNames.length - 1) {
 				} else {
 					final File fileA = new File(
-							Const.PATH_TO_INVERTED_FILE_FROM_INDEXER + fileNames[i]);
+							Const.PATH_TO_INVERTED_FILE_FROM_INDEXER
+									+ fileNames[i]);
 					final File fileB = new File(
 							Const.PATH_TO_INVERTED_FILE_FROM_INDEXER
 									+ fileNames[i + 1]);
@@ -121,8 +123,8 @@ public class InvertedFileMerger {
 					writer.close();
 					currentString = firstLetter;
 					writer = new BufferedWriter(new FileWriter(
-							Const.PATH_TO_INVERTED_FILE_FROM_MERGER + currentString
-									+ ".txt"));
+							Const.PATH_TO_INVERTED_FILE_FROM_MERGER
+									+ currentString + ".txt"));
 					writer.write(mot + "\n");
 				}
 			} else if (Const.CHIFFRES.contains(firstLetter)) {
@@ -238,6 +240,12 @@ public class InvertedFileMerger {
 						documentListResult.add(s);
 					}
 
+					System.out.print("f: " + invertedFile1.getName() + ", w:"
+							+ wordFreqDocsA[0] + ", d: " + wordFreqDocsA[1]
+							+ "\t");
+					System.out.print("f: " + invertedFile2.getName() + ", w:"
+							+ wordFreqDocsB[0] + ", d: " + wordFreqDocsB[1]
+							+ "\n");
 					final int a = Integer.parseInt(wordFreqDocsA[1])
 							+ Integer.parseInt(wordFreqDocsB[1]);
 					writer.write(wordFreqDocsA[0] + "\t" + a + "\t");

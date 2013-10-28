@@ -13,6 +13,10 @@ public class Utils {
 	private static HashMap<Integer, Long> startTimes = new HashMap<Integer, Long>();
 	private static int chronoId = 0;
 
+	public static int cpt = 0;
+	final static long MAX_MEMORY = Math.min(1073741824L * 2L,
+			Utils.runtime.maxMemory());
+
 	/**
 	 * Returns a String representation of memory information
 	 * 
@@ -55,15 +59,36 @@ public class Utils {
 	 * Return <code>true</code> if the ratio of the memory is full.
 	 * 
 	 * @param ratio
+	 *            the ratio we mustn't exceed
 	 * @return <code>true</code> if the ratio of the memory is full.
 	 */
 	public static boolean isMemoryFull(final double ratio) {
-		final long maxMemory = Utils.runtime.maxMemory(); // 1073741824;// 1 Gb
+
+		// final long maxMemory = Math.min(1073741824,
+		// Utils.runtime.maxMemory()); // Utils.runtime.maxMemory();
 		// System.out.println(maxMemory);
 		final long allocatedMemory = Utils.runtime.totalMemory();
 		final long freeMemory = Utils.runtime.freeMemory();
-		final double r = (allocatedMemory - freeMemory) / (double) maxMemory
-				* 1073741824 / maxMemory;
+		// final double r = (allocatedMemory - freeMemory) / (double) maxMemory
+		// * 1073741824 / maxMemory;
+		final double r = (allocatedMemory - freeMemory)
+				/ (double) Utils.MAX_MEMORY;
+		if (Utils.cpt++ % 100 == 0) {
+			System.out.println((double) allocatedMemory / 1073741824 + "\t"
+					+ (double) freeMemory / 1073741824 + "\t"
+					+ (double) Utils.MAX_MEMORY / 1073741824 + "\t"
+					+ (double) Utils.runtime.maxMemory() / 1073741824 + "\t"
+					+ r + "\t" + ratio);
+		}
+		if (r > ratio) {
+			System.out.println("BOUM : " + (allocatedMemory - freeMemory)
+					/ (double) 1073741824 + "GB");
+			System.out.println((double) allocatedMemory / 1073741824 + "\t"
+					+ (double) freeMemory / 1073741824 + "\t"
+					+ (double) Utils.MAX_MEMORY / 1073741824 + "\t"
+					+ (double) Utils.runtime.maxMemory() / 1073741824 + "\t"
+					+ r + "\t" + ratio);
+		}
 		return r > ratio;
 	}
 
