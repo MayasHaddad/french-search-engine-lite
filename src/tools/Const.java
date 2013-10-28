@@ -18,7 +18,7 @@ public class Const {
 	 */
 	// public static final String PATH_TO_LITTLE_CORPUS =
 	// "/public/iri/projetIRI/corpus/0000/";
-	public static final String PATH_TO_LITTLE_CORPUS = "/public/iri/projetIRI/corpus/";
+	public static final String PATH_TO_LITTLE_CORPUS = "/public/iri/projetIRI/corpus/0000/";
 
 	/*
 	 * Path vers le fichier des stopwords français
