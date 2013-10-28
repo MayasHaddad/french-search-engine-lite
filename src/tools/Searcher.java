@@ -274,7 +274,14 @@ public class Searcher {
 		}
 		return new TreeMap(result);
 	}
-
+	
+	public static TreeMap<Double, TreeSet<String>> getResult(String query) throws IOException{
+		
+		return Searcher.getSimilarDocuments(
+				query, (new File(Const.PATH_TO_INVERTED_FILE_FROM_MERGER)),
+				Const.PATH_TO_WEIGHT_FILES,
+				Const.NB_FILES_IN_CORPUS);
+	}
 	public static void printSimilarDocuments(int topNResults, TreeMap<Double, TreeSet<String>> filesBySimilarity){
 
 		Map.Entry<Double, TreeSet<String>> element = filesBySimilarity.lastEntry();
