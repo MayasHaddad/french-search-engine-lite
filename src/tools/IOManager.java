@@ -73,6 +73,14 @@ public class IOManager {
 		return true;
 	}
 
+	/**
+	 * Create and check a new file to write in
+	 * 
+	 * @param fnm
+	 *            the file to create
+	 * @return the file to use
+	 * @throws IOException
+	 */
 	public static File createWriteFile(final String fnm) throws IOException {
 		// We can analyse... Output creation
 		final File out = new File(fnm);
@@ -90,6 +98,14 @@ public class IOManager {
 		return out;
 	}
 
+	/**
+	 * Create and check a new directory to write in
+	 * 
+	 * @param fnm
+	 *            the directory name
+	 * @return the directory to use
+	 * @throws IOException
+	 */
 	public static File createWriteDir(final String fnm) throws IOException {
 		// We can analyse... Output creation
 		final File out = new File(fnm);
@@ -108,6 +124,8 @@ public class IOManager {
 	}
 
 	/**
+	 * Calculate nb of files in this directory
+	 * 
 	 * Suppose that inDir is checked.
 	 * 
 	 * @param inDir
@@ -138,6 +156,21 @@ public class IOManager {
 		return cpt;
 	}
 
+	/**
+	 * Get the number of files of the directory "directory"
+	 * 
+	 * This function use a file. If the number of file is already added to the
+	 * file, we return it. Otherwise, we calculate it and add it to the file
+	 * before we return it.
+	 * 
+	 * Suppose that "directory" is checked
+	 * 
+	 * @param directory
+	 *            the directory to consider
+	 * @return the number of files in the directory
+	 * @throws IOException
+	 * 
+	 */
 	public static int getNbFiles(final File directory) throws IOException {
 		final BufferedReader br = new BufferedReader(new InputStreamReader(
 				new FileInputStream(Const.PATH_TO_NBFILES)));
