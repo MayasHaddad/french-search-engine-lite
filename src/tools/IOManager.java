@@ -145,20 +145,19 @@ public class IOManager {
 		String words[];
 		while (line != null) {
 			words = line.split("\t");
-			if (words[0].equals(directory)) {
+			if (words[0].equals(directory.getAbsolutePath())) {
 				return Integer.parseInt(words[1]);
 			}
 			line = br.readLine();
 		}
 		br.close();
 		// no results, we have to calculate it
-		System.out.println("Not already in memory");
 		final int nbDocs = IOManager.countDocumentRecursively(directory);
 		// final PrintWriter pw = new PrintWriter(new
 		// File(Const.PATH_TO_NBFILES));
 		final BufferedWriter bw = new BufferedWriter(new FileWriter(
 				Const.PATH_TO_NBFILES, true));
-		bw.write(directory + "\t" + nbDocs + "\n");
+		bw.write(directory.getAbsolutePath() + "\t" + nbDocs + "\n");
 		bw.close();
 		return nbDocs;
 	}
