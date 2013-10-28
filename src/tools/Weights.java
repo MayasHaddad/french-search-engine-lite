@@ -44,8 +44,7 @@ public class Weights {
 		// initialise the number of files in the corpus
 		System.out.print("Count the number of documents : N = ");
 		if (Const.NB_FILES_IN_CORPUS == null) {
-			Const.NB_FILES_IN_CORPUS = IOManager
-					.countDocumentRecursively(inDir);
+			Const.NB_FILES_IN_CORPUS = IOManager.getNbFiles(inDir);
 		}
 		Weights.CURRENT_TIME = System.nanoTime();
 		System.out.println(Const.NB_FILES_IN_CORPUS + "|| temps(ms) = "
