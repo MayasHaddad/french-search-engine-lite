@@ -1,7 +1,12 @@
 package tools;
 
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStreamReader;
 
 public class IOManager {
 
@@ -109,7 +114,7 @@ public class IOManager {
 	 *            the in dir
 	 * @return nb of files in the direcotry and sub-directories
 	 */
-	public static int countDocumentRecursively(final File inDir) {
+	private static int countDocumentRecursively(final File inDir) {
 		int cpt = 0;
 		if (!inDir.exists()) {
 			System.err.println("IOManager, countDocumentRecusively : File "
@@ -131,5 +136,30 @@ public class IOManager {
 			}
 		}
 		return cpt;
+	}
+
+	public static int getNbFiles(final File directory) throws IOException {
+		final BufferedReader br = new BufferedReader(new InputStreamReader(
+				new FileInputStream(Const.PATH_TO_NBFILES)));
+		String line = br.readLine();
+		String words[];
+		while (line != null) {
+			words = line.split("\t");
+			if (words[0].equals(directory)) {
+				return Integer.parseInt(words[1]);
+			}
+			line = br.readLine();
+		}
+		br.close();
+		// no results, we have to calculate it
+		System.out.println("Not already in memory");
+		final int nbDocs = IOManager.countDocumentRecursively(directory);
+		// final PrintWriter pw = new PrintWriter(new
+		// File(Const.PATH_TO_NBFILES));
+		final BufferedWriter bw = new BufferedWriter(new FileWriter(
+				Const.PATH_TO_NBFILES, true));
+		bw.write(directory + "\t" + nbDocs + "\n");
+		bw.close();
+		return nbDocs;
 	}
 }

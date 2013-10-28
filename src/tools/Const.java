@@ -16,12 +16,19 @@ public class Const {
 	/*
 	 * Path vers le dossier contenant les documents du corpus
 	 */
+	// public static final String PATH_TO_LITTLE_CORPUS =
+	// "/public/iri/projetIRI/corpus/0000/";
 	public static final String PATH_TO_LITTLE_CORPUS = "/public/iri/projetIRI/corpus/0000/";
 
 	/*
 	 * Path vers le fichier des stopwords français
 	 */
 	public static String PATH_TO_STOP_WORDS = "/projet/iri/bvh/Tools/frenchST.txt";
+
+	/*
+	 * Path vers le fichier des stopwords français
+	 */
+	public static String PATH_TO_NBFILES = "/projet/iri/bvh/Tools/nbFiles.txt";
 
 	/*
 	 * Path vers le dossier contenant les Inverted Files générées par l'Indexer

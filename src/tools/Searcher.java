@@ -266,7 +266,7 @@ public class Searcher {
 
 					final Double similarity = Searcher.getSimilarity(
 							weightsOfQuery, new File(weightsDirectoryPath
-									+ File.separator + filename + ".poid"));
+									+ File.separator + filename)); // file is in .txt.poid
 					TreeSet<String> filenamesList = result.get(similarity);
 
 					if (filenamesList == null) {
@@ -281,7 +281,14 @@ public class Searcher {
 		}
 		return new TreeMap(result);
 	}
-
+	
+	public static TreeMap<Double, TreeSet<String>> getResult(String query, File Corpus) throws IOException{
+		
+		return Searcher.getSimilarDocuments(
+				query, (new File(Const.PATH_TO_INVERTED_FILE_FROM_MERGER)),
+				Const.PATH_TO_WEIGHT_FILES,
+				IOManager.getNbFiles(Corpus));
+	}
 	public static void printSimilarDocuments(int topNResults, TreeMap<Double, TreeSet<String>> filesBySimilarity){
 
 		Map.Entry<Double, TreeSet<String>> element = filesBySimilarity.lastEntry();
@@ -310,7 +317,7 @@ public class Searcher {
 					+ " /weight /inverted-file.txt/");
 			System.exit(1);
 		}
-
+		
 		// getting the program's command line arguments
 		final String weightsDirectoryPath = args[0];
 		final String invertedFilesDirPath = args[1];
@@ -329,7 +336,7 @@ public class Searcher {
 			final String query = inputReader.readLine();
 
 			/*final ArrayList<String> queryNormalized = new FrenchStemmer()
-			.normalize(query);*/
+			.normalize(query);
 			
 			
 			final ArrayList<String> queryNormalized = Const.NORMALIZER.normalize(new ByteArrayInputStream(query.getBytes()), Const.REMOVE_STOP_WORDS, Const.PATH_TO_STOP_WORDS);
@@ -343,16 +350,18 @@ public class Searcher {
 
 			//printSimilarDocuments(100, Searcher.getSimilarDocuments(query, invertedFilesDir, weightsDirectoryPath, numberOfDocumentsInTheCorpus));
 
-			/*for (final Map.Entry<Double, TreeSet<String>> similarity : Searcher
+			for (final Map.Entry<Double, TreeSet<String>> similarity : Searcher
 					.getSimilarDocuments(query, invertedFilesDir,
 							weightsDirectoryPath, numberOfDocumentsInTheCorpus)
 							.entrySet()) {
 				for (final String similarFile : similarity.getValue()) {
 					System.out.println(similarFile + " " + similarity.getKey());
 				}
-			}*/
+			}
 			System.out.println();
-			// System.out.println(weightsOfQuery);
+			// System.out.println(weightsOfQuery);*/
+			System.out.println(getResult("Bazin", new File("/public/iri/projetIRI/corpus/0000")));
+			
 		} catch (final IOException e) {
 			System.out.println("error: " + e);
 		}
