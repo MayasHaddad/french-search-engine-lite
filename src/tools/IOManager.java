@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -179,6 +180,7 @@ public class IOManager {
 		while (line != null) {
 			words = line.split("\t");
 			if (words[0].equals(directory.getAbsolutePath())) {
+				br.close();
 				return Integer.parseInt(words[1]);
 			}
 			line = br.readLine();
@@ -194,4 +196,36 @@ public class IOManager {
 		bw.close();
 		return nbDocs;
 	}
+
+	/**
+	 * nom de fichier .poid => chemin vers le fichier du corpus
+	 * 
+	 * @param fileName
+	 * @return
+	 */
+	public static String returnFilePathFromPoid(final String fileName) {
+		// the main directory is PATH_TO_CORPUS
+		// calculate file name
+		System.out.println(fileName);
+		final String[] fileNameTokens = fileName.split("\\.");
+		System.out.println(fileName.split("\\.").length);
+		final String realFileName = fileNameTokens[0] + "." + fileNameTokens[1];
+
+		final String mainFolder = fileNameTokens[0].substring(0, 4);
+		System.out.println("MainFolder: " + mainFolder);
+		final String folder = fileNameTokens[0].substring(0, 6);
+		System.out.println("Folder: " + folder);
+		System.out.println("File: " + realFileName);
+		// System.out.println("Path: " + Const.PATH_TO_CORPUS + mainFolder
+		// + File.separator + folder + File.separator + realFileName);
+
+		return Const.PATH_TO_CORPUS + mainFolder + File.separator + folder
+				+ File.separator + realFileName;
+	}
+
+	public static BufferedReader returnBufferedReader(final File f)
+			throws FileNotFoundException {
+		return new BufferedReader(new InputStreamReader(new FileInputStream(f)));
+	}
+
 }
