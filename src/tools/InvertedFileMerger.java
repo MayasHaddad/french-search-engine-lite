@@ -239,13 +239,22 @@ public class InvertedFileMerger {
 					for (final String s : documentListA) {
 						documentListResult.add(s);
 					}
+					
+					if(wordFreqDocsA[1].equals("")){
+						motA = readerA.readLine();
+						continue;
+					}
+					if(wordFreqDocsB[1].equals("")){
+						motB = readerB.readLine();
+						continue;
+					}
 
-					System.out.print("f: " + invertedFile1.getName() + ", w:"
+					/*System.out.print("f: " + invertedFile1.getName() + ", w:"
 							+ wordFreqDocsA[0] + ", d: " + wordFreqDocsA[1]
-							+ "\t");
+							+ "files : "+ wordFreqDocsA[2]+ "\t");
 					System.out.print("f: " + invertedFile2.getName() + ", w:"
-							+ wordFreqDocsB[0] + ", d: " + wordFreqDocsB[1]
-							+ "\n");
+							+ wordFreqDocsB[0] + ", d: " + wordFreqDocsB[1] + "files : "+ wordFreqDocsB[2]									
+							+ "\n");*/
 					final int a = Integer.parseInt(wordFreqDocsA[1])
 							+ Integer.parseInt(wordFreqDocsB[1]);
 					writer.write(wordFreqDocsA[0] + "\t" + a + "\t");

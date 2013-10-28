@@ -57,9 +57,9 @@ public class Searcher {
 			final File invertedFilesDirectory) throws IOException {
 
 		final Map<String, TreeSet<String>> filesContainingQueryWords = new HashMap<String, TreeSet<String>>();
+
 		if (invertedFilesDirectory.isDirectory()) {
 			for (final String queryWord : queryNormalized) {
-
 				boolean queryWordIsInTheCorpus = false;
 
 				// We won't search for a word which has only one
@@ -87,7 +87,15 @@ public class Searcher {
 								final ArrayList<String> filenamesArrayList = new ArrayList<String>();
 								for (final String filename : line.split("\t")[2]
 										.split(",")) {
-									filenamesArrayList.add(filename);
+									String updatedFileName = "";
+									final int a = 8 - filename.length();
+									for (int i = 0; i < a; i++) {
+										updatedFileName += "0";
+									}
+									updatedFileName = updatedFileName
+											+ filename + ".txt.poid";
+									filenamesArrayList.add(updatedFileName);
+									// System.out.println(updatedFileName);
 								}
 
 								final TreeSet<String> filenamesTreeSet = new TreeSet<String>(
@@ -349,7 +357,7 @@ public class Searcher {
 			 * // int numberOfDocumentsInTheCorpus = //
 			 * IOManager.countDocumentRecursively(new File("F:\\lemonde"));
 			 * 
-			 * printSimilarDocuments(100, Searcher.getSimilarDocuments(query,
+			 * //printSimilarDocuments(100, Searcher.getSimilarDocuments(query,
 			 * invertedFilesDir, weightsDirectoryPath,
 			 * numberOfDocumentsInTheCorpus));
 			 * 
