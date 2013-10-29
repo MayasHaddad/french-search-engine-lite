@@ -58,7 +58,7 @@ public class Const {
 	 * String représentant les chiffres. Utilisé comme la constant "lettres"
 	 */
 	public static final String CHIFFRES = "0123456789";
-	
+
 	public static final String LETTRES_ET_CHIFFRES = "abcdefghijklmnopqrstuvwxyzéèêâî0123456789";
 
 	// /////////////// INDEXATION
