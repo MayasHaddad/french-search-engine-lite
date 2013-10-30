@@ -26,10 +26,10 @@ import java.util.TreeSet;
  * @author mhadda1
  *
  */
-public class XplodedIndexSearcher extends Searcher{
-	public Map<String, TreeSet<String>> getContainingFilesOfThisQuery(
-			final ArrayList<String> queryNormalized,
-			final File invertedFilesDirectory) throws IOException {
+abstract class XplodedIndexSearcher extends Searcher{
+	
+	public Map<String, TreeSet<String>> getContainingFilesOfThisQuery(final ArrayList<String> queryNormalized, final File invertedFilesDirectory) 
+			throws IOException {
 		final Map<String, TreeSet<String>> filesContainingQueryWords = new HashMap<String, TreeSet<String>>();
 
 		if (invertedFilesDirectory.isDirectory()) {
@@ -96,7 +96,7 @@ public class XplodedIndexSearcher extends Searcher{
 		return filesContainingQueryWords;
 	}
 
-	public static void main(final String[] args) {
+	/*public static void main(final String[] args) {
 
 		try {
 			System.out.println("Ecrire votre requ�te");
@@ -109,6 +109,5 @@ public class XplodedIndexSearcher extends Searcher{
 		} catch (final IOException e) {
 			System.out.println("error: " + e);
 		}
-
-	}
+	}*/
 }
