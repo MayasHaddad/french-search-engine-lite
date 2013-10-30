@@ -95,19 +95,4 @@ abstract class XplodedIndexSearcher extends Searcher{
 		}
 		return filesContainingQueryWords;
 	}
-
-	/*public static void main(final String[] args) {
-
-		try {
-			System.out.println("Ecrire votre requ�te");
-			final BufferedReader inputReader = new BufferedReader(
-					new InputStreamReader(System.in));
-			final String query = inputReader.readLine();
-			Searcher s = new XplodedIndexSearcher();
-			System.out.println(s.getResult(query, new File("/public/iri/projetIRI/corpus/0000/")));
-
-		} catch (final IOException e) {
-			System.out.println("error: " + e);
-		}
-	}*/
 }
