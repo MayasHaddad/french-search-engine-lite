@@ -12,6 +12,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.TreeMap;
 
+import abstractClasses.XplodedIndexSearcher;
+
 /**
  * @author mhadda1
  *
