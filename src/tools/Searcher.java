@@ -53,7 +53,7 @@ public class Searcher {
 	 * line.split("\t")[0], Integer.parseInt(line.split("\t")[1])); } }
 	 * br.close(); return filesContainingQueryWords; }
 	 */
-	public static Map<String, TreeSet<String>> getContainingFilesOfThisQueryExplodedIndex(
+	public Map<String, TreeSet<String>> getContainingFilesOfThisQueryExplodedIndex(
 			final ArrayList<String> queryNormalized,
 			final File invertedFilesDirectory) throws IOException {
 
@@ -126,7 +126,7 @@ public class Searcher {
 	 * This method returns the files which contain all the query words at once
 	 */
 
-	public static TreeSet<String> getOnlyCommonFilesOfQueryWords(Map<String, TreeSet<String>> filesContainingQueryWords){
+	public TreeSet<String> getOnlyCommonFilesOfQueryWords(Map<String, TreeSet<String>> filesContainingQueryWords){
 
 		ArrayList<String> result = new ArrayList<String>();
 		
@@ -151,7 +151,7 @@ public class Searcher {
 	 *            a file .poids
 	 * @return a similarity measurement
 	 */
-	public static double getSimilarity(
+	public double getSimilarity(
 			final HashMap<String, Double> weightsOfQuery, final File f2)
 					throws IOException {
 
@@ -257,15 +257,14 @@ public class Searcher {
 		return d1d2 / (Math.sqrt(d1) * Math.sqrt(d2));
 	}
 
-	public static TreeMap<Double, TreeSet<String>> getSimilarDocuments(
+	public TreeMap<Double, TreeSet<String>> getSimilarDocuments(
 			final String query, final File invertedFilesDir,
 			final String weightsDirectoryPath,
 			final int numberOfDocumentsInTheCorpus) throws IOException {
 
-		final ArrayList<String> queryNormalized = new FrenchStemmer()
-		.normalize(query);
+		final ArrayList<String> queryNormalized = Const.NORMALIZER.normalize(query);
 
-		final Map<String, TreeSet<String>> filenamesContainingQueryWords = Searcher
+		final Map<String, TreeSet<String>> filenamesContainingQueryWords = this
 				.getContainingFilesOfThisQueryExplodedIndex(queryNormalized,
 						invertedFilesDir);
 
@@ -284,7 +283,7 @@ public class Searcher {
 			for (final String filename : filenamesListContainingQueryWord) {
 				if (!alreadyVisitedFilename.contains(filename)) {
 
-					final Double similarity = Searcher.getSimilarity(
+					final Double similarity = this.getSimilarity(
 							weightsOfQuery, new File(weightsDirectoryPath
 									+ File.separator + filename)); // file is in
 					// .txt.poid
@@ -303,15 +302,15 @@ public class Searcher {
 		return new TreeMap(result);
 	}
 
-	public static TreeMap<Double, TreeSet<String>> getResult(
+	public TreeMap<Double, TreeSet<String>> getResult(
 			final String query, final File Corpus) throws IOException {
 
-		return Searcher.getSimilarDocuments(query, new File(
+		return this.getSimilarDocuments(query, new File(
 				Const.PATH_TO_INVERTED_FILE_FROM_MERGER),
 				Const.PATH_TO_WEIGHT_FILES, IOManager.getNbFiles(Corpus));
 	}
 
-	public static void printSimilarDocuments(int topNResults,
+	public void printSimilarDocuments(int topNResults,
 			final TreeMap<Double, TreeSet<String>> filesBySimilarity) {
 
 		Map.Entry<Double, TreeSet<String>> element = filesBySimilarity
@@ -392,12 +391,13 @@ public class Searcher {
 			 */
 			/*System.out.println(Searcher.getResult("Bazin", new File(
 					"/public/iri/projetIRI/corpus/0000")));*/
-		/*	final ArrayList<String> queryNormalized = new FrenchStemmer()
+			/*final ArrayList<String> queryNormalized = new FrenchStemmer()
 			.normalize(query);
 			getOnlyCommonFilesOfQueryWords(getContainingFilesOfThisQueryExplodedIndex(
 					queryNormalized,
-					new File("/projet/iri/bvh/InvertedFileFromMerger/")));*/
-			System.out.println(getResult(query, new File("/public/iri/projetIRI/corpus/0000/")));
+					new File("/projet/iri/bvh/InvertedFileFromMerger/")));
+			*/Searcher s = new Searcher();
+			System.out.println(s.getResult(query, new File("/public/iri/projetIRI/corpus/0000/")));
 
 		} catch (final IOException e) {
 			System.out.println("error: " + e);
