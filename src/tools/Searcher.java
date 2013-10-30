@@ -28,13 +28,6 @@ abstract class Searcher {
 
 	public static Map<String, Integer> DOCUMENT_FRENQUENCIES_QUERY_WORDS = new HashMap<String, Integer>();
 
-	private Map<String, TreeSet<String>> getContainingFilesOfThisQuery(
-			final ArrayList<String> queryNormalized,
-			final File invertedFilesDirectory) throws IOException {
-		// This method is not implemented and is private
-		// Please use the inherited specific method
-		return new HashMap<String, TreeSet<String>>();
-	}
 	/*
 	 * This method returns the files which contain all the query words at once
 	 */
@@ -64,7 +57,7 @@ abstract class Searcher {
 	 *            a file .poids
 	 * @return a similarity measurement
 	 */
-	public double getSimilarity(
+	private double getSimilarity(
 			final HashMap<String, Double> weightsOfQuery, final File f2)
 					throws IOException {
 
@@ -171,21 +164,16 @@ abstract class Searcher {
 	}
 
 	public TreeMap<Double, TreeSet<String>> getSimilarDocuments(
-			final String query, final File invertedFilesDir,
+			final String query,
 			final String weightsDirectoryPath,
-			final int numberOfDocumentsInTheCorpus) throws IOException {
-
-		final ArrayList<String> queryNormalized = Const.NORMALIZER.normalize(query);
-
-		final Map<String, TreeSet<String>> filenamesContainingQueryWords = this
-				.getContainingFilesOfThisQuery(queryNormalized,
-						invertedFilesDir);
+			final int numberOfDocumentsInTheCorpus,
+			final Map<String, TreeSet<String>> filenamesContainingQueryWords) throws IOException {
 
 		final ArrayList<String> alreadyVisitedFilename = new ArrayList<String>();
 
 		final HashMap<String, Double> weightsOfQuery = Indexer.getTfIdf(
 				(InputStream) new ByteArrayInputStream(query.getBytes()),
-				(HashMap) Searcher.DOCUMENT_FRENQUENCIES_QUERY_WORDS,
+				(HashMap<String, Integer>) Searcher.DOCUMENT_FRENQUENCIES_QUERY_WORDS,
 				numberOfDocumentsInTheCorpus + 1, new FrenchStemmer(),
 				Const.REMOVE_STOP_WORDS);
 
@@ -216,11 +204,9 @@ abstract class Searcher {
 	}
 
 	public TreeMap<Double, TreeSet<String>> getResult(
-			final String query, final File Corpus) throws IOException {
+			final String query, final File Corpus, final Map<String, TreeSet<String>> filenamesContainingQueryWords) throws IOException {
 
-		return this.getSimilarDocuments(query, new File(
-				Const.PATH_TO_INVERTED_FILE_FROM_MERGER),
-				Const.PATH_TO_WEIGHT_FILES, IOManager.getNbFiles(Corpus));
+		return this.getSimilarDocuments(query,	Const.PATH_TO_WEIGHT_FILES, IOManager.getNbFiles(Corpus), filenamesContainingQueryWords);
 	}
 
 	public void printSimilarDocuments(int topNResults,
