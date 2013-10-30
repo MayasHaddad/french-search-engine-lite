@@ -24,7 +24,7 @@ import java.util.TreeSet;
  * @author user
  * 
  */
-public class Searcher {
+abstract class Searcher {
 
 	public static Map<String, Integer> DOCUMENT_FRENQUENCIES_QUERY_WORDS = new HashMap<String, Integer>();
 
@@ -53,74 +53,12 @@ public class Searcher {
 	 * line.split("\t")[0], Integer.parseInt(line.split("\t")[1])); } }
 	 * br.close(); return filesContainingQueryWords; }
 	 */
-	public Map<String, TreeSet<String>> getContainingFilesOfThisQueryExplodedIndex(
+	private Map<String, TreeSet<String>> getContainingFilesOfThisQuery(
 			final ArrayList<String> queryNormalized,
 			final File invertedFilesDirectory) throws IOException {
-
-		final Map<String, TreeSet<String>> filesContainingQueryWords = new HashMap<String, TreeSet<String>>();
-
-		if (invertedFilesDirectory.isDirectory()) {
-			for (final String queryWord : queryNormalized) {
-				boolean queryWordIsInTheCorpus = false;
-
-				// We won't search for a word which has only one
-				if (queryWord.length() >= 2) {
-
-					final File invertedFile = new File(invertedFilesDirectory
-							+ File.separator + queryWord.substring(0, 2)
-							+ ".txt");
-
-					// no need to process a word for which there are no inverted
-					// file ...
-					if (invertedFile.exists()) {
-
-						// lecture du fichier texte
-						final InputStream ips = new FileInputStream(
-								invertedFile);
-						final InputStreamReader ipsr = new InputStreamReader(
-								ips);
-						final BufferedReader br = new BufferedReader(ipsr);
-						String line;
-						while ((line = br.readLine()) != null) {
-							if (queryNormalized.contains(line.split("\t")[0])) {
-								// the current word is in the query
-								// store the files containing the word
-								final ArrayList<String> filenamesArrayList = new ArrayList<String>();
-								for (final String filename : line.split("\t")[2]
-										.split(",")) {
-									String updatedFileName = "";
-									final int a = 8 - filename.length();
-									for (int i = 0; i < a; i++) {
-										updatedFileName += "0";
-									}
-									updatedFileName = updatedFileName
-											+ filename + ".txt.poid";
-									filenamesArrayList.add(updatedFileName);
-									// System.out.println(updatedFileName);
-								}
-
-								final TreeSet<String> filenamesTreeSet = new TreeSet<String>(
-										filenamesArrayList);
-								filesContainingQueryWords.put(
-										line.split("\t")[0], filenamesTreeSet);
-								Searcher.DOCUMENT_FRENQUENCIES_QUERY_WORDS.put(
-										line.split("\t")[0],
-										Integer.parseInt(line.split("\t")[1]));
-								queryWordIsInTheCorpus = false;
-							}
-						}
-						br.close();
-					}
-				}
-				if (!queryWordIsInTheCorpus) {
-					// even though the word is not in the corpus, it's in the
-					// query, so df = 1
-					Searcher.DOCUMENT_FRENQUENCIES_QUERY_WORDS
-					.put(queryWord, 1);
-				}
-			}
-		}
-		return filesContainingQueryWords;
+		// This method is not implemented and is private
+		// Please use the inherited specific method
+		return new HashMap<String, TreeSet<String>>();
 	}
 	/*
 	 * This method returns the files which contain all the query words at once
@@ -265,7 +203,7 @@ public class Searcher {
 		final ArrayList<String> queryNormalized = Const.NORMALIZER.normalize(query);
 
 		final Map<String, TreeSet<String>> filenamesContainingQueryWords = this
-				.getContainingFilesOfThisQueryExplodedIndex(queryNormalized,
+				.getContainingFilesOfThisQuery(queryNormalized,
 						invertedFilesDir);
 
 		final ArrayList<String> alreadyVisitedFilename = new ArrayList<String>();
@@ -334,7 +272,7 @@ public class Searcher {
 
 	/**
 	 * @param args
-	 */
+	 *//*
 	public static void main(final String[] args) {
 		if (args.length != 3) {
 			System.err.println("Usage : java " + Searcher.class.getName()
@@ -376,7 +314,12 @@ public class Searcher {
 			 * invertedFilesDir));
 			 * 
 			 * // int numberOfDocumentsInTheCorpus = //
-			 * IOManager.countDocumentRecursively(new File("F:\\lemonde"));
+	Searcher s = new Searcher();
+			System.out.println(s.getResult(query, new File("/public/iri/projetIRI/corpus/0000/")));
+
+		} catch (final IOException e) {
+			System.out.println("error: " + e);
+		}		 * IOManager.countDocumentRecursively(new File("F:\\lemonde"));
 			 * 
 			 * //printSimilarDocuments(100, Searcher.getSimilarDocuments(query,
 			 * invertedFilesDir, weightsDirectoryPath,
@@ -396,11 +339,11 @@ public class Searcher {
 			getOnlyCommonFilesOfQueryWords(getContainingFilesOfThisQueryExplodedIndex(
 					queryNormalized,
 					new File("/projet/iri/bvh/InvertedFileFromMerger/")));
-			*/Searcher s = new Searcher();
+			Searcher s = new Searcher();
 			System.out.println(s.getResult(query, new File("/public/iri/projetIRI/corpus/0000/")));
 
 		} catch (final IOException e) {
 			System.out.println("error: " + e);
 		}
-	}
+	}*/
 }
