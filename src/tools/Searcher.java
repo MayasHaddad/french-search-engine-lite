@@ -28,31 +28,6 @@ abstract class Searcher {
 
 	public static Map<String, Integer> DOCUMENT_FRENQUENCIES_QUERY_WORDS = new HashMap<String, Integer>();
 
-	// Retrieve all the files which contain the query
-	/*
-	 * public static Map<String, TreeSet<String>> getContainingFilesOfThisQuery(
-	 * final ArrayList<String> queryNormalized, final File invertedFile) throws
-	 * IOException {
-	 * 
-	 * final Map<String, TreeSet<String>> filesContainingQueryWords = new
-	 * HashMap<String, TreeSet<String>>();
-	 * 
-	 * // lecture du fichier texte final InputStream ips = new
-	 * FileInputStream(invertedFile); final InputStreamReader ipsr = new
-	 * InputStreamReader(ips); final BufferedReader br = new
-	 * BufferedReader(ipsr); String line; while ((line = br.readLine()) != null)
-	 * { if (queryNormalized.contains(line.split("\t")[0])) { // the current
-	 * word is in the query // store the files containing the word final
-	 * ArrayList<String> filenamesArrayList = new ArrayList<String>(); for
-	 * (final String filename : line.split("\t")[2].split(",")) {
-	 * filenamesArrayList.add(filename); }
-	 * 
-	 * final TreeSet<String> filenamesTreeSet = new TreeSet<String>(
-	 * filenamesArrayList); filesContainingQueryWords.put(line.split("\t")[0],
-	 * filenamesTreeSet); Searcher.DOCUMENT_FRENQUENCIES_QUERY_WORDS.put(
-	 * line.split("\t")[0], Integer.parseInt(line.split("\t")[1])); } }
-	 * br.close(); return filesContainingQueryWords; }
-	 */
 	private Map<String, TreeSet<String>> getContainingFilesOfThisQuery(
 			final ArrayList<String> queryNormalized,
 			final File invertedFilesDirectory) throws IOException {
@@ -269,81 +244,4 @@ abstract class Searcher {
 			element = filesBySimilarity.lastEntry();
 		}
 	}
-
-	/**
-	 * @param args
-	 *//*
-	public static void main(final String[] args) {
-		if (args.length != 3) {
-			System.err.println("Usage : java " + Searcher.class.getName()
-					+ " weightsDir invertedFilesDir NUMBEROFFILES");
-			System.err.println("Example : java " + Searcher.class.getName()
-					+ " /weight /inverted-file.txt/");
-			System.exit(1);
-		}
-
-		// getting the program's command line arguments
-		final String weightsDirectoryPath = args[0];
-		final String invertedFilesDirPath = args[1];
-		final int numberOfDocumentsInTheCorpus = Integer.parseInt(args[2]);
-
-		// getting the user's query from the keybord
-		final BufferedReader inputReader = new BufferedReader(
-				new InputStreamReader(System.in));
-
-		try {
-			// Creating the needed files
-			final File weightsDirectory = new File(weightsDirectoryPath);
-			final File invertedFilesDir = new File(invertedFilesDirPath);
-
-			System.out.println("Ecrire votre requ�te");
-			final String query = inputReader.readLine();
-
-			/*
-			 * final ArrayList<String> queryNormalized = new FrenchStemmer()
-			 * .normalize(query);
-			 * 
-			 * 
-			 * final ArrayList<String> queryNormalized =
-			 * Const.NORMALIZER.normalize(new
-			 * ByteArrayInputStream(query.getBytes()), Const.REMOVE_STOP_WORDS,
-			 * Const.PATH_TO_STOP_WORDS);
-			 * 
-			 * System.out.println(Searcher
-			 * .getContainingFilesOfThisQueryExplodedIndex( queryNormalized,
-			 * invertedFilesDir));
-			 * 
-			 * // int numberOfDocumentsInTheCorpus = //
-	Searcher s = new Searcher();
-			System.out.println(s.getResult(query, new File("/public/iri/projetIRI/corpus/0000/")));
-
-		} catch (final IOException e) {
-			System.out.println("error: " + e);
-		}		 * IOManager.countDocumentRecursively(new File("F:\\lemonde"));
-			 * 
-			 * //printSimilarDocuments(100, Searcher.getSimilarDocuments(query,
-			 * invertedFilesDir, weightsDirectoryPath,
-			 * numberOfDocumentsInTheCorpus));
-			 * 
-			 * for (final Map.Entry<Double, TreeSet<String>> similarity :
-			 * Searcher .getSimilarDocuments(query, invertedFilesDir,
-			 * weightsDirectoryPath, numberOfDocumentsInTheCorpus) .entrySet())
-			 * { for (final String similarFile : similarity.getValue()) {
-			 * System.out.println(similarFile + " " + similarity.getKey()); } }
-			 * System.out.println(); // System.out.println(weightsOfQuery);
-			 */
-			/*System.out.println(Searcher.getResult("Bazin", new File(
-					"/public/iri/projetIRI/corpus/0000")));*/
-			/*final ArrayList<String> queryNormalized = new FrenchStemmer()
-			.normalize(query);
-			getOnlyCommonFilesOfQueryWords(getContainingFilesOfThisQueryExplodedIndex(
-					queryNormalized,
-					new File("/projet/iri/bvh/InvertedFileFromMerger/")));
-			Searcher s = new Searcher();
-			System.out.println(s.getResult(query, new File("/public/iri/projetIRI/corpus/0000/")));
-
-		} catch (final IOException e) {
-			System.out.println("error: " + e);
-		}
-	}*/
 }
