@@ -14,7 +14,7 @@ import javax.swing.JLabel;
 import javax.swing.JTextField;
 
 import tools.Const;
-import tools.Searcher;
+import tools.XplodedIndexSimpleWeightFileSearcher;
 
 public class RequestListener implements ActionListener {
 	JTextField jtf;
@@ -33,9 +33,12 @@ public class RequestListener implements ActionListener {
 	public void actionPerformed(final ActionEvent e) {
 		System.out.println("Answering request : " + this.jtf.getText());
 		try {
-			final TreeMap<Double, TreeSet<String>> resultRequest = Searcher
-					.getResult(this.jtf.getText(), new File(
-							Const.PATH_TO_LITTLE_CORPUS));
+			XplodedIndexSimpleWeightFileSearcher searcher = new XplodedIndexSimpleWeightFileSearcher();
+			final TreeMap<Double, TreeSet<String>> resultRequest = searcher.getResult(this.jtf.getText(),
+							new File(Const.PATH_TO_LITTLE_CORPUS), 
+							searcher.getContainingFilesOfThisQuery(
+									Const.NORMALIZER.normalize(this.jtf.getText()),
+									new File(Const.PATH_TO_INVERTED_FILE_FROM_MERGER)));
 			System.out.println("result found");
 
 			// create the list to display

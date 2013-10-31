@@ -10,7 +10,7 @@ import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
 import javax.swing.JTextField;
 
-import tools.Searcher;
+import tools.XplodedIndexSimpleWeightFileSearcher;
 
 public class GraphicalInterface extends JFrame {
 
@@ -22,7 +22,7 @@ public class GraphicalInterface extends JFrame {
 	private final JSplitPane split;
 	private final int WIDTH = 1400;
 	private final int HEIGHT = 800;
-	Searcher s;
+	XplodedIndexSimpleWeightFileSearcher s;
 
 	public GraphicalInterface() {
 
