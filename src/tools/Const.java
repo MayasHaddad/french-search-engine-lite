@@ -18,7 +18,7 @@ public class Const {
 	 */
 	// public static final String PATH_TO_LITTLE_CORPUS =
 	// "/public/iri/projetIRI/corpus/0000/";
-	public static final String PATH_TO_LITTLE_CORPUS = "/public/iri/projetIRI/corpus/0000/";
+	public static final String PATH_TO_LITTLE_CORPUS = "/public/iri/projetIRI/corpus/0000";
 
 	/*
 	 * Path vers le fichier des stopwords français
@@ -74,5 +74,10 @@ public class Const {
 
 	// the type of file considered
 	public static String EXTENTION_KEEP = ".txt";
+	
+	
+	public static String WEIGHTFILETMP = "/projet/iri/bvh/WeightFileTmp/";
+	
+	public static String INVERTEDFILETMP = "/projet/iri/bvh/InvertedFileTmp/";
 
 }

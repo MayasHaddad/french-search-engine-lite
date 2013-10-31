@@ -42,8 +42,8 @@ public class Main {
 			// System.out.println(IOManager.countDocumentRecursively(in));
 
 			// calculate the weights
-			// Weights.getWeightFiles(new File(Const.PATH_TO_LITTLE_CORPUS),
-			// new File(Const.PATH_TO_WEIGHT_FILES), new FrenchStemmer());
+			 //Weights.getWeightFiles(new File(Const.PATH_TO_LITTLE_CORPUS),
+			 //new File(Const.PATH_TO_WEIGHT_FILES), new FrenchStemmer());
 
 			// Create inverted files of maximum memory
 			// InvertedFile.calculateInvertedFile(new File(
@@ -51,7 +51,14 @@ public class Main {
 			// Const.REMOVE_STOP_WORDS);
 
 			// Fusion and merge invertedFiles
-			final InvertedFileMerger a = new InvertedFileMerger();
+			//final InvertedFileMerger a = new InvertedFileMerger();
+			//a.run();
+			System.out.println("Debut nb "+new java.util.Date());
+			Const.NB_FILES_IN_CORPUS = IOManager.getNbFiles(new File(Const.PATH_TO_LITTLE_CORPUS));
+			System.out.println("Fin nb "+new java.util.Date());
+			AdvancedIndexer b = new AdvancedIndexer(Const.PATH_TO_LITTLE_CORPUS);
+			b.run();
+			final InvertedFileMerger a = new InvertedFileMerger(Const.INVERTEDFILETMP);
 			a.run();
 
 			System.out.println("DEBUG: end");
