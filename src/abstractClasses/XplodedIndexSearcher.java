@@ -28,6 +28,11 @@ import java.util.TreeSet;
  */
 public abstract class XplodedIndexSearcher extends Searcher{
 	
+	public File getInvertedFileOfQueryWord(String queryWord, File invertedFilesDirectory){
+		return new File(invertedFilesDirectory
+				+ File.separator + queryWord.substring(0, 2)
+				+ ".txt");
+	}
 	public Map<String, TreeSet<String>> getContainingFilesOfThisQuery(final ArrayList<String> queryNormalized, final File invertedFilesDirectory) 
 			throws IOException {
 		final Map<String, TreeSet<String>> filesContainingQueryWords = new HashMap<String, TreeSet<String>>();
@@ -39,9 +44,7 @@ public abstract class XplodedIndexSearcher extends Searcher{
 				// We won't search for a word which has only one
 				if (queryWord.length() >= 2) {
 
-					final File invertedFile = new File(invertedFilesDirectory
-							+ File.separator + queryWord.substring(0, 2)
-							+ ".txt");
+					final File invertedFile = this.getInvertedFileOfQueryWord(queryWord, invertedFilesDirectory);
 
 					// no need to process a word for which there are no inverted
 					// file ...
