@@ -6,3 +6,4 @@ bin/
 *.war
 *.ear
 doc/
+*.prefs
