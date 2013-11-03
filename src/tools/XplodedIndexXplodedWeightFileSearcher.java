@@ -8,7 +8,7 @@ import abstractClasses.XplodedIndexSearcher;
 
 public class XplodedIndexXplodedWeightFileSearcher extends XplodedIndexSearcher{
 
-	public String getLineStartingWith(String word, BufferedReader br){
+	public String getLineStartingWith(String word, BufferedReader br) throws IOException{
 		String line = br.readLine();
 		while(line != null){
 			if(word.compareToIgnoreCase(line.split("\t")[0]) == 0){
