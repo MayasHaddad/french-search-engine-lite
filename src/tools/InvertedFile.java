@@ -170,9 +170,9 @@ public class InvertedFile {
 		}
 	}
 
-	private static File generateInvertedFileName() {
+	public static File generateInvertedFileName() {
 		InvertedFile.cpt++;
-		return new File(Const.PATH_TO_INVERTED_FILE_FROM_INDEXER
+		return new File(Const.INVERTEDFILETMP
 				+ File.separator + InvertedFile.cpt.toString());
 	}
 }

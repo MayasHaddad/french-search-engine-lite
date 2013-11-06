@@ -10,6 +10,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
+import expes.Utils;
+
 /**
  * Weight file, invertedFiles, tfidf...
  * 
@@ -24,6 +26,8 @@ public abstract class Indexer {
 	// For each word, number of document in the corpus containing it
 	public static HashMap<String, Integer> DOCUMENT_FREQUENCY = new HashMap<String, Integer>();
 
+	
+	public static int cpt = 0;
 	/**
 	 * Get the number of times a word appears in a file.
 	 * 
@@ -50,16 +54,18 @@ public abstract class Indexer {
 		// du nombre d'occurrences pour ce mot
 		for (String word : words) {
 			word = word.toLowerCase();
-			// on récupère le nombre d'occurrences pour ce mot
-			number = hits.get(word);
-			// Si ce mot n'était pas encore présent dans le dictionnaire,
-			// on l'ajoute (nombre d'occurrences = 1)
-			if (number == null) {
-				hits.put(word, 1);
-			}
-			// Sinon, on incrémente le nombre d'occurrence
-			else {
-				hits.put(word, ++number);
+				if(Const.LETTRES_ET_CHIFFRES.contains(word.substring(0,1))){
+				// on récupère le nombre d'occurrences pour ce mot
+				number = hits.get(word);
+				// Si ce mot n'était pas encore présent dans le dictionnaire,
+				// on l'ajoute (nombre d'occurrences = 1)
+				if (number == null) {
+					hits.put(word, 1);
+				}
+				// Sinon, on incrémente le nombre d'occurrence
+				else {
+					hits.put(word, ++number);
+				}
 			}
 		}
 
@@ -129,7 +135,12 @@ public abstract class Indexer {
 	 */
 	private static void analyseOneFileForDocumentFrequency(final File f)
 			throws IOException {
-		System.out.print("-"); // thinking...
+		cpt++;
+		if(cpt%100==0){
+			System.gc();
+			System.out.println(cpt); // thinking...
+			System.out.println((double)Utils.getUsedMemory()/ (double)1073741824);
+		}
 		String wordLC;
 		Integer number;
 		final ArrayList<String> alreadySeenInTheCurrentFile = new ArrayList<String>();
@@ -142,13 +153,16 @@ public abstract class Indexer {
 		// increment doc freq
 		for (final String word : words) {
 			wordLC = word.toLowerCase();
-			number = Indexer.DOCUMENT_FREQUENCY.get(wordLC);
-			// (word !in doc_freq)?(add it):(increment freq);
-			if (number == null) {
-				Indexer.DOCUMENT_FREQUENCY.put(wordLC, 1);
-			} else if (!alreadySeenInTheCurrentFile.contains(wordLC)) {
-				Indexer.DOCUMENT_FREQUENCY.put(wordLC, ++number);
-				alreadySeenInTheCurrentFile.add(wordLC);
+			//Ajouté par Seb : on teste directement si le mot est "interessant", a savoir s'il commence par un caractère contenu dans const.LETTRES_ET_CHIFFRES
+			if(Const.LETTRES_ET_CHIFFRES.contains(wordLC.substring(0,1))){
+				number = Indexer.DOCUMENT_FREQUENCY.get(wordLC);
+				// (word !in doc_freq)?(add it):(increment freq);
+				if (number == null) {
+					Indexer.DOCUMENT_FREQUENCY.put(wordLC, 1);
+				} else if (!alreadySeenInTheCurrentFile.contains(wordLC)) {
+					Indexer.DOCUMENT_FREQUENCY.put(wordLC, ++number);
+					alreadySeenInTheCurrentFile.add(wordLC);
+				}
 			}
 		}
 	}

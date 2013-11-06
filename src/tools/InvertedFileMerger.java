@@ -17,6 +17,7 @@ public class InvertedFileMerger {
 
 	private final File directorySource;
 	private int marqueur = 1;
+	private String pathSource;
 
 	/**
 	 * 
@@ -25,9 +26,10 @@ public class InvertedFileMerger {
 	 *            l'indexer.
 	 **/
 
-	public InvertedFileMerger() {
+	public InvertedFileMerger(String pathSource) {
+		this.pathSource = pathSource;
 		this.directorySource = new File(
-				Const.PATH_TO_INVERTED_FILE_FROM_INDEXER);
+				this.pathSource);
 	}
 
 	/**
@@ -68,13 +70,13 @@ public class InvertedFileMerger {
 				if (i >= fileNames.length - 1) {
 				} else {
 					final File fileA = new File(
-							Const.PATH_TO_INVERTED_FILE_FROM_INDEXER
+							this.pathSource
 									+ fileNames[i]);
 					final File fileB = new File(
-							Const.PATH_TO_INVERTED_FILE_FROM_INDEXER
+							this.pathSource
 									+ fileNames[i + 1]);
 					final File fileResultat = new File(
-							Const.PATH_TO_INVERTED_FILE_FROM_INDEXER
+							this.pathSource
 									+ "FileResultat" + this.marqueur + ".txt");
 
 					this.mergeInvertedFiles(fileA, fileB, fileResultat);
@@ -151,7 +153,7 @@ public class InvertedFileMerger {
 	 */
 	private void splitInvertedFileResultWithTwoLetters(final String fileName)
 			throws IOException {
-		final File file = new File(Const.PATH_TO_INVERTED_FILE_FROM_INDEXER
+		final File file = new File(this.pathSource
 				+ fileName);
 		final BufferedReader reader = new BufferedReader(new FileReader(file));
 		final BufferedWriter trucDeMerde = new BufferedWriter(new FileWriter(

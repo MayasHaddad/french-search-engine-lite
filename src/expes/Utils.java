@@ -73,13 +73,13 @@ public class Utils {
 		// * 1073741824 / maxMemory;
 		final double r = (allocatedMemory - freeMemory)
 				/ (double) Utils.MAX_MEMORY;
-		if (Utils.cpt++ % 100 == 0) {
-			System.out.println((double) allocatedMemory / 1073741824 + "\t"
-					+ (double) freeMemory / 1073741824 + "\t"
-					+ (double) Utils.MAX_MEMORY / 1073741824 + "\t"
-					+ (double) Utils.runtime.maxMemory() / 1073741824 + "\t"
-					+ r + "\t" + ratio);
-		}
+		
+		System.out.println((double) allocatedMemory / 1073741824 + "\t"
+				+ (double) freeMemory / 1073741824 + "\t"
+				+ (double) Utils.MAX_MEMORY / 1073741824 + "\t"
+				+ (double) Utils.runtime.maxMemory() / 1073741824 + "\t"
+				+ r + "\t" + ratio);
+		
 		if (r > ratio) {
 			System.out.println("BOUM : " + (allocatedMemory - freeMemory)
 					/ (double) 1073741824 + "GB");

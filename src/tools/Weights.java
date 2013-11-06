@@ -128,7 +128,7 @@ public class Weights {
 			final Normalizer n) throws IOException {
 
 		// calculate tf idf
-		final TreeMap<String, Double> tfIdf = new TreeMap(Indexer.getTfIdf(
+		final TreeMap<String, Double> tfIdf = new TreeMap<String, Double>(Indexer.getTfIdf(
 				new FileInputStream(inFile.getAbsolutePath()),
 				Indexer.DOCUMENT_FREQUENCY, Const.NB_FILES_IN_CORPUS,
 				Const.NORMALIZER, Const.REMOVE_STOP_WORDS));
