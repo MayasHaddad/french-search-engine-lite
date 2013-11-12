@@ -1,12 +1,16 @@
 package tools;
 
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.TreeMap;
 import java.util.TreeSet;
 
@@ -17,6 +21,7 @@ public class AdvancedIndexer {
 	private String pathATraiter = null;
 	private Integer cpt = 0;
 	private TreeMap<String, TreeSet<String>> res = new TreeMap<String, TreeSet<String>>();
+	private TreeMap<String, Double> listDenominateur = new TreeMap<String, Double>();
 
 	public AdvancedIndexer(String pathToCorpus) {
 		pathATraiter = pathToCorpus;
@@ -35,6 +40,18 @@ public class AdvancedIndexer {
 		System.out.println(new java.util.Date());
 
 	}
+	
+	private void saveDenominateur(TreeMap<String, Double> listDenominateur) throws IOException{
+		
+		BufferedWriter writer = new BufferedWriter(new FileWriter(new File(Const.WEIGHTFILETMP+"weight.txt")));
+		for (final Entry<String, Double> entry : listDenominateur.entrySet()){
+			writer.write(entry.getKey()+"\t"+entry.getValue()+"\n");
+			
+		}
+		writer.close();
+		listDenominateur.clear();
+		System.gc();
+	}
 
 	
 	
@@ -46,6 +63,7 @@ public class AdvancedIndexer {
 		traitementRec(dir);
 		InvertedFile.saveInvertedFile(res,
 				InvertedFile.generateInvertedFileName());
+		saveDenominateur(listDenominateur);
 	}
 
 	private void traitementRec(final File dir) throws IOException {
@@ -64,6 +82,7 @@ public class AdvancedIndexer {
 	}
 
 	private void traiterFichier(File file) throws IOException {
+		double denominateur = 0.0;
 		cpt++;
 		if (cpt%1000==0 && Utils.isMemoryFull(Main.RATIO_MEMORY)) {
 			InvertedFile.saveInvertedFile(res,
@@ -82,9 +101,11 @@ public class AdvancedIndexer {
 		for (final Map.Entry<String, Integer> entry : map.entrySet()){
 			
 			double tfidf = getTfIdfForOneWord(entry.getKey(), entry.getValue());
-			addWordToInvertedFile(entry.getKey(), fileNameConvertedInString, tfidf);
-			
+			denominateur += (tfidf * tfidf);
+			addWordToInvertedFile(entry.getKey(), fileNameConvertedInString, tfidf);			
 		}
+		denominateur = Math.sqrt(denominateur);
+		listDenominateur.put(fileNameOfActualFile,denominateur);
 	}
 	
 	private void addWordToInvertedFile(String word, String fileName, double tfidf){
@@ -112,7 +133,7 @@ public class AdvancedIndexer {
 		} else {
 			logtf = 1 + Math.log10(tf);
 		}
-		//TODO remplacer 9997 par document number
+		
 		idf = Math.log10((double) Const.NB_FILES_IN_CORPUS / Indexer.DOCUMENT_FREQUENCY.get(word));
 		result = logtf * idf;
 		return result;
