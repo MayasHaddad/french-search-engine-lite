@@ -22,6 +22,8 @@ public class AdvancedIndexer {
 	private Integer cpt = 0;
 	private TreeMap<String, TreeSet<String>> res = new TreeMap<String, TreeSet<String>>();
 	private TreeMap<String, Double> listDenominateur = new TreeMap<String, Double>();
+	private int count = 0;
+	private int countFichier = 1;
 
 	public AdvancedIndexer(String pathToCorpus) {
 		pathATraiter = pathToCorpus;
@@ -43,9 +45,20 @@ public class AdvancedIndexer {
 	
 	private void saveDenominateur(TreeMap<String, Double> listDenominateur) throws IOException{
 		
-		BufferedWriter writer = new BufferedWriter(new FileWriter(new File(Const.WEIGHTFILETMP+"weight.txt")));
+		BufferedWriter writer = new BufferedWriter(new FileWriter(new File(Const.WEIGHTFILETMP+countFichier+".txt")));
 		for (final Entry<String, Double> entry : listDenominateur.entrySet()){
-			writer.write(entry.getKey()+"\t"+entry.getValue()+"\n");
+			count++;
+			if(count%1000 == 0){
+				countFichier++;
+				writer.close();
+				writer = new BufferedWriter(new FileWriter(new File(Const.WEIGHTFILETMP+countFichier+".txt")));
+				
+			}
+			String a = entry.getKey();
+			a = a.split(".txt")[0];
+			a = a.split(".html")[0];
+			int b = Integer.parseInt(a);
+			writer.write(b+"\t"+entry.getValue()+"\n");
 			
 		}
 		writer.close();
@@ -64,6 +77,7 @@ public class AdvancedIndexer {
 		InvertedFile.saveInvertedFile(res,
 				InvertedFile.generateInvertedFileName());
 		saveDenominateur(listDenominateur);
+		
 	}
 
 	private void traitementRec(final File dir) throws IOException {
@@ -74,6 +88,7 @@ public class AdvancedIndexer {
 					continue;
 				}
 			traiterFichier(f);
+
 			
 			} else {
 				traitementRec(f);
@@ -82,6 +97,7 @@ public class AdvancedIndexer {
 	}
 
 	private void traiterFichier(File file) throws IOException {
+		
 		double denominateur = 0.0;
 		cpt++;
 		if (cpt%1000==0 && Utils.isMemoryFull(Main.RATIO_MEMORY)) {
@@ -119,8 +135,7 @@ public class AdvancedIndexer {
 			s.add(fileNamePlusTfIdf);
 			//System.out.println(word+"    "+s);
 			res.put(word, s);
-		}
-		
+		}	
 	}
 	
 	private double getTfIdfForOneWord(String word, int tf){
