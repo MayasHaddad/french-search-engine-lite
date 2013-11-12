@@ -46,6 +46,9 @@ public class XplodedIndexXplodedWeightFileSearcher extends XplodedIndexSearcher{
 		}
 	}
 	
+	public String getCorrespondingDenominatorFile(String updatedFileName) {
+		return Integer.toString(Integer.parseInt(updatedFileName.substring(0, 5)) + 1) + ".txt";
+	}
 	// Retrieves the files containing the query words and performs a similarity calculus at the same time
 	public TreeMap<Double, TreeSet<String>> getSimilarDocuments(
 			final String query,
@@ -103,6 +106,7 @@ public class XplodedIndexXplodedWeightFileSearcher extends XplodedIndexSearcher{
 			String fileName = fileNameByNumeratorEntry.getKey().toString();
 			// Adding the 0s to get a correct fileName
 			// must be in a method
+			
 			String updatedFileName = "";
 			final int a = 8 - fileName.length();
 			for (int i = 0; i < a; i++) {
@@ -110,14 +114,14 @@ public class XplodedIndexXplodedWeightFileSearcher extends XplodedIndexSearcher{
 			}
 			updatedFileName = updatedFileName
 					+ fileName + ".txt";
-			
+			//System.out.println(updatedFileName + "\t" + this.getCorrespondingDenominatorFile(updatedFileName));
 			
 			// Opening the new weightFile (weightfileTmp)
 			final BufferedReader brOfDenominator = new BufferedReader(new InputStreamReader(
-					new FileInputStream(new File("/projet/iri/bvh/WeightFileTmp/weight.txt"))));
+					new FileInputStream(new File("/projet/iri/bvh/WeightFileTmp/" + this.getCorrespondingDenominatorFile(updatedFileName)))));
 			
 			// Getting the denominator files' line containing the query word
-			String lineOfDenominator = getLineStartingWith(updatedFileName, brOfDenominator);
+			String lineOfDenominator = getLineStartingWith(fileName, brOfDenominator);
 
 			Double denominator = Double.parseDouble(lineOfDenominator.split("\t")[1]);
 			
