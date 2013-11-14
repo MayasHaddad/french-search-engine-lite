@@ -7,8 +7,10 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.TreeSet;
 
 import expes.Utils;
 
@@ -140,7 +142,10 @@ public abstract class Indexer {
 	private static final boolean getDocumentFrequencyRec(final File dir)
 			throws IOException {
 
-		for (final File f : dir.listFiles()) {
+		final TreeSet<String> t = new TreeSet<String>(Arrays.asList(dir.list()));
+
+		for (final String s : t) {
+			final File f = new File(dir.getAbsolutePath() + File.separator + s);
 			if (f.isFile()) {
 				if (!f.getName().endsWith(Const.EXTENTION_KEEP)) {
 					continue;

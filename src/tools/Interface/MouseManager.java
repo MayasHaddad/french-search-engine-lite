@@ -68,13 +68,18 @@ public class MouseManager implements MouseListener {
 				// this.pannel
 				// .setPage("http://docs.oracle.com/javase/7/docs/api/javax/swing/JEditorPane.html");
 				// }
-				String pan = this.pannel.getText();
+				String fileText = this.pannel.getText();
+				fileText = "<html>" + fileText + "</html>";
 				final FrenchStemmer fs = new FrenchStemmer();
-				final String motCherche = fs.normalize(
-						this.p1.getJTextFieldText()).get(0);
-				pan = pan.replaceAll(motCherche, "\n##########\n##########\n"
-						+ motCherche + "\n##########\n##########\n");
-				this.pannel.setText(pan);
+				for (final String motCherche : fs.normalize(this.p1
+						.getJTextFieldText())) {
+					// final String motCherche = fs.normalize(
+					// this.p1.getJTextFieldText()).get(0);
+					fileText = fileText
+							.replaceAll(motCherche, "<span style='color:red'>"
+									+ motCherche + "</span>");
+				}
+				this.pannel.setText(fileText);
 
 			} catch (final IOException e1) {
 				e1.printStackTrace();

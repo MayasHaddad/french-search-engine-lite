@@ -10,7 +10,6 @@ import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
 import javax.swing.JTextField;
 
-import tools.XplodedIndexSimpleWeightFileSearcher;
 import tools.XplodedIndexXplodedWeightFileSearcher;
 
 public class GraphicalInterface extends JFrame {
@@ -41,7 +40,7 @@ public class GraphicalInterface extends JFrame {
 			pan2.setPage("");
 		} catch (final IOException e) {
 			pan2.setContentType("text/html");
-			pan2.setText("<html>Could not load</html>");
+			pan2.setText("<html><p style='color:red'>Could not load</p></html>");
 		}
 		final JScrollPane scrollPane = new JScrollPane(pan2);
 		// pan2.setBackground(Color.red);

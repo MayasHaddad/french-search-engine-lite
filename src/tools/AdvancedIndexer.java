@@ -6,6 +6,7 @@ import java.io.FileInputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -82,7 +83,9 @@ public class AdvancedIndexer {
 
 	private boolean traitementRec(final File dir) throws IOException {
 
-		for (final File f : dir.listFiles()) {
+		final TreeSet<String> t = new TreeSet<String>(Arrays.asList(dir.list()));
+		for (final String s : t) {
+			final File f = new File(dir.getAbsolutePath() + File.separator + s);
 			if (f.isFile()) {
 				if (!f.getName().endsWith(Const.EXTENTION_KEEP)) {
 					continue;

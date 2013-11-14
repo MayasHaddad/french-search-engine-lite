@@ -15,20 +15,6 @@ public class Main {
 	 *            command arguments
 	 */
 	public static void main(final String[] args) {
-		if (args.length != 5) {
-			System.err
-					.println("Usage : java "
-							+ Indexer.class.getName()
-							+ " inDirectory outDirectory stopWordsPath removeStopWords extension");
-			System.err.println("Example : java " + Indexer.class.getName()
-					+ " /in /out /stop-words.txt false .html");
-			System.exit(1);
-		}
-		final String inDir = args[0];
-		final String outDir = args[1];
-		Const.PATH_TO_STOP_WORDS = args[2];
-		Const.REMOVE_STOP_WORDS = Boolean.parseBoolean(new String(args[3]));
-		Const.EXTENTION_KEEP = args[4];
 		try {
 			System.out.println("Start program, wait for key pressed");
 			Utils.waitKeyPressed();
