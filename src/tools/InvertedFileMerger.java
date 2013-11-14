@@ -156,8 +156,8 @@ public class InvertedFileMerger {
 		final File file = new File(this.pathSource
 				+ fileName);
 		final BufferedReader reader = new BufferedReader(new FileReader(file));
-		final BufferedWriter trucDeMerde = new BufferedWriter(new FileWriter(
-				Const.PATH_TO_INVERTED_FILE_FROM_MERGER + "otherCharacter.txt"));
+		/*final BufferedWriter trucDeMerde = new BufferedWriter(new FileWriter(
+				Const.PATH_TO_INVERTED_FILE_FROM_MERGER + "otherCharacter.txt"));*/
 		final BufferedWriter chiffre = new BufferedWriter(new FileWriter(
 				Const.PATH_TO_INVERTED_FILE_FROM_MERGER + "chiffre.txt"));
 
@@ -185,7 +185,7 @@ public class InvertedFileMerger {
 										+ currentString + ".txt"));
 						writer.write(mot + "\n");
 					} else {
-						trucDeMerde.write(mot + "\n");
+						//trucDeMerde.write(mot + "\n");
 					}
 				}
 			}/* else if (Const.CHIFFRES.contains(firstLetter)) {
@@ -197,7 +197,7 @@ public class InvertedFileMerger {
 		}
 
 		reader.close();
-		trucDeMerde.close();
+		//trucDeMerde.close();
 		chiffre.close();
 		writer.close();
 	}
