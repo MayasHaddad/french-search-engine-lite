@@ -48,14 +48,6 @@ public class AdvancedIndexer {
 		BufferedWriter writer = new BufferedWriter(new FileWriter(new File(
 				Const.WEIGHTFILETMP + this.countFichier + ".txt")));
 		for (final Entry<String, Double> entry : listDenominateur.entrySet()) {
-			this.count++;
-			if (this.count % 1000 == 0) {
-				this.countFichier++;
-				writer.close();
-				writer = new BufferedWriter(new FileWriter(new File(
-						Const.WEIGHTFILETMP + this.countFichier + ".txt")));
-
-			}
 			String a = entry.getKey();
 			a = a.split(".txt")[0];
 			a = a.split(".html")[0];
@@ -66,6 +58,7 @@ public class AdvancedIndexer {
 		writer.close();
 		listDenominateur.clear();
 		System.gc();
+		this.countFichier++;
 	}
 
 	private void traitement(final File dir) throws IOException {
@@ -77,7 +70,7 @@ public class AdvancedIndexer {
 		this.traitementRec(dir);
 		InvertedFile.saveInvertedFile(this.res,
 				InvertedFile.generateInvertedFileName());
-		this.saveDenominateur(this.listDenominateur);
+		//this.saveDenominateur(this.listDenominateur);
 
 	}
 
@@ -96,13 +89,17 @@ public class AdvancedIndexer {
 					System.out.println("reached max : "
 							+ Const.MAX_NUMBER_OF_FILE + " files");
 					return false;
+				} else {
+					//return true;
 				}
-
 			} else {
 				if (this.traitementRec(f) == false) {
 					return false;
 				}
 			}
+		}
+		if(listDenominateur.size()>0){
+			this.saveDenominateur(this.listDenominateur);			
 		}
 		return true;
 	}
@@ -128,7 +125,6 @@ public class AdvancedIndexer {
 				.parseInt(fileNameOfActualFile.substring(0, 8)));
 
 		for (final Map.Entry<String, Integer> entry : map.entrySet()) {
-
 			final double tfidf = this.getTfIdfForOneWord(entry.getKey(),
 					entry.getValue());
 			denominateur += tfidf * tfidf;
@@ -163,10 +159,10 @@ public class AdvancedIndexer {
 		} else {
 			logtf = 1 + Math.log10(tf);
 		}
-
 		idf = Math.log10((double) Const.NB_FILES_IN_CORPUS
 				/ Indexer.DOCUMENT_FREQUENCY.get(word));
 		result = logtf * idf;
+		
 		return result;
 	}
 

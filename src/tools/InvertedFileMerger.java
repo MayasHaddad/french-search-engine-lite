@@ -156,8 +156,8 @@ public class InvertedFileMerger {
 		final File file = new File(this.pathSource
 				+ fileName);
 		final BufferedReader reader = new BufferedReader(new FileReader(file));
-		final BufferedWriter trucDeMerde = new BufferedWriter(new FileWriter(
-				Const.PATH_TO_INVERTED_FILE_FROM_MERGER + "otherCharacter.txt"));
+		/*final BufferedWriter trucDeMerde = new BufferedWriter(new FileWriter(
+				Const.PATH_TO_INVERTED_FILE_FROM_MERGER + "otherCharacter.txt"));*/
 		final BufferedWriter chiffre = new BufferedWriter(new FileWriter(
 				Const.PATH_TO_INVERTED_FILE_FROM_MERGER + "chiffre.txt"));
 
@@ -171,12 +171,12 @@ public class InvertedFileMerger {
 			final String secondLetter = mot.substring(1, 2).toLowerCase();
 			final String twoFirstLetters = mot.substring(0, 2).toLowerCase();
 
-			if (Const.LETTRES.contains(firstLetter)) {
+			if (Const.LETTRES_ET_CHIFFRES.contains(firstLetter)) {
 
 				if (currentString.equals(twoFirstLetters)) {
 					writer.write(mot + "\n");
 				} else {
-					if (Const.LETTRES.contains(secondLetter)) {
+					if (Const.LETTRES_ET_CHIFFRES.contains(secondLetter)) {
 
 						writer.close();
 						currentString = twoFirstLetters;
@@ -185,19 +185,19 @@ public class InvertedFileMerger {
 										+ currentString + ".txt"));
 						writer.write(mot + "\n");
 					} else {
-						trucDeMerde.write(mot + "\n");
+						//trucDeMerde.write(mot + "\n");
 					}
 				}
-			} else if (Const.CHIFFRES.contains(firstLetter)) {
+			}/* else if (Const.CHIFFRES.contains(firstLetter)) {
 				chiffre.write(mot + "\n");
 			} else {
 				trucDeMerde.write(mot + "\n");
-			}
+			}*/
 			mot = reader.readLine();
 		}
 
 		reader.close();
-		trucDeMerde.close();
+		//trucDeMerde.close();
 		chiffre.close();
 		writer.close();
 	}
