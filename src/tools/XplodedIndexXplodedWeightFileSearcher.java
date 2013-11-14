@@ -43,11 +43,15 @@ public class XplodedIndexXplodedWeightFileSearcher extends XplodedIndexSearcher 
 						new InputStreamReader(new FileInputStream(
 								this.getInvertedFileOfQueryWord(queryWord,
 										invertedFileDirectory))));
-
-				final Integer df = Integer.parseInt(this.getLineStartingWith(
-						queryWord, br).split("\t")[1]);
-
+				Integer df = 1;
+				try {
+					df = Integer.parseInt(this.getLineStartingWith(queryWord,
+							br).split("\t")[1]);
+				} catch (final Exception e) {
+					System.err.println("mot " + queryWord + " introuvable");
+				}
 				Searcher.DOCUMENT_FRENQUENCIES_QUERY_WORDS.put(queryWord, df);
+
 			}
 		}
 	}
@@ -87,7 +91,9 @@ public class XplodedIndexXplodedWeightFileSearcher extends XplodedIndexSearcher 
 			final String queryWord = weightsOfQueryEntry.getKey();
 			final Double queryWordWeight = weightsOfQueryEntry.getValue();
 
-			if (queryWord.length() >= 2) {
+			if (queryWord.length() >= 2
+					&& Searcher.DOCUMENT_FRENQUENCIES_QUERY_WORDS
+							.get(queryWord) > 1) {
 
 				// Getting into the exploded inverted file containing the query
 				// word
