@@ -58,7 +58,7 @@ public class XplodedIndexXplodedWeightFileSearcher extends XplodedIndexSearcher 
 
 	public String getCorrespondingDenominatorFile(final String updatedFileName) {
 		return Integer.toString(Integer.parseInt(updatedFileName
-				.substring(0, 5)) + 1) + ".txt";
+				.substring(0, 6)) + 1) + ".txt";
 	}
 
 	// Retrieves the files containing the query words and performs a similarity
@@ -152,7 +152,8 @@ public class XplodedIndexXplodedWeightFileSearcher extends XplodedIndexSearcher 
 			// Getting the denominator files' line containing the query word
 			final String lineOfDenominator = this.getLineStartingWith(fileName,
 					brOfDenominator);
-
+			System.out.println(updatedFileName + "\t" + Const.WEIGHTFILETMP
+					+ this.getCorrespondingDenominatorFile(updatedFileName));
 			final Double denominator = Double.parseDouble(lineOfDenominator
 					.split("\t")[1]);
 
