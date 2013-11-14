@@ -171,12 +171,12 @@ public class InvertedFileMerger {
 			final String secondLetter = mot.substring(1, 2).toLowerCase();
 			final String twoFirstLetters = mot.substring(0, 2).toLowerCase();
 
-			if (Const.LETTRES.contains(firstLetter)) {
+			if (Const.LETTRES_ET_CHIFFRES.contains(firstLetter)) {
 
 				if (currentString.equals(twoFirstLetters)) {
 					writer.write(mot + "\n");
 				} else {
-					if (Const.LETTRES.contains(secondLetter)) {
+					if (Const.LETTRES_ET_CHIFFRES.contains(secondLetter)) {
 
 						writer.close();
 						currentString = twoFirstLetters;
@@ -188,11 +188,11 @@ public class InvertedFileMerger {
 						trucDeMerde.write(mot + "\n");
 					}
 				}
-			} else if (Const.CHIFFRES.contains(firstLetter)) {
+			}/* else if (Const.CHIFFRES.contains(firstLetter)) {
 				chiffre.write(mot + "\n");
 			} else {
 				trucDeMerde.write(mot + "\n");
-			}
+			}*/
 			mot = reader.readLine();
 		}
 
