@@ -34,16 +34,12 @@ public class Main {
 			Utils.waitKeyPressed();
 			System.out.println("DEBUG: begin");
 
-			final File in = new File(inDir);// /public/iri/projetIRI/corpus/0000/000000/
-			final File out = new File(outDir);
-			System.out.println("Launch calculus");
-
 			// count document
 			// System.out.println(IOManager.countDocumentRecursively(in));
 
 			// calculate the weights
-			 //Weights.getWeightFiles(new File(Const.PATH_TO_LITTLE_CORPUS),
-			 //new File(Const.PATH_TO_WEIGHT_FILES), new FrenchStemmer());
+			// Weights.getWeightFiles(new File(Const.PATH_TO_LITTLE_CORPUS),
+			// new File(Const.PATH_TO_WEIGHT_FILES), new FrenchStemmer());
 
 			// Create inverted files of maximum memory
 			// InvertedFile.calculateInvertedFile(new File(
@@ -51,14 +47,22 @@ public class Main {
 			// Const.REMOVE_STOP_WORDS);
 
 			// Fusion and merge invertedFiles
-			//final InvertedFileMerger a = new InvertedFileMerger();
-			//a.run();
-			System.out.println("Debut nb "+new java.util.Date());
-			Const.NB_FILES_IN_CORPUS = IOManager.getNbFiles(new File(Const.PATH_TO_LITTLE_CORPUS));
-			System.out.println("Fin nb "+new java.util.Date());
-			AdvancedIndexer b = new AdvancedIndexer(Const.PATH_TO_LITTLE_CORPUS);
+			// final InvertedFileMerger a = new InvertedFileMerger();
+			// a.run();
+			System.out.println("Debut nb " + new java.util.Date());
+			// Get number of files
+			if (Const.MAX_NUMBER_OF_FILE != null
+					&& Const.MAX_NUMBER_OF_FILE < 1998425) {
+				Const.NB_FILES_IN_CORPUS = Const.MAX_NUMBER_OF_FILE;
+			} else {
+				Const.NB_FILES_IN_CORPUS = IOManager.getNbFiles(new File(
+						Const.PATH_TO_CORPUS));
+			}
+			System.out.println("Fin nb " + new java.util.Date());
+			final AdvancedIndexer b = new AdvancedIndexer(Const.PATH_TO_CORPUS);
 			b.run();
-			final InvertedFileMerger a = new InvertedFileMerger(Const.INVERTEDFILETMP);
+			final InvertedFileMerger a = new InvertedFileMerger(
+					Const.INVERTEDFILETMP);
 			a.run();
 
 			System.out.println("DEBUG: end");

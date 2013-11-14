@@ -33,18 +33,22 @@ public class Const {
 	/*
 	 * Path vers le dossier contenant les Inverted Files générées par l'Indexer
 	 */
-	public static final String PATH_TO_INVERTED_FILE_FROM_INDEXER = "/projet/iri/bvh/InvertedFileFromIndexer/";
+	public static final String PATH_TO_INVERTED_FILE_FROM_INDEXER = "/projet/iri/bvh/InvertedFileFromMerger1000000/InvertedFileFromIndexer/";
+	// "/projet/iri/bvh/InvertedFileFromIndexer/"
 
 	/*
 	 * Path vers le dossier contenant les Inverted Files générées par
 	 * l'InvertedFileMerger, après fusion puis découpage donc
 	 */
-	public static final String PATH_TO_INVERTED_FILE_FROM_MERGER = "/projet/iri/bvh/InvertedFileFromMerger/";
+	public static final String PATH_TO_INVERTED_FILE_FROM_MERGER = "/projet/iri/bvh/InvertedFileFromMerger1000000/";
+	// "/projet/iri/bvh/InvertedFileFromMerger"
 
 	/*
 	 * Path vers le dossier contenant les fichiers .poids générés par l'Indexer
 	 */
 	public static final String PATH_TO_WEIGHT_FILES = "/projet/iri/bvh/WeightFile/";
+
+	public static final String PATH_TO_DOC_FREQ = "/projet/iri/bvh/DocFreq";
 
 	/*
 	 * String représentant les lettres apparaissant le plus couramment en tant
@@ -74,10 +78,14 @@ public class Const {
 
 	// the type of file considered
 	public static String EXTENTION_KEEP = ".txt";
-	
-	
-	public static String WEIGHTFILETMP = "/projet/iri/bvh/WeightFileTmp/";
-	
-	public static String INVERTEDFILETMP = "/projet/iri/bvh/InvertedFileTmp/";
+
+	public static String WEIGHTFILETMP = "/projet/iri/bvh/InvertedFileFromMerger1000000/WeightFileTmp/";
+	// "/projet/iri/bvh/WeightFileTmp/"
+
+	public static String INVERTEDFILETMP = "/projet/iri/bvh/InvertedFileFromMerger1000000/InvertedFileTmp/";
+	// /projet/iri/bvh/InvertedFileTmp/
+
+	public static final Integer MAX_NUMBER_OF_FILE = 1000000;
+	public static Integer CURRENT_NUMBER_OF_FILE = 0;
 
 }

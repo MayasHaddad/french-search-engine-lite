@@ -11,6 +11,7 @@ import java.util.List;
 import javax.swing.JEditorPane;
 import javax.swing.JLabel;
 
+import tools.FrenchStemmer;
 import tools.IOManager;
 
 public class MouseManager implements MouseListener {
@@ -48,6 +49,18 @@ public class MouseManager implements MouseListener {
 			// this.pannel.updateUI();
 			final File f = new File(
 					IOManager.returnFilePathFromPoid(currentLabel.getText()));
+
+			// essai firefox
+			final Runtime runtime = Runtime.getRuntime();
+			try {
+				runtime.exec("firefox "
+						+ IOManager.returnFilePathFromPoid(currentLabel
+								.getText()));
+			} catch (final IOException e2) {
+				// TODO Auto-generated catch block
+				e2.printStackTrace();
+			}
+
 			final BufferedReader br = null;
 			try {
 				// if (currentLabel.getText().split("\\.")[1].equals("txt")) {
@@ -56,11 +69,11 @@ public class MouseManager implements MouseListener {
 				// .setPage("http://docs.oracle.com/javase/7/docs/api/javax/swing/JEditorPane.html");
 				// }
 				String pan = this.pannel.getText();
-				pan = pan.replaceAll(
-						this.p1.getJTextFieldText(),
-						"\n\n\n\n\n\n\n\n\n\n\n\n"
-								+ this.p1.getJTextFieldText()
-								+ "\n\n\n\n\n\n\n\n\n\n\n");
+				final FrenchStemmer fs = new FrenchStemmer();
+				final String motCherche = fs.normalize(
+						this.p1.getJTextFieldText()).get(0);
+				pan = pan.replaceAll(motCherche, "\n##########\n##########\n"
+						+ motCherche + "\n##########\n##########\n");
 				this.pannel.setText(pan);
 
 			} catch (final IOException e1) {
