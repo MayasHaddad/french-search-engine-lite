@@ -183,7 +183,7 @@ public class XplodedIndexXplodedWeightFileSearcher extends XplodedIndexSearcher 
 			} catch (final IOException e) {
 			}
 		}
-
+		System.out.println(result);
 		return result;
 	}
 

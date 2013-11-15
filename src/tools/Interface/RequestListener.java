@@ -37,6 +37,10 @@ public class RequestListener implements ActionListener {
 			final TreeMap<Double, TreeSet<String>> resultRequest = searcher
 					.getResult(this.jtf.getText(), new File(
 							Const.PATH_TO_LITTLE_CORPUS));
+			for (final Map.Entry<Double, TreeSet<String>> res : resultRequest
+					.entrySet()) {
+				System.out.println(res.getKey() + " || " + res.getValue());
+			}
 			if (resultRequest.isEmpty()) {
 				this.jep.setText("Pas de reponses dans le corpus");
 				this.jp.updateUI();
@@ -50,9 +54,12 @@ public class RequestListener implements ActionListener {
 			// this.jp.removeAll();
 			this.jp.clear();
 			final List<JLabel> l = this.jp.getList();
-			for (final Map.Entry<Double, TreeSet<String>> score : resultRequest
-					.entrySet()) {
-				for (final String s : score.getValue()) {
+			while (true) {
+				final Double key = resultRequest.lastKey();
+				final TreeSet<String> value = resultRequest.get(key);
+				resultRequest.remove(key);
+
+				for (final String s : value) {
 					final JLabel j = new JLabel(s/* + " " + score.getKey() */);
 					j.addMouseListener(this.mouseManager);
 					l.add(j);

@@ -18,7 +18,7 @@ public class GraphicalInterface extends JFrame {
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-	public static int NUMBER_RESULTS = 0;
+	public static int NUMBER_RESULTS = 20;
 	private final JSplitPane split;
 	private final int WIDTH = 1400;
 	private final int HEIGHT = 800;
@@ -40,7 +40,7 @@ public class GraphicalInterface extends JFrame {
 			pan2.setPage("");
 		} catch (final IOException e) {
 			pan2.setContentType("text/html");
-			pan2.setText("<html><p style='color:red'>Could not load</p></html>");
+			pan2.setText("<html><h1 style='color:blue'>Bienvenue</h1></html>");
 		}
 		final JScrollPane scrollPane = new JScrollPane(pan2);
 		// pan2.setBackground(Color.red);
