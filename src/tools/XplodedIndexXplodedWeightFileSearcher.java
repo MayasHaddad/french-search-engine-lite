@@ -4,15 +4,19 @@ import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.PrintWriter;
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.TreeMap;
 import java.util.TreeSet;
 
+import abstractClasses.Indexer;
 import abstractClasses.Searcher;
 import abstractClasses.XplodedIndexSearcher;
 
@@ -122,6 +126,7 @@ public class XplodedIndexXplodedWeightFileSearcher extends XplodedIndexSearcher 
 					if (fileNameByNumerator.containsKey(fileName)) {
 						lastValue = fileNameByNumerator.get(fileName);
 					}
+					
 					fileNameByNumerator.put(fileName, lastValue
 							+ queryWordWeightInThatFile * queryWordWeight);
 				}
@@ -166,7 +171,7 @@ public class XplodedIndexXplodedWeightFileSearcher extends XplodedIndexSearcher 
 
 				final Double denominator = Double.parseDouble(lineOfDenominator
 						.split("\t")[1]);
-
+				
 				final Double similarity = numerator / denominator;
 
 				TreeSet<String> fileNamesList = new TreeSet<String>();
@@ -183,10 +188,39 @@ public class XplodedIndexXplodedWeightFileSearcher extends XplodedIndexSearcher 
 			} catch (final IOException e) {
 			}
 		}
-		System.out.println(result);
+		printSimilarDocuments(100, result);
 		return result;
 	}
-
+	
+	public void printSimilarDocuments(int topNResults,
+			final TreeMap<Double, TreeSet<String>> filesBySimilarity) {
+		
+		try{
+		Map.Entry<Double, TreeSet<String>> element = filesBySimilarity
+				.lastEntry();
+		
+		PrintWriter writer = new PrintWriter("/net/k3/u/etudiant/mhadda1/droitsLocataires.txt", "UTF-8");
+		
+		while (element != null && topNResults > 0) {
+			System.out.println(topNResults);
+			if (element.getValue().size() > 1) {
+				for (final String currentFileName : element.getValue()) {
+					writer.println(currentFileName + "\t"
+							+ element.getKey());
+				}
+			} else {
+				writer.println(element.getValue().first() + "\t"
+						+ element.getKey());
+			}
+			topNResults--;
+			filesBySimilarity.remove(element.getKey());
+			element = filesBySimilarity.lastEntry();
+		}
+		writer.close();
+		} catch(IOException e){
+			System.out.println(e);
+		}
+	}
 	public TreeMap<Double, TreeSet<String>> getResult(final String query,
 			final File Corpus) throws IOException {
 
