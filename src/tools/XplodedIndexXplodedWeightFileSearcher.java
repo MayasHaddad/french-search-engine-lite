@@ -18,6 +18,7 @@ import abstractClasses.XplodedIndexSearcher;
 
 public class XplodedIndexXplodedWeightFileSearcher extends XplodedIndexSearcher {
 
+	private HashMap<Integer, BufferedReader> fileNameByBufferedReader = new HashMap<Integer, BufferedReader>(); 
 	public String getLineStartingWith(final String word, final BufferedReader br)
 			throws IOException {
 		String line = br.readLine();
@@ -93,7 +94,7 @@ public class XplodedIndexXplodedWeightFileSearcher extends XplodedIndexSearcher 
 
 			if (queryWord.length() >= 2
 					&& Searcher.DOCUMENT_FRENQUENCIES_QUERY_WORDS
-							.get(queryWord) > 1) {
+					.get(queryWord) > 1) {
 
 				// Getting into the exploded inverted file containing the query
 				// word
@@ -126,47 +127,61 @@ public class XplodedIndexXplodedWeightFileSearcher extends XplodedIndexSearcher 
 		}
 		for (final Map.Entry<Integer, Double> fileNameByNumeratorEntry : fileNameByNumerator
 				.entrySet()) {
-			final Double numerator = fileNameByNumeratorEntry.getValue();
-			final String fileName = fileNameByNumeratorEntry.getKey()
-					.toString();
-			// Adding the 0s to get a correct fileName
-			// must be in a method
+			try{
+				final Double numerator = fileNameByNumeratorEntry.getValue();
+				final String fileName = fileNameByNumeratorEntry.getKey()
+						.toString();
+				// Adding the 0s to get a correct fileName
+				// must be in a method
 
-			String updatedFileName = "";
-			final int a = 8 - fileName.length();
-			for (int i = 0; i < a; i++) {
-				updatedFileName += "0";
-			}
-			updatedFileName = updatedFileName + fileName + ".txt";
-			// System.out.println(updatedFileName + "\t" +
-			// this.getCorrespondingDenominatorFile(updatedFileName));
+				String updatedFileName = "";
+				final int a = 8 - fileName.length();
+				for (int i = 0; i < a; i++) {
+					updatedFileName += "0";
+				}
+				updatedFileName = updatedFileName + fileName + ".txt";
+				// System.out.println(updatedFileName + "\t" +
+				// this.getCorrespondingDenominatorFile(updatedFileName));
 
-			// Opening the new weightFile (weightfileTmp)
-			final BufferedReader brOfDenominator = new BufferedReader(
-					new InputStreamReader(
-							new FileInputStream(
-									new File(
-											Const.WEIGHTFILETMP
+
+				System.out.println(updatedFileName + "\t" + Const.WEIGHTFILETMP
+						+ this.getCorrespondingDenominatorFile(updatedFileName));
+				// Opening the new weightFile (weightfileTmp)
+				final BufferedReader brOfDenominator;
+				if(fileNameByBufferedReader.containsKey((Integer.parseInt(fileName)))){
+					brOfDenominator = fileNameByBufferedReader.get((Integer.parseInt(fileName)));
+				}else{
+					brOfDenominator = new BufferedReader(
+							new InputStreamReader(
+									new FileInputStream(
+											new File(
+													Const.WEIGHTFILETMP
 													+ this.getCorrespondingDenominatorFile(updatedFileName)))));
+					fileNameByBufferedReader.put((Integer.parseInt(fileName)), brOfDenominator);
 
-			// Getting the denominator files' line containing the query word
-			final String lineOfDenominator = this.getLineStartingWith(fileName,
-					brOfDenominator);
-			System.out.println(updatedFileName + "\t" + Const.WEIGHTFILETMP
-					+ this.getCorrespondingDenominatorFile(updatedFileName));
-			final Double denominator = Double.parseDouble(lineOfDenominator
-					.split("\t")[1]);
+				}
+				// Getting the denominator files' line containing the query word
+				final String lineOfDenominator = this.getLineStartingWith(fileName,
+						brOfDenominator);
 
-			final Double similarity = numerator / denominator;
+				final Double denominator = Double.parseDouble(lineOfDenominator
+						.split("\t")[1]);
 
-			TreeSet<String> fileNamesList = new TreeSet<String>();
-			// filling the result structure with the similarity and the files
-			// having that very same similarity value
-			if (result.containsKey(similarity)) {
-				fileNamesList = result.get(similarity);
+				final Double similarity = numerator / denominator;
+
+				TreeSet<String> fileNamesList = new TreeSet<String>();
+				// filling the result structure with the similarity and the files
+				// having that very same similarity value
+				if (result.containsKey(similarity)) {
+					fileNamesList = result.get(similarity);
+				}
+				fileNamesList.add(updatedFileName);
+				result.put(similarity, fileNamesList);
+				brOfDenominator.close();
+				
+			}catch(IOException e){
+				System.out.println("ppp");
 			}
-			fileNamesList.add(updatedFileName);
-			result.put(similarity, fileNamesList);
 		}
 
 		return result;
