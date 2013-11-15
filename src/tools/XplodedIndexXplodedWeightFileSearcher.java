@@ -18,7 +18,8 @@ import abstractClasses.XplodedIndexSearcher;
 
 public class XplodedIndexXplodedWeightFileSearcher extends XplodedIndexSearcher {
 
-	private HashMap<Integer, BufferedReader> fileNameByBufferedReader = new HashMap<Integer, BufferedReader>(); 
+	private final HashMap<Integer, BufferedReader> fileNameByBufferedReader = new HashMap<Integer, BufferedReader>();
+
 	public String getLineStartingWith(final String word, final BufferedReader br)
 			throws IOException {
 		String line = br.readLine();
@@ -44,14 +45,15 @@ public class XplodedIndexXplodedWeightFileSearcher extends XplodedIndexSearcher 
 						new InputStreamReader(new FileInputStream(
 								this.getInvertedFileOfQueryWord(queryWord,
 										invertedFileDirectory))));
-				Integer df = 1;
+				Integer df = 0;
 				try {
 					df = Integer.parseInt(this.getLineStartingWith(queryWord,
 							br).split("\t")[1]);
 				} catch (final Exception e) {
 					System.err.println("mot " + queryWord + " introuvable");
 				}
-				Searcher.DOCUMENT_FRENQUENCIES_QUERY_WORDS.put(queryWord, df);
+				Searcher.DOCUMENT_FRENQUENCIES_QUERY_WORDS.put(queryWord,
+						df + 1);
 
 			}
 		}
@@ -94,7 +96,7 @@ public class XplodedIndexXplodedWeightFileSearcher extends XplodedIndexSearcher 
 
 			if (queryWord.length() >= 2
 					&& Searcher.DOCUMENT_FRENQUENCIES_QUERY_WORDS
-					.get(queryWord) > 1) {
+							.get(queryWord) > 1) {
 
 				// Getting into the exploded inverted file containing the query
 				// word
@@ -127,7 +129,7 @@ public class XplodedIndexXplodedWeightFileSearcher extends XplodedIndexSearcher 
 		}
 		for (final Map.Entry<Integer, Double> fileNameByNumeratorEntry : fileNameByNumerator
 				.entrySet()) {
-			try{
+			try {
 				final Double numerator = fileNameByNumeratorEntry.getValue();
 				final String fileName = fileNameByNumeratorEntry.getKey()
 						.toString();
@@ -143,21 +145,24 @@ public class XplodedIndexXplodedWeightFileSearcher extends XplodedIndexSearcher 
 
 				// Opening the new weightFile (weightfileTmp)
 				final BufferedReader brOfDenominator;
-				if(fileNameByBufferedReader.containsKey((Integer.parseInt(fileName)))){
-					brOfDenominator = fileNameByBufferedReader.get((Integer.parseInt(fileName)));
-				}else{
+				if (this.fileNameByBufferedReader.containsKey(Integer
+						.parseInt(fileName))) {
+					brOfDenominator = this.fileNameByBufferedReader.get(Integer
+							.parseInt(fileName));
+				} else {
 					brOfDenominator = new BufferedReader(
 							new InputStreamReader(
 									new FileInputStream(
 											new File(
 													Const.WEIGHTFILETMP
-													+ this.getCorrespondingDenominatorFile(updatedFileName)))));
-					fileNameByBufferedReader.put((Integer.parseInt(fileName)), brOfDenominator);
+															+ this.getCorrespondingDenominatorFile(updatedFileName)))));
+					this.fileNameByBufferedReader.put(
+							Integer.parseInt(fileName), brOfDenominator);
 
 				}
 				// Getting the denominator files' line containing the query word
-				final String lineOfDenominator = this.getLineStartingWith(fileName,
-						brOfDenominator);
+				final String lineOfDenominator = this.getLineStartingWith(
+						fileName, brOfDenominator);
 
 				final Double denominator = Double.parseDouble(lineOfDenominator
 						.split("\t")[1]);
@@ -165,7 +170,8 @@ public class XplodedIndexXplodedWeightFileSearcher extends XplodedIndexSearcher 
 				final Double similarity = numerator / denominator;
 
 				TreeSet<String> fileNamesList = new TreeSet<String>();
-				// filling the result structure with the similarity and the files
+				// filling the result structure with the similarity and the
+				// files
 				// having that very same similarity value
 				if (result.containsKey(similarity)) {
 					fileNamesList = result.get(similarity);
@@ -173,9 +179,8 @@ public class XplodedIndexXplodedWeightFileSearcher extends XplodedIndexSearcher 
 				fileNamesList.add(updatedFileName);
 				result.put(similarity, fileNamesList);
 				brOfDenominator.close();
-				
-			}catch(IOException e){
-				System.out.println("ppp");
+
+			} catch (final IOException e) {
 			}
 		}
 
