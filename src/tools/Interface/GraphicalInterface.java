@@ -18,7 +18,7 @@ public class GraphicalInterface extends JFrame {
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-	public static int NUMBER_RESULTS = 10;
+	public static int NUMBER_RESULTS = 0;
 	private final JSplitPane split;
 	private final int WIDTH = 1400;
 	private final int HEIGHT = 800;

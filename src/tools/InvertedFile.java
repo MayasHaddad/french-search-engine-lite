@@ -6,12 +6,9 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 import java.util.TreeSet;
@@ -48,16 +45,17 @@ public class InvertedFile {
 			return;
 		}
 		Iterator it;
-		int cpt =0;
+		int cpt = 0;
 		TreeSet<String> listFiles;
 		for (final File f : dir.listFiles()) {
-			String fileNameOfActualFile = f.getName();
-			String fileNameConvertedInString = Integer.toString(Integer.parseInt(fileNameOfActualFile.substring(0,8)));
-			
-			cpt ++;
-			
+			final String fileNameOfActualFile = f.getName();
+			final String fileNameConvertedInString = Integer.toString(Integer
+					.parseInt(fileNameOfActualFile.substring(0, 8)));
+
+			cpt++;
+
 			// check memory
-			if (cpt%1000==0 && Utils.isMemoryFull(Main.RATIO_MEMORY)) {
+			if (cpt % 1000 == 0 && Utils.isMemoryFull(Main.RATIO_MEMORY)) {
 				InvertedFile.saveInvertedFile(InvertedFile.res,
 						InvertedFile.generateInvertedFileName());
 				InvertedFile.res.clear();
@@ -75,29 +73,31 @@ public class InvertedFile {
 				continue;
 			}
 			occurences.clear();
-			//mots = normalizer.normalize(f.getAbsolutePath(), removeStopWords,
-			//		Const.PATH_TO_STOP_WORDS);
-			//for (final String word : mots) {
-			//	occurences.add(word);
-			//}
-			BufferedReader readerA = new BufferedReader(new FileReader(f));
+			// mots = normalizer.normalize(f.getAbsolutePath(), removeStopWords,
+			// Const.PATH_TO_STOP_WORDS);
+			// for (final String word : mots) {
+			// occurences.add(word);
+			// }
+			final BufferedReader readerA = new BufferedReader(new FileReader(f));
 			String line;
 			while ((line = readerA.readLine()) != null) {
-				String s = line.split("\t")[0];
-				//TODO vérifier pas sur LETTRES_ET_CHIFFRES mais sur la table ASCII
-				if(Const.LETTRES_ET_CHIFFRES.contains(s.substring(0,1))){
+				final String s = line.split("\t")[0];
+				// TODO vérifier pas sur LETTRES_ET_CHIFFRES mais sur la table
+				// ASCII
+				if (Const.LETTRES_ET_CHIFFRES.contains(s.substring(0, 1))) {
 					occurences.add(s);
 				}
 			}
 			readerA.close();
-			
+
 			// put all the words into the tree
 			it = occurences.iterator();
 			while (it.hasNext()) {
-				final String key = (String) it.next();				
+				final String key = (String) it.next();
 				final TreeSet<String> s = InvertedFile.res.get(key);
 				if (s != null
-						&& !InvertedFile.res.get(key).contains(fileNameConvertedInString)) {
+						&& !InvertedFile.res.get(key).contains(
+								fileNameConvertedInString)) {
 					listFiles = InvertedFile.res.get(key);
 					listFiles.add(fileNameConvertedInString);
 					// res.put(key, listFiles);
@@ -142,6 +142,7 @@ public class InvertedFile {
 			final TreeMap<String, TreeSet<String>> invertedFile,
 			final File outFile) throws IOException {
 		if (!outFile.exists()) {
+			System.out.println(outFile.getAbsolutePath());
 			outFile.createNewFile();
 		}
 		if (outFile.canRead() && outFile.isFile()) {
@@ -172,7 +173,7 @@ public class InvertedFile {
 
 	public static File generateInvertedFileName() {
 		InvertedFile.cpt++;
-		return new File(Const.INVERTEDFILETMP
-				+ File.separator + InvertedFile.cpt.toString());
+		return new File(Const.INVERTEDFILETMP + File.separator
+				+ InvertedFile.cpt.toString());
 	}
 }

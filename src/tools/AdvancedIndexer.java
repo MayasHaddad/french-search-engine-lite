@@ -21,7 +21,7 @@ public class AdvancedIndexer {
 	private Integer cpt = 0;
 	private final TreeMap<String, TreeSet<String>> res = new TreeMap<String, TreeSet<String>>();
 	private final TreeMap<String, Double> listDenominateur = new TreeMap<String, Double>();
-	private int count = 0;
+	private final int count = 0;
 	private int countFichier = 1;
 
 	public AdvancedIndexer(final String pathToCorpus) {
@@ -45,8 +45,8 @@ public class AdvancedIndexer {
 	private void saveDenominateur(final TreeMap<String, Double> listDenominateur)
 			throws IOException {
 
-		BufferedWriter writer = new BufferedWriter(new FileWriter(new File(
-				Const.WEIGHTFILETMP + this.countFichier + ".txt")));
+		final BufferedWriter writer = new BufferedWriter(new FileWriter(
+				new File(Const.WEIGHTFILETMP + this.countFichier + ".txt")));
 		for (final Entry<String, Double> entry : listDenominateur.entrySet()) {
 			String a = entry.getKey();
 			a = a.split(".txt")[0];
@@ -70,7 +70,9 @@ public class AdvancedIndexer {
 		this.traitementRec(dir);
 		InvertedFile.saveInvertedFile(this.res,
 				InvertedFile.generateInvertedFileName());
-		//this.saveDenominateur(this.listDenominateur);
+		if (this.listDenominateur.size() > 0) {
+			this.saveDenominateur(this.listDenominateur);
+		}
 
 	}
 
@@ -90,7 +92,7 @@ public class AdvancedIndexer {
 							+ Const.MAX_NUMBER_OF_FILE + " files");
 					return false;
 				} else {
-					//return true;
+					// return true;
 				}
 			} else {
 				if (this.traitementRec(f) == false) {
@@ -98,8 +100,8 @@ public class AdvancedIndexer {
 				}
 			}
 		}
-		if(listDenominateur.size()>0){
-			this.saveDenominateur(this.listDenominateur);			
+		if (this.listDenominateur.size() > 0) {
+			this.saveDenominateur(this.listDenominateur);
 		}
 		return true;
 	}
@@ -162,7 +164,7 @@ public class AdvancedIndexer {
 		idf = Math.log10((double) Const.NB_FILES_IN_CORPUS
 				/ Indexer.DOCUMENT_FREQUENCY.get(word));
 		result = logtf * idf;
-		
+
 		return result;
 	}
 

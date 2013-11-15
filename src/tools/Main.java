@@ -45,8 +45,10 @@ public class Main {
 						Const.PATH_TO_CORPUS));
 			}
 			System.out.println("Fin nb " + new java.util.Date());
+
 			final AdvancedIndexer b = new AdvancedIndexer(Const.PATH_TO_CORPUS);
 			b.run();
+
 			final InvertedFileMerger a = new InvertedFileMerger(
 					Const.INVERTEDFILETMP);
 			a.run();
