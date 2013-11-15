@@ -21,6 +21,7 @@ public class RequestListener implements ActionListener {
 	JEditorPane jep;
 	P1 jp;
 	private MouseManager mouseManager = null;
+	private static final boolean returnOnlyGtoResults = true;
 
 	public RequestListener(final JTextField jtf, final P1 jp,
 			final JEditorPane jep) {
@@ -54,11 +55,17 @@ public class RequestListener implements ActionListener {
 			// this.jp.removeAll();
 			this.jp.clear();
 			final List<JLabel> l = this.jp.getList();
-			while (resultRequest != null) {
+			boolean isNotEmpty = false;
+			while (!resultRequest.isEmpty()) {
 				final Double key = resultRequest.lastKey();
 				final TreeSet<String> value = resultRequest.get(key);
 				resultRequest.remove(key);
 
+				if (RequestListener.returnOnlyGtoResults && isNotEmpty
+						&& key < 0.1) {
+					System.out.println("don't take : " + key + ", " + value);
+					continue;
+				}
 				for (final String s : value) {
 					final JLabel j = new JLabel(s/* + " " + score.getKey() */);
 					j.addMouseListener(this.mouseManager);
@@ -69,6 +76,7 @@ public class RequestListener implements ActionListener {
 						break;
 					}
 				}
+				isNotEmpty = true;
 				if (cpt > GraphicalInterface.NUMBER_RESULTS) {
 					break;
 				}
