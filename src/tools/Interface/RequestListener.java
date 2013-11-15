@@ -54,7 +54,7 @@ public class RequestListener implements ActionListener {
 			// this.jp.removeAll();
 			this.jp.clear();
 			final List<JLabel> l = this.jp.getList();
-			while (true) {
+			while (resultRequest != null) {
 				final Double key = resultRequest.lastKey();
 				final TreeSet<String> value = resultRequest.get(key);
 				resultRequest.remove(key);
