@@ -189,18 +189,4 @@ public class XplodedIndexXplodedWeightFileSearcher extends XplodedIndexSearcher 
 				IOManager.getNbFiles(Corpus), new File(
 						Const.PATH_TO_INVERTED_FILE_FROM_MERGER));
 	}
-
-	public static void main(final String[] args) throws IOException {
-
-		System.out.println("Ecrire votre requ�te");
-
-		final BufferedReader inputReader = new BufferedReader(
-				new InputStreamReader(System.in));
-		final String query = inputReader.readLine();
-
-		final XplodedIndexXplodedWeightFileSearcher s = new XplodedIndexXplodedWeightFileSearcher();
-
-		System.out.println(s.getResult(query, new File(
-				"/public/iri/projetIRI/corpus/0000/")));
-	}
 }
