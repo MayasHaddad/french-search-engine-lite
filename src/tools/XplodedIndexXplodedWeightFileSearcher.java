@@ -140,12 +140,7 @@ public class XplodedIndexXplodedWeightFileSearcher extends XplodedIndexSearcher 
 					updatedFileName += "0";
 				}
 				updatedFileName = updatedFileName + fileName + ".txt";
-				// System.out.println(updatedFileName + "\t" +
-				// this.getCorrespondingDenominatorFile(updatedFileName));
 
-
-				System.out.println(updatedFileName + "\t" + Const.WEIGHTFILETMP
-						+ this.getCorrespondingDenominatorFile(updatedFileName));
 				// Opening the new weightFile (weightfileTmp)
 				final BufferedReader brOfDenominator;
 				if(fileNameByBufferedReader.containsKey((Integer.parseInt(fileName)))){
